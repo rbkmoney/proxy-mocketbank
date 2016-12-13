@@ -13,6 +13,7 @@ import com.rbkmoney.proxy.test.utils.damsel.ProxyProviderWrapper;
 import com.rbkmoney.proxy.test.utils.damsel.ProxyWrapper;
 import org.apache.thrift.TException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertTrue;
                 "merchant.countryCode=643",
         }
 )
-//@Ignore("Integration test")
+@Ignore("Integration test")
 public class TestServerHandlerSuccessWith3DSIntegrationTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestServerHandlerSuccessWith3DSIntegrationTest.class);
