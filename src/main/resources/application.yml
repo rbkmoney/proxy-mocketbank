@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: name
+    description: description
+---
+info:
+  version: 1.0.0
+  responsible: Anatoly Cherkasov
+  stage: dev
+---
+endpoints:
+  health:
+    sensitive: false
+---
+server:
+  port: @server.port@
+  secondary:
+    ports: 8080
+---
+proxy-test-mpi:
+  url: http://127.0.0.1:8018
+---
+proxy-test:
+  callbackUrl: http://127.0.0.1:8019
+---
+cds:
+  url:
+    keyring: http://127.0.0.1:8021/v1/keyring
+    storage: http://127.0.0.1:8021/v1/storage
+---
+hellgate:
+  url: http://127.0.0.1:8023/v1/proxyhost/provider
+---
+timer:
+  timeout: 60
+---
+fixture:
+  cards: classpath:fixture/cards.csv
+

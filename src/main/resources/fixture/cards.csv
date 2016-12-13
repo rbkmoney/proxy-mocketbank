@@ -1,0 +1,20 @@
+cardPan, action, paymentSystem
+4242424242424242, Success, Visa
+5555555555554444, Success, MasterCard
+586824160825533338, Success, Maestro
+4012888888881881, 3-D Secure Success, Visa
+5169147129584558, 3-D Secure Success, MasterCard
+4987654321098769, 3-D Secure Failure, Visa
+5123456789012346, 3-D Secure Failure, MasterCard
+4342561111111118, 3-D Secure Timeout, Visa
+5112000200000002, 3-D Secure Timeout, MasterCard
+4000000000000002, Incufficient Funds, Visa
+5100000000000412, Incufficient Funds, MasterCard
+4222222222222220, Invalid Card, Visa
+5100000000000511, Invalid Card, MasterCard
+4003830171874018, CVV Match Fail, Visa
+5496198584584769, CVV Match Fail, MasterCard
+4000000000000069, Expired Card, Visa
+5105105105105100, Expired Card, MasterCard
+4111110000000112, Unknown Failure, Visa
+5124990000000002, Unknown Failure, MasterCard
