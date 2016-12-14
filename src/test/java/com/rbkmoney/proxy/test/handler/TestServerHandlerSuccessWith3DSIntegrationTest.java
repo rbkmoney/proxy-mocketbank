@@ -86,10 +86,10 @@ public class TestServerHandlerSuccessWith3DSIntegrationTest {
     }
 
     @Test
-    public void testProcessPaymentFail() throws TException, IOException, URISyntaxException {
+    public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
         String[] cards = {
             "4012888888881881",
-//            "5169147129584558",
+            "5169147129584558",
         };
 
         // Put the card and save the response to a subsequent request

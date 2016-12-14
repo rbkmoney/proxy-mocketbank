@@ -19,7 +19,7 @@
     <description>Проксик для тестирования и эмуляции запросов к банку</description>
 
     <properties>
-        <server.port>8019</server.port>
+        <server.port>8022</server.port>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
