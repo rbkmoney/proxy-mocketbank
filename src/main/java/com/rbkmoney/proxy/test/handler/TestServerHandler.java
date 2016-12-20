@@ -125,24 +125,29 @@ public class TestServerHandler implements ProviderProxySrv.Iface {
                                 TestMpiUtils.generateInvoice(context.getPayment()),
                                 Collections.emptyMap()
                         );
-                        return ProxyProviderWrapper.makeProxyResult(
+                        ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(
                                 intent,
                                 "captured".getBytes(),
                                 transactionInfo
                         );
+                        LOGGER.info("Processed: success {}", proxyResult);
+                        return proxyResult;
                     default:
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                LOGGER.error("Processed: Not enrolled, error: {}", error);
+                ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(error, error);
+                LOGGER.info("Processed: failure {}", proxyResult);
                 return ProxyProviderWrapper.makeProxyResultFailure(error, error);
             }
 
         } else {
-            return ProxyProviderWrapper.makeProxyResultFailure(
+            ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
                     UNSUPPORTED_CARD.getAction(),
                     UNSUPPORTED_CARD.getAction()
             );
+            LOGGER.info("Processed: failure {}", proxyResult);
+            return proxyResult;
         }
 
         VerifyEnrollmentResponse verifyEnrollmentResponse = null;
@@ -161,15 +166,16 @@ public class TestServerHandler implements ProviderProxySrv.Iface {
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(TestMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
-
             String tag = "MPI-" + TestMpiUtils.generateInvoice(context.getPayment());
+            LOGGER.info("Processed: suspend tag {}", tag);
 
-            // Prepare response
             String url = verifyEnrollmentResponse.getAcsUrl();
             Map<String, String> params = new HashMap<>();
             params.put("PaReq", verifyEnrollmentResponse.getPaReq());
             params.put("MD", tag);
             params.put("TermUrl", TestMpiUtils.getCallbackUrl(callbackUrl, "/test/term_url{?termination_uri}"));
+
+            LOGGER.info("Processed: prepare redirect params {}", params);
 
             intent = ProxyWrapper.makeIntentWithSuspendIntent(
                     tag, BaseWrapper.makeTimerTimeout(timerTimeout),
@@ -185,7 +191,7 @@ public class TestServerHandler implements ProviderProxySrv.Iface {
         Map<String, String> extra = new HashMap<>();
         extra.put(TestMpiUtils.PA_REQ, verifyEnrollmentResponse.getPaReq());
 
-        LOGGER.info("Extra map {}", extra);
+        LOGGER.info("Processed: Extra map {}", extra);
 
         byte[] state;
         try {
@@ -196,7 +202,9 @@ public class TestServerHandler implements ProviderProxySrv.Iface {
             return ProxyProviderWrapper.makeProxyResultFailure("Converter", e.getMessage());
         }
 
-        return ProxyProviderWrapper.makeProxyResult(intent, state, transactionInfo);
+        ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(intent, state, transactionInfo);
+        LOGGER.info("Processed: finish {}", proxyResult);
+        return proxyResult;
     }
 
     private ProxyResult captured(Context context) {
