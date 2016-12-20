@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.test.utils.testmpi;
 
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,8 @@ import java.net.URISyntaxException;
 public class TestMpiUtils {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TestMpiUtils.class);
+
+    public final static String MASK_CHAR = "*";
 
     public final static String MESSAGE_ID = "messageId";
     public final static String PA_REQ = "PaReq";
@@ -35,5 +38,19 @@ public class TestMpiUtils {
 
     public static String generateInvoice(PaymentInfo payment) {
         return payment.getInvoice().getId() + payment.getPayment().getId();
+    }
+
+    public static String maskNumber(final String creditCardNumber, int startLength, int endLength, String maskChar) {
+        final String cardNumber = creditCardNumber.replaceAll("\\D", "");
+
+        final int start = startLength;
+        final int end = cardNumber.length() - endLength;
+        final String overlay = StringUtils.repeat(maskChar, end - start);
+
+        return StringUtils.overlay(cardNumber, overlay, start, end);
+    }
+
+    public static String maskNumber(final String creditCardNumber) {
+        return maskNumber(creditCardNumber, 4, 4, MASK_CHAR);
     }
 }

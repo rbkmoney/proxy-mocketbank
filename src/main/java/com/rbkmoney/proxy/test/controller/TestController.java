@@ -29,6 +29,8 @@ public class TestController {
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
 
+        LOGGER.info("Input params: {}", request.getParameterMap());
+
         String tag = "";
         ByteBuffer callback = null;
         String resp = "";
