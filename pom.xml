@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <artifactId>proxy-test</artifactId>
-    <version>1.0.1</version>
+    <artifactId>proxy-mocketbank</artifactId>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
-    <name>proxy-test</name>
+    <name>proxy-mocketbank</name>
     <description>Проксик для тестирования и эмуляции запросов к банку</description>
 
     <properties>

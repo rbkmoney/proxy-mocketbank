@@ -17,10 +17,10 @@ server:
   secondary:
     ports: 8080
 ---
-proxy-test-mpi:
+proxy-mocketbank-mpi:
   url: http://127.0.0.1:8018
 ---
-proxy-test:
+proxy-mocketbank:
   callbackUrl: http://127.0.0.1:8019
 ---
 cds:
