@@ -1,10 +1,10 @@
 spring:
   application:
-    name: name
-    description: description
+    name: @name@
+    description: @description@
 ---
 info:
-  version: 1.0.0
+  version: @version@
   responsible: Anatoly Cherkasov
   stage: dev
 ---
@@ -32,7 +32,7 @@ hellgate:
   url: http://127.0.0.1:8023/v1/proxyhost/provider
 ---
 timer:
-  timeout: 60
+  timeout: 600
 ---
 fixture:
   cards: classpath:fixture/cards.csv
