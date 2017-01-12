@@ -6,6 +6,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/mocketbank")
@@ -38,13 +38,13 @@ public class MocketBankController {
         try {
             callback = Converter.mapToByteBuffer(Converter.mapArrayToMap(request.getParameterMap()));
         } catch (IOException e) {
-            LOGGER.error("Exception Map to ByteBuffer in processCallback", e);
+            LOGGER.warn("Exception Map to ByteBuffer in processCallback", e);
         }
 
-        if (Optional.ofNullable(request.getParameter("MD")).isPresent()) {
+        if (StringUtils.hasText(request.getParameter("MD"))) {
             tag = request.getParameter("MD");
         } else {
-            LOGGER.error("Missing a required parameter 'MD' ");
+            LOGGER.warn("Missing a required parameter 'MD' ");
         }
 
         try {
@@ -54,7 +54,7 @@ public class MocketBankController {
             LOGGER.error("Exception in processCallback", e);
         }
 
-        if (!request.getParameter("termination_uri").isEmpty())
+        if (StringUtils.hasText(request.getParameter("termination_uri")))
             servletResponse.sendRedirect(request.getParameter("termination_uri"));
 
         return resp;

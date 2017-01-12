@@ -173,7 +173,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             Map<String, String> params = new HashMap<>();
             params.put("PaReq", verifyEnrollmentResponse.getPaReq());
             params.put("MD", tag);
-            params.put("TermUrl", MocketBankMpiUtils.getCallbackUrl(callbackUrl, "/test/term_url{?termination_uri}"));
+            params.put("TermUrl", MocketBankMpiUtils.getCallbackUrl(callbackUrl, "/mocketbank/term_url{?termination_uri}"));
 
             LOGGER.info("Processed: prepare redirect params {}", params);
 
