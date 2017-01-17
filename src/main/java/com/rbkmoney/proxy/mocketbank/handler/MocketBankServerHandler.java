@@ -1,6 +1,5 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
-import com.rbkmoney.damsel.base.TryLater;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy.Intent;
@@ -9,7 +8,6 @@ import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction;
@@ -17,6 +15,7 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiEnro
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiTransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +61,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public ProxyResult processPayment(Context context) throws TryLater, TException {
+    public ProxyResult processPayment(Context context) throws TException {
 
         options = (context.getOptions().size() > 0) ? context.getOptions() : new HashMap<>();
 
-        Target target = context.getSession().getTarget();
+        TargetInvoicePaymentStatus target = context.getSession().getTarget();
 
         if (target.isSetProcessed()) {
             return processed(context);
@@ -89,7 +88,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         CardData cardData;
         TransactionInfo transactionInfo = null;
 
-        com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentOk();
+        com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
 
         try {
             LOGGER.info("Processed: call CDS. Token {}, session: {}", token, session);
@@ -218,7 +217,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         context.getSession().setState("confirm".getBytes());
 
-        Intent intent = ProxyWrapper.makeFinishIntentOk();
+        Intent intent = ProxyWrapper.makeFinishIntentSuccess();
         ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(intent, "confirm".getBytes(), transactionInfo);
 
         LOGGER.info("Captured: proxyResult {}", proxyResult);
@@ -232,7 +231,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public CallbackResult handlePaymentCallback(ByteBuffer byteBuffer, Context context) throws TryLater, TException {
+    public CallbackResult handlePaymentCallback(ByteBuffer byteBuffer, Context context) throws TException {
         LOGGER.info("HandlePaymentCallback: start");
         InvoicePayment invoicePayment = context.getPayment().getPayment();
         String token = invoicePayment.getPayer().getPaymentTool().getBankCard().getToken();
@@ -283,7 +282,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         if (validatePaResResponse.getTransactionStatus().equals(MocketBankMpiTransactionStatus.AUTHENTICATION_SUCCESSFUL)) {
             byte[] callbackResponse = new byte[0];
-            com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentOk();
+            com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
 
             TransactionInfo transactionInfo = DomainWrapper.makeTransactionInfo(
                     MocketBankMpiUtils.generateInvoice(context.getPayment()),

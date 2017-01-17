@@ -14,32 +14,32 @@ import java.util.Map;
 
 public class ProxyProviderWrapper {
 
-    public static Target makeTargetProcessed() {
-        Target target = new Target();
-        target.setProcessed(DomainWrapper.makeInvoicePaymentProcessed());
+    public static TargetInvoicePaymentStatus makeTargetProcessed() {
+        TargetInvoicePaymentStatus target = new TargetInvoicePaymentStatus();
+        target.setProcessed(new InvoicePaymentProcessed());
         return target;
     }
 
-    public static Target makeTargetCaptured() {
-        Target target = new Target();
-        target.setCaptured(DomainWrapper.makeInvoicePaymentCaptured());
+    public static TargetInvoicePaymentStatus makeTargetCaptured() {
+        TargetInvoicePaymentStatus target = new TargetInvoicePaymentStatus();
+        target.setCaptured(new InvoicePaymentCaptured());
         return target;
     }
 
-    public static Target makeTargetCancelled() {
-        Target target = new Target();
-        target.setCancelled(DomainWrapper.makeInvoicePaymentCancelled());
+    public static TargetInvoicePaymentStatus makeTargetCancelled() {
+        TargetInvoicePaymentStatus target = new TargetInvoicePaymentStatus();
+        target.setCancelled(new InvoicePaymentCancelled());
         return target;
     }
 
-    public static Session makeSession(Target target, byte[] state) {
+    public static Session makeSession(TargetInvoicePaymentStatus target, byte[] state) {
         Session session = new Session();
         session.setTarget(target);
         session.setState(state);
         return session;
     }
 
-    public static Session makeSession(Target target) {
+    public static Session makeSession(TargetInvoicePaymentStatus target) {
         return ProxyProviderWrapper.makeSession(target, null);
     }
 
@@ -113,27 +113,21 @@ public class ProxyProviderWrapper {
         return context;
     }
 
-    public static Shop makeShop(String shopId, Category category, ShopDetails shopDetails) {
+    public static Shop makeShop(Category category, ShopDetails shopDetails) {
         Shop shop = new Shop();
-        shop.setId(shopId);
         shop.setCategory(category);
         shop.setDetails(shopDetails);
         return shop;
     }
 
-    public static Invoice makeInvoice(String invoiceID, String createdAt, String product, com.rbkmoney.damsel.proxy_provider.Cash cost, String description) {
+    public static Invoice makeInvoice(String invoiceID, String createdAt, com.rbkmoney.damsel.proxy_provider.Cash cost) {
         Invoice invoice = new Invoice();
         invoice.setId(invoiceID);
         invoice.setCreatedAt(createdAt);
-        invoice.setProduct(product);
         invoice.setCost(cost);
-        invoice.setDescription(description);
         return invoice;
     }
 
-    public static Invoice makeInvoice(String invoiceId, String createdAt, String product, com.rbkmoney.damsel.proxy_provider.Cash cost) {
-        return ProxyProviderWrapper.makeInvoice(invoiceId, createdAt, product, cost, null);
-    }
 
     public static InvoicePayment makeInvoicePayment(String invoicePaymentId, String created_at, com.rbkmoney.damsel.domain.Payer payer, com.rbkmoney.damsel.proxy_provider.Cash cost) {
         InvoicePayment invoicePayment = new InvoicePayment();

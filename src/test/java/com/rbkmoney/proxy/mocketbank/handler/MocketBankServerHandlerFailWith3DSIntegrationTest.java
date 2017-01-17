@@ -142,12 +142,9 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
                 ProxyProviderWrapper.makeInvoice(
                         invoiceId,
                         "2016-06-02",
-                        "product",
-                        getCost(),
-                        "Invoice description"
+                        getCost()
                 ),
                 ProxyProviderWrapper.makeShop(
-                        "shopId",
                         DomainWrapper.makeCategory("CategoryName", "Category description"),
                         DomainWrapper.makeShopDetails("ShopName", "Shop description")
                 ),
@@ -172,7 +169,7 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
         return Converter.mapToByteArray(extra);
     }
 
-    private Context getContext(PutCardDataResult putCardDataResult, Target target, TransactionInfo transactionInfo) throws IOException {
+    private Context getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
         return ProxyProviderWrapper.makeContext(
                 getPaymentInfo(putCardDataResult, transactionInfo),
                 ProxyProviderWrapper.makeSession(

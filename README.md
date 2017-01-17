@@ -2,7 +2,7 @@
 
 [![Build Status](http://ci.rbkmoney.com/buildStatus/icon?job=rbkmoney_private/proxy-mocketbank/master)](http://ci.rbkmoney.com/job/rbkmoney_private/proxy-mocketbank/master)
 
-Сервис предназначен для эмулирования запросов между процессингом и банковском
+Сервис предназначен для эмулирования запросов между процессингом и банком
 
 
 ### Developers
@@ -44,12 +44,12 @@ services:
       --cds.url.storage=http://cds:8022/v1/storage
       --cds.url.keyring=http://cds:8022/v1/keyring
       --hellgate.url=http://hellgate:8022/v1/proxyhost/provider
-      --proxy-test.callbackUrl=http://proxy-mocketbank:8080
-      --proxy-test-mpi.url=http://proxy-mocketbank-mpi:8080
+      --proxy-mocketbank.callbackUrl=http://proxy-mocketbank:8080
+      --proxy-mocketbank-mpi.url=http://proxy-mocketbank-mpi:8080
     working_dir: /opt/proxy-mocketbank
     restart: on-failure:3
 
-  proxy_test_mpi:
+  proxy_mocketbank_mpi:
     image: dr.rbkmoney.com/rbkmoney/proxy-mocketbank-mpi:last
     environment:
       - SERVICE_NAME=proxy_mocketbank_mpi
@@ -57,9 +57,9 @@ services:
       - "8018:8080"
     command: |
       -Xms64m -Xmx256m
-      -jar /opt/proxy-test-mpi/proxy-mocketbank-mpi.jar
+      -jar /opt/proxy-mocketbank-mpi/proxy-mocketbank-mpi.jar
       --logging.file=/var/log/proxy-mocketbank-mpi/proxy-mocketbank-mpi.json
-      --proxy-test-mpi.callbackUrl=http://proxy-mocketbank-mpi:8080
+      --proxy-mocketbank-mpi.callbackUrl=http://proxy-mocketbank-mpi:8080
     working_dir: /opt/proxy-mocketbank-mpi
     restart: on-failure:3
     

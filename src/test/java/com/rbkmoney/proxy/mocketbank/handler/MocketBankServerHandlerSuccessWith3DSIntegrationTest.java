@@ -129,7 +129,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
                 callbackMap, getContext(putCardDataResponse, null, null)
         );
 
-        assertTrue("CallbackResult ", callbackResult.getResult().getIntent().getFinish().getStatus().isSetOk());
+        assertTrue("CallbackResult ", callbackResult.getResult().getIntent().getFinish().getStatus().isSetSuccess());
 
         LOGGER.info("Call capture payment");
         // Обрабатываем ответ и вызываем CapturePayment
@@ -144,7 +144,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
                 )
         );
 
-        assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusOk(), processResultCapture.getIntent().getFinish().getStatus());
+        assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusSuccess(), processResultCapture.getIntent().getFinish().getStatus());
 
         // Обрабатываем ответ
         LOGGER.info("Response capture payment {}", processResultCapture.toString());
@@ -159,12 +159,9 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
                 ProxyProviderWrapper.makeInvoice(
                         invoiceId,
                         "2016-06-02",
-                        "product",
-                        getCost(),
-                        "Invoice description"
+                        getCost()
                 ),
                 ProxyProviderWrapper.makeShop(
-                        "shopId",
                         DomainWrapper.makeCategory("CategoryName", "Category description"),
                         DomainWrapper.makeShopDetails("ShopName", "Shop description")
                 ),
@@ -189,7 +186,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
         return Converter.mapToByteArray(extra);
     }
 
-    private Context getContext(PutCardDataResult putCardDataResult, Target target, TransactionInfo transactionInfo) throws IOException {
+    private Context getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
         return ProxyProviderWrapper.makeContext(
                 getPaymentInfo(putCardDataResult, transactionInfo),
                 ProxyProviderWrapper.makeSession(

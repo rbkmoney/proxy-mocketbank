@@ -7,9 +7,9 @@ import com.rbkmoney.damsel.user_interaction.UserInteraction;
 public class ProxyWrapper {
 
     // FinishIntent
-    public static Intent makeFinishIntentOk() {
+    public static Intent makeFinishIntentSuccess() {
         FinishIntent finishIntent = new FinishIntent();
-        finishIntent.setStatus(ProxyWrapper.makeFinishStatusOk());
+        finishIntent.setStatus(ProxyWrapper.makeFinishStatusSuccess());
         Intent intent = new Intent();
         intent.setFinish(finishIntent);
         return intent;
@@ -19,24 +19,12 @@ public class ProxyWrapper {
         FinishIntent finishIntent = new FinishIntent();
         finishIntent.setStatus(
                 ProxyWrapper.makeFinishStatusFailure(
-                        BaseWrapper.makeError(code, description)
+                        makeFailure(code, description)
                 )
         );
         Intent intent = new Intent();
         intent.setFinish(finishIntent);
         return intent;
-    }
-
-    public static Intent makeIntentWithSleepIntent(Timer timer) {
-        Intent intent = new Intent();
-        intent.setSleep(ProxyWrapper.makeSleepIntent(timer));
-        return intent;
-    }
-
-    public static SleepIntent makeSleepIntent(Timer timer) {
-        SleepIntent sleepIntent = new SleepIntent();
-        sleepIntent.setTimer(timer);
-        return sleepIntent;
     }
 
     public static Intent makeIntentWithSuspendIntent(String tag, Timer timer, UserInteraction userInteraction) {
@@ -57,11 +45,19 @@ public class ProxyWrapper {
         return suspendIntent;
     }
 
-    public static FinishStatus makeFinishStatusFailure(com.rbkmoney.damsel.base.Error error) {
-        return FinishStatus.failure(error);
+    public static FinishStatus makeFinishStatusFailure(Failure failure) {
+        return FinishStatus.failure(failure);
     }
 
-    public static FinishStatus makeFinishStatusOk() {
-        return FinishStatus.ok(BaseWrapper.makeOk());
+    public static FinishStatus makeFinishStatusSuccess() {
+        return FinishStatus.success(new Success());
     }
+
+    public static Failure makeFailure(String code, String description) {
+        Failure failure = new Failure();
+        failure.setCode(code);
+        failure.setDescription(description);
+        return failure;
+    }
+
 }

@@ -7,7 +7,7 @@ import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.Context;
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import com.rbkmoney.damsel.proxy_provider.ProxyResult;
-import com.rbkmoney.damsel.proxy_provider.Target;
+import com.rbkmoney.damsel.proxy_provider.TargetInvoicePaymentStatus;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
@@ -145,12 +145,9 @@ public class MocketBankServerHandlerFailIntegrationTest {
                 ProxyProviderWrapper.makeInvoice(
                         invoiceId,
                         "2016-06-02",
-                        "product",
-                        getCost(),
-                        "Invoice description"
+                        getCost()
                 ),
                 ProxyProviderWrapper.makeShop(
-                        "shopId",
                         DomainWrapper.makeCategory("CategoryName", "Category description"),
                         DomainWrapper.makeShopDetails("ShopName", "Shop description")
                 ),
@@ -173,7 +170,7 @@ public class MocketBankServerHandlerFailIntegrationTest {
         return Converter.mapToByteArray(Collections.emptyMap());
     }
 
-    private Context getContext(PutCardDataResult putCardDataResult, Target target, TransactionInfo transactionInfo) throws IOException {
+    private Context getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
         return ProxyProviderWrapper.makeContext(
                 getPaymentInfo(putCardDataResult, transactionInfo),
                 ProxyProviderWrapper.makeSession(

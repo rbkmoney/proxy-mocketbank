@@ -1,9 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
-import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.cds.ExpDate;
-import com.rbkmoney.damsel.cds.PutCardDataResult;
-import com.rbkmoney.damsel.cds.UnlockStatus;
+import com.rbkmoney.damsel.cds.*;
 import com.rbkmoney.damsel.domain.BankCard;
 
 
@@ -36,9 +33,9 @@ public class CdsWrapper {
         return putCardDataResult;
     }
 
-    public static UnlockStatus makeUnlockStatusOk() {
+    public static UnlockStatus makeUnlockStatusUnlocked() {
         UnlockStatus unlockStatus = new UnlockStatus();
-        unlockStatus.setOk(BaseWrapper.makeOk());
+        unlockStatus.setUnlocked(new Unlocked());
         return unlockStatus;
     }
 
@@ -47,4 +44,5 @@ public class CdsWrapper {
         unlockStatus.setMoreKeysNeeded(value);
         return unlockStatus;
     }
+
 }

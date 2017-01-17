@@ -1,9 +1,9 @@
 package com.rbkmoney.proxy.mocketbank.utils.cds;
 
-import com.rbkmoney.damsel.base.Ok;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
 import com.rbkmoney.damsel.cds.UnlockStatus;
+import com.rbkmoney.damsel.cds.Unlocked;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,7 +22,7 @@ public class CdsApiTest {
     private CdsApi cds;
 
     @Mock
-    private Ok ok;
+    private Unlocked unlocked;
 
     @Mock
     private CardData cardData;
@@ -40,7 +40,7 @@ public class CdsApiTest {
     @Test
     public void testUnlock() throws Exception {
         ByteBuffer bbuf = ByteBuffer.allocate(10);
-        UnlockStatus status = UnlockStatus.ok(ok);
+        UnlockStatus status = UnlockStatus.unlocked(unlocked);
 
         Mockito.when(cds.unlock(bbuf)).thenReturn(status);
 

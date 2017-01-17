@@ -7,7 +7,7 @@ import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.Context;
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import com.rbkmoney.damsel.proxy_provider.ProxyResult;
-import com.rbkmoney.damsel.proxy_provider.Target;
+import com.rbkmoney.damsel.proxy_provider.TargetInvoicePaymentStatus;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
@@ -120,9 +120,9 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
                 )
         );
 
-        assertEquals("Process payment ", ProxyWrapper.makeFinishStatusOk(), processResultPayment.getIntent().getFinish().getStatus());
+        assertEquals("Process payment ", ProxyWrapper.makeFinishStatusSuccess(), processResultPayment.getIntent().getFinish().getStatus());
 
-        if (processResultPayment.getIntent().getFinish().getStatus().equals(ProxyWrapper.makeFinishStatusOk())) {
+        if (processResultPayment.getIntent().getFinish().getStatus().equals(ProxyWrapper.makeFinishStatusSuccess())) {
 
             LOGGER.info("Call capture payment");
             // Обрабатываем ответ и вызываем CapturePayment
@@ -137,7 +137,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
                     )
             );
 
-            assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusOk(), processResultCapture.getIntent().getFinish().getStatus());
+            assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusSuccess(), processResultCapture.getIntent().getFinish().getStatus());
 
             // Обрабатываем ответ
             LOGGER.info("Response capture payment {}", processResultCapture.toString());
@@ -160,12 +160,9 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
                 ProxyProviderWrapper.makeInvoice(
                         invoiceId,
                         "2016-06-02",
-                        "product",
-                        getCost(),
-                        "Invoice description"
+                        getCost()
                 ),
                 ProxyProviderWrapper.makeShop(
-                        "shopId",
                         DomainWrapper.makeCategory("CategoryName", "Category description"),
                         DomainWrapper.makeShopDetails("ShopName", "Shop description")
                 ),
@@ -188,7 +185,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
         return Converter.mapToByteArray(Collections.emptyMap());
     }
 
-    private Context getContext(PutCardDataResult putCardDataResult, Target target, TransactionInfo transactionInfo) throws IOException {
+    private Context getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
         return ProxyProviderWrapper.makeContext(
                 getPaymentInfo(putCardDataResult, transactionInfo),
                 ProxyProviderWrapper.makeSession(
