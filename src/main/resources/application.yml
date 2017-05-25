@@ -13,9 +13,9 @@ endpoints:
     sensitive: false
 ---
 server:
-  port: @server.port@
+  port: @service.port@
   secondary:
-    ports: 8080
+    ports: @service.secondary.ports@
 ---
 proxy-mocketbank-mpi:
   url: http://127.0.0.1:8018
