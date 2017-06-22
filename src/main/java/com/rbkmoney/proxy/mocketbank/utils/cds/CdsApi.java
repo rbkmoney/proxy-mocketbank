@@ -56,7 +56,7 @@ public class CdsApi {
     public CardData getCardData(String token) throws TException {
         LOGGER.info("Storage getCardData: token {}", token);
         CardData cardData = storageSrv.getCardData(token);
-        LOGGER.info("Storage getCardData: response");
+        LOGGER.info("Storage getCardData: response token {}", token);
         return cardData;
     }
 
@@ -71,7 +71,7 @@ public class CdsApi {
     public CardData getSessionCardData(String token, String session) throws TException {
         LOGGER.info("Storage getSessionCardData: token {}, session{} ", token, session);
         CardData cardData = storageSrv.getSessionCardData(token, session);
-        LOGGER.info("Storage getSessionCardData: response");
+        LOGGER.info("Storage getSessionCardData: response token {}, session{}", token, session);
         return cardData;
     }
 
@@ -83,7 +83,7 @@ public class CdsApi {
      * @throws TException
      */
     public PutCardDataResult putCardData(CardData cardData) throws TException {
-        LOGGER.info("Storage putCardData: cardData {} ", cardData);
+        LOGGER.info("Storage putCardData: cardData");
         PutCardDataResult result = storageSrv.putCardData(cardData);
         LOGGER.info("Storage putCardData: response");
         return result;
