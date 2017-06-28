@@ -107,8 +107,8 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             if (!cardUtils.isEnrolled(card)) {
                 String error;
                 switch (action) {
-                    case INCUFFICIENT_FUNDS:
-                        error = INCUFFICIENT_FUNDS.getAction();
+                    case INSUFFICIENT_FUNDS:
+                        error = INSUFFICIENT_FUNDS.getAction();
                         break;
                     case INVALID_CARD:
                         error = INVALID_CARD.getAction();
