@@ -3,6 +3,7 @@ package com.rbkmoney.proxy.mocketbank.handler;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
 import com.rbkmoney.damsel.cds.UnlockStatus;
+import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
@@ -172,7 +173,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
                                 DomainWrapper.makeContactInfo("email", "phone"),
                                 DomainWrapper.makeClientInfo("fingerprint", "ip"),
                                 DomainWrapper.makePaymentTool(putCardDataResponse.getBankCard()),
-                                putCardDataResponse.getSession()
+                                putCardDataResponse.getSessionId()
                         ),
                         getCost(),
                         transactionInfo

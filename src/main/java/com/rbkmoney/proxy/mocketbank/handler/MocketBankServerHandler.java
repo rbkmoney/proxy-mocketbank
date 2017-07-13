@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy.Intent;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -82,8 +83,8 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
     private ProxyResult processed(Context context) {
         LOGGER.info("processed start");
-        com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPayment().getPayment();
-        String session = invoicePayment.getPayer().getSession();
+        com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
+        String session = invoicePayment.getPayer().getSessionId();
         String token = invoicePayment.getPayer().getPaymentTool().getBankCard().getToken();
         CardData cardData;
         TransactionInfo transactionInfo = null;
@@ -121,7 +122,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         break;
                     case SUCCESS:
                         transactionInfo = DomainWrapper.makeTransactionInfo(
-                                MocketBankMpiUtils.generateInvoice(context.getPayment()),
+                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                                 Collections.emptyMap()
                         );
                         ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(
@@ -165,7 +166,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
-            String tag = "MPI-" + MocketBankMpiUtils.generateInvoice(context.getPayment());
+            String tag = "MPI-" + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
             LOGGER.info("Processed: suspend tag {}", tag);
 
             String url = verifyEnrollmentResponse.getAcsUrl();
@@ -208,7 +209,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
     private ProxyResult captured(Context context) {
         LOGGER.info("Captured: start");
-        com.rbkmoney.damsel.proxy_provider.InvoicePayment payment = context.getPayment().getPayment();
+        com.rbkmoney.damsel.proxy_provider.InvoicePayment payment = context.getPaymentInfo().getPayment();
         TransactionInfo transactionInfoContractor = payment.getTrx();
         TransactionInfo transactionInfo = DomainWrapper.makeTransactionInfo(
                 transactionInfoContractor.getId(),
@@ -233,9 +234,9 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     @Override
     public CallbackResult handlePaymentCallback(ByteBuffer byteBuffer, Context context) throws TException {
         LOGGER.info("HandlePaymentCallback: start");
-        InvoicePayment invoicePayment = context.getPayment().getPayment();
+        InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
         String token = invoicePayment.getPayer().getPaymentTool().getBankCard().getToken();
-        String session = invoicePayment.getPayer().getSession();
+        String session = invoicePayment.getPayer().getSessionId();
         options = context.getOptions();
 
         HashMap<String, String> parameters;
@@ -285,7 +286,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
 
             TransactionInfo transactionInfo = DomainWrapper.makeTransactionInfo(
-                    MocketBankMpiUtils.generateInvoice(context.getPayment()),
+                    MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                     Collections.emptyMap()
             );
 

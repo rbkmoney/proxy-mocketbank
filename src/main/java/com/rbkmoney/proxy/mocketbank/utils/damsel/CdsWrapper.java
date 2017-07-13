@@ -29,7 +29,7 @@ public class CdsWrapper {
     public static PutCardDataResult makePutCardDataResult(BankCard bankCard, String session) {
         PutCardDataResult putCardDataResult = new PutCardDataResult();
         putCardDataResult.setBankCard(bankCard);
-        putCardDataResult.setSession(session);
+        putCardDataResult.setSessionId(session);
         return putCardDataResult;
     }
 

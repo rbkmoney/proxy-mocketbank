@@ -107,7 +107,7 @@ public class ProxyProviderWrapper {
             Map<String, String> options
     ) {
         Context context = new Context();
-        context.setPayment(paymentInfo);
+        context.setPaymentInfo(paymentInfo);
         context.setSession(session);
         context.setOptions(options);
         return context;

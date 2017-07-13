@@ -27,7 +27,7 @@ build('proxy-mocketbank', 'java-maven') {
     }
 
     try {
-        if (env.BRANCH_NAME == 'master') {
+        if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('epic')) {
             runStage('Push Service image') {
                 docker.withRegistry('https://dr.rbkmoney.com/v2/', 'dockerhub-rbkmoneycibot') {
                     serviceImage.push();

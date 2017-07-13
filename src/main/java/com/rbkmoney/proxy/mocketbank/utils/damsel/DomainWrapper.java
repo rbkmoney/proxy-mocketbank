@@ -52,7 +52,7 @@ public class DomainWrapper {
         payer.setContactInfo(contactInfo);
         payer.setClientInfo(clientInfo);
         payer.setPaymentTool(paymentTool);
-        payer.setSession(session);
+        payer.setSessionId(session);
         return payer;
     }
 
@@ -76,16 +76,11 @@ public class DomainWrapper {
         return shopLocation;
     }
 
-    public static ShopDetails makeShopDetails(String name, String description, ShopLocation location) {
+    public static ShopDetails makeShopDetails(String name, String description) {
         ShopDetails shopDetails = new ShopDetails();
         shopDetails.setName(name);
-        shopDetails.setDescription(description);
-        shopDetails.setLocation(location);
-        return shopDetails;
-    }
 
-    public static ShopDetails makeShopDetails(String name, String description) {
-        return DomainWrapper.makeShopDetails(name, description, null);
+        return shopDetails;
     }
 
     public static Category makeCategory(String name, String description) {
