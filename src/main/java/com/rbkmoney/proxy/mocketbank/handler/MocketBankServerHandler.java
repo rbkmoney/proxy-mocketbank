@@ -226,7 +226,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     private ProxyResult cancelled(Context context) {
-        ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure("Unsupported method CANCEL", "Unsupported method CANCEL");
+        ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(
+                ProxyWrapper.makeFinishIntentSuccess(),
+                "cancelled".getBytes(),
+                context.getPaymentInfo().getPayment().getTrx()
+        );
         LOGGER.error("Cancelled: proxyResult {}", proxyResult);
         return proxyResult;
     }
