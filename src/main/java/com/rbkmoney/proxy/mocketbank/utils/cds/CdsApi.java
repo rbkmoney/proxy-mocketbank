@@ -1,14 +1,13 @@
 package com.rbkmoney.proxy.mocketbank.utils.cds;
 
-import com.rbkmoney.damsel.cds.*;
+import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.damsel.cds.PutCardDataResult;
+import com.rbkmoney.damsel.cds.StorageSrv;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.nio.ByteBuffer;
-import java.util.List;
 
 @Component
 public class CdsApi {
@@ -16,35 +15,7 @@ public class CdsApi {
     private final static Logger LOGGER = LoggerFactory.getLogger(CdsApi.class);
 
     @Autowired
-    private KeyringSrv.Iface keyringSrv;
-
-    @Autowired
     private StorageSrv.Iface storageSrv;
-
-    /**
-     * Разблокировать ключи
-     *
-     * @param key_share ByteBuffer
-     * @return UnlockStatus
-     * @throws TException
-     */
-    public UnlockStatus unlock(ByteBuffer key_share) throws TException {
-        LOGGER.info("Keyring: unlock");
-        return keyringSrv.unlock(key_share);
-    }
-
-    /**
-     * Инициализация ключей
-     *
-     * @param threshold  short
-     * @param num_shares short
-     * @return List<ByteBuffer>
-     * @throws TException
-     */
-    public List<ByteBuffer> init(short threshold, short num_shares) throws TException {
-        LOGGER.info("Keyring: init");
-        return keyringSrv.init(threshold, num_shares);
-    }
 
     /**
      * Получить карточные данные без CVV

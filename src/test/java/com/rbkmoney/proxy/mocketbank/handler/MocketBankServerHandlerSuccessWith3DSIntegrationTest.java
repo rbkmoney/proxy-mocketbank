@@ -2,7 +2,6 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
-import com.rbkmoney.damsel.cds.UnlockStatus;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -29,7 +28,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -212,28 +210,6 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
 
         LOGGER.info(putCardDataResponse.toString());
         return putCardDataResponse;
-    }
-
-    /**
-     * CDS unlock Key
-     * <p>
-     * TODO: Игнорируем, если ключи уже разблокированы
-     *
-     * @param thres_hold short
-     * @param num_shares short
-     * @return UnlockStatus
-     * @throws URISyntaxException
-     * @throws TException
-     */
-    private UnlockStatus cdsUnlockKey(short thres_hold, short num_shares) throws URISyntaxException, TException, IOException {
-        LOGGER.info("CDS: init");
-        List<ByteBuffer> key = cds.init(thres_hold, num_shares);
-        LOGGER.info("CDS: init response {}", key.toString());
-
-        LOGGER.info("CDS: unlock");
-        UnlockStatus unlockStatus = cds.unlock(key.get(0));
-        LOGGER.info("CDS: unlock res {}", unlockStatus.toString());
-        return unlockStatus;
     }
 
 }
