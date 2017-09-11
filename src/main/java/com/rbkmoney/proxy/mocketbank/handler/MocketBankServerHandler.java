@@ -306,7 +306,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     Collections.emptyMap()
             );
 
-            ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(
+            CallbackProxyResult proxyResult = ProxyProviderWrapper.makeCallbackProxyResult(
                     intent, "captured".getBytes(), transactionInfo
             );
 

@@ -89,7 +89,7 @@ public class ProxyProviderWrapper {
         return DomainWrapper.makeBankCard(bin, maskedPan, token, bankCardPaymentSystem);
     }
 
-        public static PaymentInfo makePaymentInfo(
+    public static PaymentInfo makePaymentInfo(
             com.rbkmoney.damsel.proxy_provider.Invoice invoice,
             com.rbkmoney.damsel.proxy_provider.Shop shop,
             com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment
@@ -160,7 +160,21 @@ public class ProxyProviderWrapper {
         return session;
     }
 
-    public static CallbackResult makeCallbackResult(byte[] callbackResponse, ProxyResult proxyResult) {
+    public static CallbackProxyResult makeCallbackProxyResult(Intent intent, byte[] next_state, TransactionInfo trx) {
+        CallbackProxyResult proxyResult = new CallbackProxyResult();
+        proxyResult.setIntent(intent);
+        proxyResult.setNextState(next_state);
+        proxyResult.setTrx(trx);
+        return proxyResult;
+    }
+
+    public static CallbackProxyResult makeCallbackProxyResultFailure(String code, String description) {
+        CallbackProxyResult proxyResult = new CallbackProxyResult();
+        proxyResult.setIntent(ProxyWrapper.makeFinishIntentFailure(code, description));
+        return proxyResult;
+    }
+
+    public static CallbackResult makeCallbackResult(byte[] callbackResponse, CallbackProxyResult proxyResult) {
         CallbackResult callbackResult = new CallbackResult();
         callbackResult.setResponse(callbackResponse);
         callbackResult.setResult(proxyResult);
@@ -171,7 +185,7 @@ public class ProxyProviderWrapper {
     public static CallbackResult makeCallbackResultFailure(byte[] callbackResponse, String code, String description) {
         CallbackResult callbackResult = new CallbackResult();
         callbackResult.setResponse(callbackResponse);
-        callbackResult.setResult(ProxyProviderWrapper.makeProxyResultFailure(code, description));
+        callbackResult.setResult(ProxyProviderWrapper.makeCallbackProxyResultFailure(code, description));
         return callbackResult;
     }
 
