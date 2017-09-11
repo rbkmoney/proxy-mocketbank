@@ -74,6 +74,8 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             return captured(context);
         } else if (target.isSetCancelled()) {
             return cancelled(context);
+        } else if (target.isSetRefunded()) {
+            return refunded(context);
         } else {
             LOGGER.error("Error unsupported method");
             return ProxyProviderWrapper.makeProxyResultFailure("Unsupported method", "Unsupported method");
@@ -231,7 +233,17 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 "cancelled".getBytes(),
                 context.getPaymentInfo().getPayment().getTrx()
         );
-        LOGGER.error("Cancelled: proxyResult {}", proxyResult);
+        LOGGER.info("Cancelled: proxyResult {}", proxyResult);
+        return proxyResult;
+    }
+
+    private ProxyResult refunded(Context context) {
+        ProxyResult proxyResult = ProxyProviderWrapper.makeProxyResult(
+                ProxyWrapper.makeFinishIntentSuccess(),
+                "refunded".getBytes(),
+                context.getPaymentInfo().getPayment().getTrx()
+        );
+        LOGGER.info("Refunded: proxyResult {}", proxyResult);
         return proxyResult;
     }
 
