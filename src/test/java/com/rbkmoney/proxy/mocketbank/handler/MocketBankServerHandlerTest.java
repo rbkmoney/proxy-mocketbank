@@ -1,8 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
-import com.rbkmoney.damsel.proxy_provider.CallbackResult;
-import com.rbkmoney.damsel.proxy_provider.Context;
-import com.rbkmoney.damsel.proxy_provider.ProxyResult;
+import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
+import com.rbkmoney.damsel.proxy_provider.PaymentContext;
+import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,19 +17,19 @@ import static org.junit.Assert.assertEquals;
 public class MocketBankServerHandlerTest {
 
     @Mock
-    ProxyResult proxyResult;
+    private PaymentProxyResult proxyResult;
 
     @Mock
-    CallbackResult callbackResult;
+    private PaymentCallbackResult callbackResult;
 
     @Mock
-    ByteBuffer byteBuffer;
+    private ByteBuffer byteBuffer;
 
     @Mock
-    Context context;
+    private PaymentContext context;
 
     @Mock
-    MocketBankServerHandler handler;
+    private MocketBankServerHandler handler;
 
     @Before
     public void setUp() {

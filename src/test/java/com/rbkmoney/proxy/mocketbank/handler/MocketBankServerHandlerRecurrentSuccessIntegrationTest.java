@@ -2,6 +2,7 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
+import com.rbkmoney.damsel.domain.DisposablePaymentResource;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -10,6 +11,7 @@ import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -25,12 +27,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -44,13 +45,12 @@ import static org.junit.Assert.assertTrue;
                 "merchant.countryCode=643",
                 "cds.url.keyring=http://127.0.0.1:8021/v1/keyring",
                 "cds.url.storage=http://127.0.0.1:8021/v1/storage",
-                "proxy-mocketbank-mpi.url=http://127.0.0.1:8018",
         }
 )
 @Ignore("Integration test")
-public class MocketBankServerHandlerFailWith3DSIntegrationTest {
+public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandlerFailWith3DSIntegrationTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandlerRecurrentSuccessIntegrationTest.class);
 
     @ClassRule
     public final static IntegrationBaseRule rule = new IntegrationBaseRule();
@@ -90,60 +90,98 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
     }
 
     @Test
-    public void testProcessPaymentFail() throws TException, IOException, URISyntaxException {
+    public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
         String[] cards = {
-            "4987654321098769",
-            "5123456789012346",
-            "4342561111111118",
-            "5112000200000002",
+            "4242424242424242",
+            "5555555555554444",
+            "586824160825533338",
         };
 
         // Put the card and save the response to a subsequent request
         for (String card: cards) {
             CardData cardData = CdsWrapper.makeCardDataWithExpDate(
-                    "NONAME", "123", card, Byte.parseByte("12"), Short.parseShort("2020")
+                    "NONAME",
+                    "123",
+                    card,
+                    Byte.parseByte("12"),
+                    Short.parseShort("2020")
             );
-            processPaymentFail(cardData);
+            processPaymentSuccess(cardData);
         }
 
     }
 
-    private void processPaymentFail(CardData cardData) throws TException, URISyntaxException, IOException {
+    private void processPaymentSuccess(CardData cardData) throws TException, URISyntaxException, IOException {
         PutCardDataResult putCardDataResponse = cdsPutCardData(cardData);
+
+        RecurrentTokenGenerationContext generationContext = new RecurrentTokenGenerationContext();
+
+        RecurrentTokenInfo recurrentTokenInfo = new RecurrentTokenInfo();
+
+        RecurrentPaymentTool recurrentPaymentTool = new RecurrentPaymentTool();
+
+        DisposablePaymentResource disposablePaymentResource = new DisposablePaymentResource();
+        disposablePaymentResource.setPaymentSessionId(putCardDataResponse.getSessionId());
+
+        disposablePaymentResource.setPaymentTool(DomainWrapper.makePaymentTool(putCardDataResponse.getBankCard()));
+
+        recurrentPaymentTool.setPaymentResource(disposablePaymentResource);
+
+
+        recurrentTokenInfo.setPaymentTool(recurrentPaymentTool);
+
+
+        generationContext.setTokenInfo(recurrentTokenInfo);
+
+
+
+
+        RecurrentTokenGenerationProxyResult generationProxyResult = handler.generateToken(generationContext);
 
         PaymentProxyResult processResultPayment = handler.processPayment(
                 getContext(
-                        putCardDataResponse,
+                        getPaymentResourceRecurrent(generationProxyResult.getToken()),
                         ProxyProviderWrapper.makeTargetProcessed(),
                         null
                 )
         );
 
-        // Process Payment
-        assertTrue("Process payment ", !processResultPayment.getIntent().getSuspend().getTag().isEmpty());
+        assertEquals("Process payment ", ProxyWrapper.makeFinishStatusSuccess(), processResultPayment.getIntent().getFinish().getStatus());
 
+        if (processResultPayment.getIntent().getFinish().getStatus().equals(ProxyWrapper.makeFinishStatusSuccess())) {
 
-        // Prepare handlePaymentCallback
-        Map<String, String> mapCallback = new HashMap<>();
-        mapCallback.put("MD", "MD-TAG");
-        mapCallback.put("paRes", "SomePaRes");
+            LOGGER.info("Call capture payment");
+            // Обрабатываем ответ и вызываем CapturePayment
+            PaymentProxyResult processResultCapture = handler.processPayment(
+                    getContext(
+                            getPaymentResourceRecurrent(generationProxyResult.getToken()),
+                            ProxyProviderWrapper.makeTargetCaptured(),
+                            DomainWrapper.makeTransactionInfo(
+                                    processResultPayment.getTrx().getId(),
+                                    Collections.emptyMap()
+                            )
+                    )
+            );
 
-        ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
+            assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusSuccess(), processResultCapture.getIntent().getFinish().getStatus());
 
-        // handlePaymentCallback
-        PaymentCallbackResult callbackResult = handler.handlePaymentCallback(
-                callbackMap, getContext(putCardDataResponse, null, null)
-        );
-
-        assertTrue("CallbackResult ", callbackResult.getResult().getIntent().getFinish().getStatus().getFailure().isSetCode());
-
+            // Обрабатываем ответ
+            LOGGER.info("Response capture payment {}", processResultCapture.toString());
+        }
     }
 
     private Map<String, String> getOptionsProxy() {
-        return Collections.emptyMap();
+        Map<String, String> options = new HashMap<>();
+        options.put("merchantId", merchantId);
+        options.put("merchantName", merchantName);
+        options.put("merchantUrl", merchantUrl);
+        options.put("merchantAcquirerBin", merchantAcquirerBin);
+        options.put("merchantPassword", merchantPassword);
+        options.put("merchantCountryCode", merchantCountryCode);
+        return options;
     }
 
-    private PaymentInfo getPaymentInfo(PutCardDataResult putCardDataResponse, TransactionInfo transactionInfo) {
+    private PaymentInfo getPaymentInfo(TransactionInfo transactionInfo, PaymentResource paymentResource) {
         return ProxyProviderWrapper.makePaymentInfo(
                 ProxyProviderWrapper.makeInvoice(
                         invoiceId,
@@ -157,12 +195,13 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
                 ProxyProviderWrapper.makeInvoicePaymentWithTrX(
                         paymentId,
                         "2016-06-02",
-                        getPaymentResource(putCardDataResponse),
+                        paymentResource,
                         getCost(),
                         transactionInfo
                 )
         );
     }
+
 
     private PaymentResource getPaymentResource(PutCardDataResult putCardDataResponse) {
         return ProxyProviderWrapper.makePaymentResourceDisposablePaymentResource(
@@ -174,15 +213,20 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
         );
     }
 
-    private byte[] getSessionState() throws IOException {
-        Map<String, String> extra = new HashMap<>();
-        extra.put("paReq","paReq");
-        return Converter.mapToByteArray(extra);
+    private PaymentResource getPaymentResourceRecurrent(String token) {
+        return ProxyProviderWrapper.makePaymentResourceRecurrentPaymentResource(
+                ProxyProviderWrapper.makeRecurrentPaymentResource(token)
+        );
     }
 
-    private PaymentContext getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
+
+    private byte[] getSessionState() throws IOException {
+        return Converter.mapToByteArray(Collections.emptyMap());
+    }
+
+    private PaymentContext getContext(PaymentResource paymentResource, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
         return ProxyProviderWrapper.makeContext(
-                getPaymentInfo(putCardDataResult, transactionInfo),
+                getPaymentInfo(transactionInfo, paymentResource),
                 ProxyProviderWrapper.makeSession(
                         target,
                         getSessionState()
@@ -200,6 +244,9 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
     }
 
     private PutCardDataResult cdsPutCardData(CardData cardData) throws TException, URISyntaxException, IOException {
+        LOGGER.info("CDS: prepare card");
+        // CardData cardData = TestData.makeCardData();
+
         LOGGER.info("CDS: put card");
         PutCardDataResult putCardDataResponse = cds.putCardData(cardData);
 

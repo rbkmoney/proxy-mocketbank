@@ -1,0 +1,31 @@
+version: '2'
+services:
+
+  cds:
+    image: dr.rbkmoney.com/rbkmoney/cds:b2f40fa0353c6b067c71a18316277a6499e0b707
+    environment:
+      - SERVICE_NAME=cds
+    ports:
+      - "8021:8022"
+    command: /opt/cds/bin/cds foreground
+
+  holmes:
+    depends_on:
+      - cds
+    image: dr.rbkmoney.com/rbkmoney/holmes:a8ec6a15ddc60a2c1dc4f3a40a756ba527b21f77
+    environment:
+      - SERVICE_NAME=holmes
+
+  proxy-mocketbank-mpi:
+    image: dr.rbkmoney.com/rbkmoney/proxy-mocketbank-mpi:2c4f622428d086ecbeac71d6490f8e8ece37c12b
+    environment:
+      - SERVICE_NAME=proxy-mocketbank-mpi
+    ports:
+      - "8018:8080"
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"

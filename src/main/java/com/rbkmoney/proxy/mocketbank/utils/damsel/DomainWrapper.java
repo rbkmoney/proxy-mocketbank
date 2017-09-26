@@ -47,12 +47,24 @@ public class DomainWrapper {
         return paymentTool;
     }
 
-    public static Payer makePayer(ContactInfo contactInfo, ClientInfo clientInfo, PaymentTool paymentTool, String session) {
+    public static DisposablePaymentResource makeDisposablePaymentResource(ClientInfo clientInfo, String paymentSessionId, PaymentTool paymentTool) {
+        DisposablePaymentResource resource = new DisposablePaymentResource();
+        resource.setClientInfo(clientInfo);
+        resource.setPaymentSessionId(paymentSessionId);
+        resource.setPaymentTool(paymentTool);
+        return resource;
+    }
+
+    public static PaymentResourcePayer makePaymentResourcePayer(ContactInfo contactInfo, DisposablePaymentResource disposablePaymentResource) {
+        PaymentResourcePayer paymentResourcePayer = new PaymentResourcePayer();
+        paymentResourcePayer.setContactInfo(contactInfo);
+        paymentResourcePayer.setResource(disposablePaymentResource);
+        return paymentResourcePayer;
+    }
+
+    public static Payer makePayer(PaymentResourcePayer paymentResourcePayer) {
         Payer payer = new Payer();
-        payer.setContactInfo(contactInfo);
-        payer.setClientInfo(clientInfo);
-        payer.setPaymentTool(paymentTool);
-        payer.setSessionId(session);
+        payer.setPaymentResource(paymentResourcePayer);
         return payer;
     }
 
