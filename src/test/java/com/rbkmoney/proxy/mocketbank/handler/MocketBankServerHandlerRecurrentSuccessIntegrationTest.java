@@ -15,7 +15,6 @@ import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertEquals;
                 "cds.url.storage=http://127.0.0.1:8021/v1/storage",
         }
 )
-@Ignore("Integration test")
+//@Ignore("Integration test")
 public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandlerRecurrentSuccessIntegrationTest.class);
@@ -114,7 +113,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
     private void processPaymentSuccess(CardData cardData) throws TException, URISyntaxException, IOException {
         PutCardDataResult putCardDataResponse = cdsPutCardData(cardData);
 
-        RecurrentTokenGenerationContext generationContext = new RecurrentTokenGenerationContext();
+        RecurrentTokenContext generationContext = new RecurrentTokenContext();
 
         RecurrentTokenInfo recurrentTokenInfo = new RecurrentTokenInfo();
 
@@ -136,7 +135,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
 
 
 
-        RecurrentTokenGenerationProxyResult generationProxyResult = handler.generateToken(generationContext);
+        RecurrentTokenProxyResult generationProxyResult = handler.generateToken(generationContext);
 
         PaymentProxyResult processResultPayment = handler.processPayment(
                 getContext(
@@ -218,7 +217,6 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
                 ProxyProviderWrapper.makeRecurrentPaymentResource(token)
         );
     }
-
 
     private byte[] getSessionState() throws IOException {
         return Converter.mapToByteArray(Collections.emptyMap());

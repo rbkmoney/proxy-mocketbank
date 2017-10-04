@@ -2,6 +2,7 @@ package com.rbkmoney.proxy.mocketbank.controller;
 
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateApi;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,10 @@ import java.nio.ByteBuffer;
 @RequestMapping(value = "/mocketbank")
 public class MocketBankController {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MocketBankController.class);
 
     @Autowired
-    HellGateApi hellGateApi;
+    private HellGateApi hellGateApi;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -47,9 +48,17 @@ public class MocketBankController {
             LOGGER.warn("Missing a required parameter 'MD' ");
         }
 
+        // Узнать рекурент или нет, после чего вызвать тот или иной метод
         try {
-            ByteBuffer response = hellGateApi.processCallback(tag, callback);
-            resp =  new String(response.array(), "UTF-8");
+
+            ByteBuffer response;
+            if (tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG)) {
+                response = hellGateApi.processRecurrentTokenCallback(tag, callback);
+            } else {
+                response = hellGateApi.processPaymentCallback(tag, callback);
+            }
+
+            resp = new String(response.array(), "UTF-8");
         } catch (TException | UnsupportedEncodingException e) {
             LOGGER.error("Exception in processCallback", e);
         }

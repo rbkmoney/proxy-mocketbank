@@ -14,6 +14,7 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiEnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiTransactionStatus;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
@@ -63,14 +64,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
      * Запрос к прокси на создание многоразового токена
      */
     @Override
-    public RecurrentTokenGenerationProxyResult generateToken(RecurrentTokenGenerationContext context) throws TException {
+    public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
         LOGGER.info("GenerateToken start");
 
         String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
         String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
         String recurrentToken = token;
-        com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
         CardData cardData;
         try {
@@ -78,7 +79,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             cardData = cds.getSessionCardData(token, session);
         } catch (TException e) {
             LOGGER.error("GenerateToken: CDS Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResultFailure("GenerateToken: CDS Exception", e.getMessage());
+            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure("GenerateToken: CDS Exception", e.getMessage());
         }
 
         CardUtils cardUtils = new CardUtils(cardList);
@@ -103,7 +104,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = EXPIRED_CARD.getAction();
                         break;
                     case SUCCESS:
-                        RecurrentTokenGenerationProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResult(
+                        RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                                 intent,
                                 "processed".getBytes(),
                                 recurrentToken
@@ -114,13 +115,13 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                RecurrentTokenGenerationProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResultFailure(error, error);
+                RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(error, error);
                 LOGGER.info("GenerateToken: failure {}", proxyResult);
                 return proxyResult;
             }
 
         } else {
-            RecurrentTokenGenerationProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResultFailure(
+            RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                     UNSUPPORTED_CARD.getAction(),
                     UNSUPPORTED_CARD.getAction()
             );
@@ -137,14 +138,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             );
         } catch (IOException e) {
             LOGGER.error("GenerateToken: Exception in verifyEnrollment", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResultFailure(
+            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                     UNKNOWN_FAILURE.getAction(),
                     UNKNOWN_FAILURE.getAction()
             );
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
-            String tag = "MPI-" + context.getTokenInfo().getPaymentTool().getId();
+            String tag = MocketBankTag.RECURRENT_SUSPEND_TAG + context.getTokenInfo().getPaymentTool().getId();
             LOGGER.info("GenerateToken: suspend tag {}", tag);
 
             String url = verifyEnrollmentResponse.getAcsUrl();
@@ -155,7 +156,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
             LOGGER.info("GenerateToken: prepare redirect params {}", params);
 
-            intent = ProxyWrapper.makeIntentWithSuspendIntent(
+            intent = ProxyProviderWrapper.makeRecurrentTokenWithSuspendIntent(
                     tag, BaseWrapper.makeTimerTimeout(timerTimeout),
                     UserInteractionWrapper.makeUserInteraction(
                             UserInteractionWrapper.makeBrowserPostRequest(
@@ -176,10 +177,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             state = Converter.mapToByteArray(extra);
         } catch (IOException e) {
             LOGGER.error("GenerateToken: Converter Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResultFailure("Converter", e.getMessage());
+            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure("Converter", e.getMessage());
         }
 
-        RecurrentTokenGenerationProxyResult result = ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResult(
+        RecurrentTokenProxyResult result = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                 intent, state, recurrentToken
         );
 
@@ -192,7 +193,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
      * многоразового токена.
      */
     @Override
-    public RecurrentTokenGenerationCallbackResult handleRecurrentTokenGenerationCallback(ByteBuffer byteBuffer, RecurrentTokenGenerationContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
         LOGGER.info("RecurrentTokenGenerationCallbackResult: start");
 
         String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
@@ -244,9 +245,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         if (validatePaResResponse.getTransactionStatus().equals(MocketBankMpiTransactionStatus.AUTHENTICATION_SUCCESSFUL)) {
             byte[] callbackResponse = new byte[0];
-            com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+            RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
-            RecurrentTokenGenerationProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenGenerationProxyResult(
+
+            RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                     intent,
                     "processed".getBytes(),
                     recurrentToken
@@ -273,13 +275,15 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         }
 
-        RecurrentTokenGenerationCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
+        RecurrentTokenCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
                 "error".getBytes(), "RecurrentTokenGenerationCallbackResult: error", error
         );
 
         LOGGER.info("RecurrentTokenGenerationCallbackResult: callbackResult {}", callbackResult);
         return callbackResult;
     }
+
+
 
     // Тут токен
     @Override
@@ -396,7 +400,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
-            String tag = "MPI-" + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
+            String tag = MocketBankTag.COMMONE_SUSPEND_TAG + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
             LOGGER.info("Processed: suspend tag {}", tag);
 
             String url = verifyEnrollmentResponse.getAcsUrl();

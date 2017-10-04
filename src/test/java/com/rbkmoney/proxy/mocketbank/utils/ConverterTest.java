@@ -2,6 +2,7 @@ package com.rbkmoney.proxy.mocketbank.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class ConverterTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ConverterTest.class);
+
+    @Test
+    public void testMe() {
+        String tag = MocketBankTag.RECURRENT_SUSPEND_TAG + "1112";
+
+        assertTrue(tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG));
+
+        tag = MocketBankTag.COMMONE_SUSPEND_TAG + "1112";
+
+        assertTrue(tag.startsWith(MocketBankTag.COMMONE_SUSPEND_TAG));
+    }
 
     @Test
     public void byteBufferToMap() throws IOException {

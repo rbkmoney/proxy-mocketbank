@@ -1,5 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
+import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.ExpDate;
 import com.rbkmoney.damsel.domain.*;
@@ -8,9 +9,12 @@ import com.rbkmoney.damsel.proxy_provider.Invoice;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.proxy_provider.Shop;
+import com.rbkmoney.damsel.user_interaction.UserInteraction;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
+
+import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper.makeFailure;
 
 public class ProxyProviderWrapper {
 
@@ -49,11 +53,62 @@ public class ProxyProviderWrapper {
         return ProxyProviderWrapper.makeSession(target, null);
     }
 
-    // RecurrentTokenGenerationProxyResult
-    public static RecurrentTokenGenerationProxyResult makeRecurrentTokenGenerationProxyResult(
-            Intent intent, byte[] nextState, String token, TransactionInfo trx
+
+    // RecurrentTokenIntent
+    public static RecurrentTokenSuccess makeRecurrentTokenSuccess(String token) {
+        RecurrentTokenSuccess recurrentTokenSuccess = new RecurrentTokenSuccess();
+        recurrentTokenSuccess.setToken(token);
+        return recurrentTokenSuccess;
+    }
+
+    public static RecurrentTokenFinishIntent makeRecurrentTokenStatusSuccess(String token) {
+        RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();
+
+        RecurrentTokenFinishStatus status = new RecurrentTokenFinishStatus();
+        status.setSuccess(makeRecurrentTokenSuccess(token));
+        intent.setStatus(status);
+
+        return intent;
+    }
+
+    public static RecurrentTokenFinishIntent makeRecurrentTokenStatusFailure(String code, String description) {
+        RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();
+
+        RecurrentTokenFinishStatus status = new RecurrentTokenFinishStatus();
+        status.setFailure(makeFailure(code, description));
+        intent.setStatus(status);
+
+        return intent;
+    }
+
+    public static RecurrentTokenIntent makeRecurrentTokenFinishIntentFailure(String code, String description) {
+        RecurrentTokenIntent intent = new RecurrentTokenIntent();
+        intent.setFinish(makeRecurrentTokenStatusFailure(code, description));
+        return intent;
+    }
+
+    public static RecurrentTokenIntent makeRecurrentTokenFinishIntentSuccess(String token) {
+        RecurrentTokenIntent intent = new RecurrentTokenIntent();
+        intent.setFinish(makeRecurrentTokenStatusSuccess(token));
+        return intent;
+    }
+
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer, UserInteraction userInteraction) {
+        RecurrentTokenIntent intent = new RecurrentTokenIntent();
+        intent.setSuspend(ProxyWrapper.makeSuspendIntent(tag, timer, userInteraction));
+        return intent;
+    }
+
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer) {
+        return makeRecurrentTokenWithSuspendIntent(tag, timer, null);
+    }
+
+
+    // RecurrentTokenProxyResult
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
+            RecurrentTokenIntent intent, byte[] nextState, String token, TransactionInfo trx
     ) {
-        RecurrentTokenGenerationProxyResult result = new RecurrentTokenGenerationProxyResult();
+        RecurrentTokenProxyResult result = new RecurrentTokenProxyResult();
         result.setIntent(intent);
         result.setNextState(nextState);
         result.setToken(token);
@@ -61,24 +116,24 @@ public class ProxyProviderWrapper {
         return result;
     }
 
-    public static RecurrentTokenGenerationProxyResult makeRecurrentTokenGenerationProxyResult(Intent intent) {
-        return makeRecurrentTokenGenerationProxyResult(intent, null, null, null);
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(RecurrentTokenIntent intent) {
+        return makeRecurrentTokenProxyResult(intent, null, null, null);
     }
 
-    public static RecurrentTokenGenerationProxyResult makeRecurrentTokenGenerationProxyResult(
-            Intent intent, byte[] nextState
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
+            RecurrentTokenIntent intent, byte[] nextState
     ) {
-        return makeRecurrentTokenGenerationProxyResult(intent, nextState, null, null);
+        return makeRecurrentTokenProxyResult(intent, nextState, null, null);
     }
 
-    public static RecurrentTokenGenerationProxyResult makeRecurrentTokenGenerationProxyResult(
-            Intent intent, byte[] nextState, String token
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
+            RecurrentTokenIntent intent, byte[] nextState, String token
     ) {
-        return makeRecurrentTokenGenerationProxyResult(intent, nextState, token, null);
+        return makeRecurrentTokenProxyResult(intent, nextState, token, null);
     }
 
-    public static RecurrentTokenGenerationProxyResult makeRecurrentTokenGenerationProxyResultFailure(String code, String description) {
-        return makeRecurrentTokenGenerationProxyResult(ProxyWrapper.makeFinishIntentFailure(code, description));
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResultFailure(String code, String description) {
+        return makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(code, description));
     }
 
     // ProxyResult
@@ -244,18 +299,18 @@ public class ProxyProviderWrapper {
         return callbackResult;
     }
 
-    // RecurrentTokenGenerationCallbackResult
-    public static RecurrentTokenGenerationCallbackResult makeRecurrentTokenGenerationCallbackResult(byte[] callbackResponse, RecurrentTokenGenerationProxyResult proxyResult) {
-        RecurrentTokenGenerationCallbackResult result = new RecurrentTokenGenerationCallbackResult();
+    // RecurrentTokenCallbackResult
+    public static RecurrentTokenCallbackResult makeRecurrentTokenGenerationCallbackResult(byte[] callbackResponse, RecurrentTokenProxyResult proxyResult) {
+        RecurrentTokenCallbackResult result = new RecurrentTokenCallbackResult();
         result.setResponse(callbackResponse);
         result.setResult(proxyResult);
         return result;
     }
 
-    public static RecurrentTokenGenerationCallbackResult makeRecurrentTokenGenerationCallbackResultFailure(byte[] callbackResponse, String code, String description) {
-        RecurrentTokenGenerationCallbackResult result = new RecurrentTokenGenerationCallbackResult();
+    public static RecurrentTokenCallbackResult makeRecurrentTokenGenerationCallbackResultFailure(byte[] callbackResponse, String code, String description) {
+        RecurrentTokenCallbackResult result = new RecurrentTokenCallbackResult();
         result.setResponse(callbackResponse);
-        result.setResult(makeRecurrentTokenGenerationProxyResult(ProxyWrapper.makeFinishIntentFailure(code, description)));
+        result.setResult(makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(code, description)));
         return result;
     }
 

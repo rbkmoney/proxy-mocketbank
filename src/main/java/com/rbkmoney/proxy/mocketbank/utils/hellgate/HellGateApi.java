@@ -17,9 +17,17 @@ public class HellGateApi {
     @Autowired
     private ProviderProxyHostSrv.Iface providerProxyHostSrv;
 
-    public ByteBuffer processCallback(String tag, ByteBuffer callback) throws TException {
+    public ByteBuffer processPaymentCallback(String tag, ByteBuffer callback) throws TException {
         LOGGER.info("Hellgate: processCallback start");
-        ByteBuffer callbackResponse = providerProxyHostSrv.processCallback(tag, callback);
+        ByteBuffer callbackResponse = providerProxyHostSrv.processPaymentCallback(tag, callback);
+        LOGGER.info("Hellgate: processCallback finish");
+        return callbackResponse;
+    }
+
+
+    public ByteBuffer processRecurrentTokenCallback(String tag, ByteBuffer callback) throws TException {
+        LOGGER.info("Hellgate: processCallback start");
+        ByteBuffer callbackResponse = providerProxyHostSrv.processRecurrentTokenCallback(tag, callback);
         LOGGER.info("Hellgate: processCallback finish");
         return callbackResponse;
     }

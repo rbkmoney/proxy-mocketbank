@@ -12,6 +12,9 @@ import static org.junit.Assert.assertEquals;
 
 public class HellGateApiTest {
 
+    private ByteBuffer bbuf = ByteBuffer.wrap("some_byte".getBytes());
+    private ByteBuffer response = ByteBuffer.wrap("some_response_byte".getBytes());
+
     @Mock
     private HellGateApi hellGate;
 
@@ -24,14 +27,16 @@ public class HellGateApiTest {
 
     @Test
     public void testProcessCallback() throws Exception {
-        ByteBuffer bbuf = ByteBuffer.wrap("some_byte".getBytes());
-        ByteBuffer response = ByteBuffer.wrap("some_response_byte".getBytes());
+        String tag = "common_tag";
+        Mockito.when(hellGate.processPaymentCallback(tag, bbuf)).thenReturn(response);
+        assertEquals(response, hellGate.processPaymentCallback(tag, bbuf));
+    }
 
-        String tag = "some_tag";
-
-        Mockito.when(hellGate.processCallback(tag, bbuf)).thenReturn(response);
-
-        assertEquals(response, hellGate.processCallback(tag, bbuf));
+    @Test
+    public void testProcessRecurrentTokenCallback() throws Exception {
+        String tag = "recurrent_tag";
+        Mockito.when(hellGate.processRecurrentTokenCallback(tag, bbuf)).thenReturn(response);
+        assertEquals(response, hellGate.processRecurrentTokenCallback(tag, bbuf));
     }
 
 }
