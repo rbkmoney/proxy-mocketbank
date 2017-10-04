@@ -26,9 +26,9 @@ public class ConverterTest {
 
         assertTrue(tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG));
 
-        tag = MocketBankTag.COMMONE_SUSPEND_TAG + "1112";
+        tag = MocketBankTag.PAYMENT_SUSPEND_TAG + "1112";
 
-        assertTrue(tag.startsWith(MocketBankTag.COMMONE_SUSPEND_TAG));
+        assertTrue(tag.startsWith(MocketBankTag.PAYMENT_SUSPEND_TAG));
     }
 
     @Test

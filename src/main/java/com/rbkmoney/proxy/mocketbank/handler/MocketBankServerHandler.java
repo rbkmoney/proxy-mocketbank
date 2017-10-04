@@ -400,7 +400,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
-            String tag = MocketBankTag.COMMONE_SUSPEND_TAG + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
+            String tag = MocketBankTag.PAYMENT_SUSPEND_TAG + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
             LOGGER.info("Processed: suspend tag {}", tag);
 
             String url = verifyEnrollmentResponse.getAcsUrl();
