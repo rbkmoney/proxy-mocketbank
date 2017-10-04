@@ -2,7 +2,6 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
-import com.rbkmoney.damsel.domain.DisposablePaymentResource;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -15,6 +14,7 @@ import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertEquals;
                 "cds.url.storage=http://127.0.0.1:8021/v1/storage",
         }
 )
-//@Ignore("Integration test")
+@Ignore("Integration test")
 public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandlerRecurrentSuccessIntegrationTest.class);
@@ -91,13 +92,13 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
         String[] cards = {
-            "4242424242424242",
-            "5555555555554444",
-            "586824160825533338",
+                "4242424242424242",
+                "5555555555554444",
+                "586824160825533338",
         };
 
         // Put the card and save the response to a subsequent request
-        for (String card: cards) {
+        for (String card : cards) {
             CardData cardData = CdsWrapper.makeCardDataWithExpDate(
                     "NONAME",
                     "123",
@@ -113,29 +114,21 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
     private void processPaymentSuccess(CardData cardData) throws TException, URISyntaxException, IOException {
         PutCardDataResult putCardDataResponse = cdsPutCardData(cardData);
 
-        RecurrentTokenContext generationContext = new RecurrentTokenContext();
+        RecurrentTokenContext context = new RecurrentTokenContext();
+        context.setTokenInfo(
+                makeRecurrentTokenInfo(
+                        makeRecurrentPaymentTool(
+                                makeDisposablePaymentResource(
+                                        putCardDataResponse.getSessionId(),
+                                        DomainWrapper.makePaymentTool(
+                                                putCardDataResponse.getBankCard()
+                                        )
+                                )
+                        )
+                )
+        );
 
-        RecurrentTokenInfo recurrentTokenInfo = new RecurrentTokenInfo();
-
-        RecurrentPaymentTool recurrentPaymentTool = new RecurrentPaymentTool();
-
-        DisposablePaymentResource disposablePaymentResource = new DisposablePaymentResource();
-        disposablePaymentResource.setPaymentSessionId(putCardDataResponse.getSessionId());
-
-        disposablePaymentResource.setPaymentTool(DomainWrapper.makePaymentTool(putCardDataResponse.getBankCard()));
-
-        recurrentPaymentTool.setPaymentResource(disposablePaymentResource);
-
-
-        recurrentTokenInfo.setPaymentTool(recurrentPaymentTool);
-
-
-        generationContext.setTokenInfo(recurrentTokenInfo);
-
-
-
-
-        RecurrentTokenProxyResult generationProxyResult = handler.generateToken(generationContext);
+        RecurrentTokenProxyResult generationProxyResult = handler.generateToken(context);
 
         PaymentProxyResult processResultPayment = handler.processPayment(
                 getContext(

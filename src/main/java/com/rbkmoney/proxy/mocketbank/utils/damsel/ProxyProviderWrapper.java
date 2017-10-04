@@ -103,6 +103,28 @@ public class ProxyProviderWrapper {
         return makeRecurrentTokenWithSuspendIntent(tag, timer, null);
     }
 
+    // RecurrentTokenInfo
+    public static RecurrentTokenInfo makeRecurrentTokenInfo(RecurrentPaymentTool recurrentPaymentTool) {
+        RecurrentTokenInfo recurrentTokenInfo = new RecurrentTokenInfo();
+        recurrentTokenInfo.setPaymentTool(recurrentPaymentTool);
+        return recurrentTokenInfo;
+    }
+
+    // DisposablePaymentResource
+    public static DisposablePaymentResource makeDisposablePaymentResource(String sessionId, PaymentTool paymentTool) {
+        DisposablePaymentResource disposablePaymentResource = new DisposablePaymentResource();
+        disposablePaymentResource.setPaymentSessionId(sessionId);
+        disposablePaymentResource.setPaymentTool(paymentTool);
+        return disposablePaymentResource;
+    }
+
+    // RecurrentPaymentTool
+    public static RecurrentPaymentTool makeRecurrentPaymentTool(DisposablePaymentResource disposablePaymentResource) {
+        RecurrentPaymentTool recurrentPaymentTool = new RecurrentPaymentTool();
+        recurrentPaymentTool.setPaymentResource(disposablePaymentResource);
+        return recurrentPaymentTool;
+    }
+
 
     // RecurrentTokenProxyResult
     public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
