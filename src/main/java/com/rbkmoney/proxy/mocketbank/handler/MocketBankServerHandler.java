@@ -209,7 +209,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             parameters.putAll(Converter.byteBufferToMap(byteBuffer));
         } catch (Exception e) {
             LOGGER.error("RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
+            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
                     "error".getBytes(),
                     "RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception",
                     e.getMessage()
@@ -223,7 +223,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             cardData = cds.getSessionCardData(token, session);
         } catch (TException e) {
             LOGGER.error("RecurrentTokenGenerationCallbackResult: CDS Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
+            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
                     "error".getBytes(),
                     "RecurrentTokenGenerationCallbackResult: CDS Exception",
                     e.getMessage()
@@ -235,7 +235,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             validatePaResResponse = mocketBankMpiApi.validatePaRes(cardData.getPan(), parameters.get("paRes"));
         } catch (IOException e) {
             LOGGER.error("RecurrentTokenGenerationCallbackResult: Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
+            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
                     "error".getBytes(),
                     "RecurrentTokenGenerationCallbackResult: Exception",
                     e.getMessage()
@@ -255,7 +255,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             );
 
             LOGGER.info("RecurrentTokenGenerationCallbackResult: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);
-            return ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResult(callbackResponse, proxyResult);
+            return ProxyProviderWrapper.makeRecurrentTokenCallbackResult(callbackResponse, proxyResult);
         }
 
         CardUtils cardUtils = new CardUtils(cardList);
@@ -275,7 +275,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         }
 
-        RecurrentTokenCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenGenerationCallbackResultFailure(
+        RecurrentTokenCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
                 "error".getBytes(), "RecurrentTokenGenerationCallbackResult: error", error
         );
 
@@ -381,6 +381,20 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     UNSUPPORTED_CARD.getAction()
             );
             LOGGER.info("Processed: failure {}", proxyResult);
+            return proxyResult;
+        }
+
+        if(invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
+            transactionInfo = DomainWrapper.makeTransactionInfo(
+                    MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
+                    Collections.emptyMap()
+            );
+            PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                    intent,
+                    "captured".getBytes(),
+                    transactionInfo
+            );
+            LOGGER.info("Processed: success {}", proxyResult);
             return proxyResult;
         }
 
