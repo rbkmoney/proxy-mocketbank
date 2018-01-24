@@ -209,7 +209,7 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest {
 
         PaymentResource paymentResource = new PaymentResource();
         RecurrentPaymentResource recurrentPaymentResource = new RecurrentPaymentResource();
-        recurrentPaymentResource.setRecToken(recurrentTokenCallback.getResult().getToken());
+        recurrentPaymentResource.setRecToken(recurrentTokenCallback.getResult().getIntent().getFinish().getStatus().getSuccess().getToken());
         recurrentPaymentResource.setPaymentTool(DomainWrapper.makePaymentTool(
                 putCardDataResponse.getBankCard()
         ));

@@ -70,7 +70,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
         String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
-        String recurrentToken = token;
         RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
         CardData cardData;
@@ -106,8 +105,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     case SUCCESS:
                         RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                                 intent,
-                                "processed".getBytes(),
-                                recurrentToken
+                                "processed".getBytes()
                         );
                         LOGGER.info("GenerateToken: success {}", proxyResult);
                         return proxyResult;
@@ -181,7 +179,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         RecurrentTokenProxyResult result = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
-                intent, state, recurrentToken
+                intent, state
         );
 
         LOGGER.info("GenerateToken: finish {}", result);
@@ -199,8 +197,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
         String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
-        Map<String, String> options = context.getOptions();
-        String recurrentToken = token;
         HashMap<String, String> parameters;
 
         LOGGER.info("RecurrentTokenGenerationCallbackResult: merge input parameters");
@@ -247,11 +243,9 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             byte[] callbackResponse = new byte[0];
             RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
-
             RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                     intent,
-                    "processed".getBytes(),
-                    recurrentToken
+                    "processed".getBytes()
             );
 
             LOGGER.info("RecurrentTokenGenerationCallbackResult: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);

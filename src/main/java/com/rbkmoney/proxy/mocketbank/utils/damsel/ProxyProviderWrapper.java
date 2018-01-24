@@ -144,31 +144,25 @@ public class ProxyProviderWrapper {
 
     // RecurrentTokenProxyResult
     public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
-            RecurrentTokenIntent intent, byte[] nextState, String token, TransactionInfo trx
+            RecurrentTokenIntent intent, byte[] nextState, TransactionInfo trx
     ) {
         RecurrentTokenProxyResult result = new RecurrentTokenProxyResult();
         result.setIntent(intent);
         result.setNextState(nextState);
-        result.setToken(token);
         result.setTrx(trx);
         return result;
     }
 
     public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(RecurrentTokenIntent intent) {
-        return makeRecurrentTokenProxyResult(intent, null, null, null);
+        return makeRecurrentTokenProxyResult(intent, null,  null);
     }
 
     public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
             RecurrentTokenIntent intent, byte[] nextState
     ) {
-        return makeRecurrentTokenProxyResult(intent, nextState, null, null);
+        return makeRecurrentTokenProxyResult(intent, nextState, null);
     }
 
-    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResult(
-            RecurrentTokenIntent intent, byte[] nextState, String token
-    ) {
-        return makeRecurrentTokenProxyResult(intent, nextState, token, null);
-    }
 
     public static RecurrentTokenProxyResult makeRecurrentTokenProxyResultFailure(String code, String description) {
         return makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(code, description));

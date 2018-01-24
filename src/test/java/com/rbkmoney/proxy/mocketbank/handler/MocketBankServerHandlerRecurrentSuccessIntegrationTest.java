@@ -130,9 +130,10 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
 
         RecurrentTokenProxyResult generationProxyResult = handler.generateToken(context);
 
+        String token = generationProxyResult.getIntent().getFinish().getStatus().getSuccess().getToken();
         PaymentProxyResult processResultPayment = handler.processPayment(
                 getContext(
-                        getPaymentResourceRecurrent(generationProxyResult.getToken()),
+                        getPaymentResourceRecurrent(token),
                         ProxyProviderWrapper.makeTargetProcessed(),
                         null
                 )
@@ -146,7 +147,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
             // Обрабатываем ответ и вызываем CapturePayment
             PaymentProxyResult processResultCapture = handler.processPayment(
                     getContext(
-                            getPaymentResourceRecurrent(generationProxyResult.getToken()),
+                            getPaymentResourceRecurrent(token),
                             ProxyProviderWrapper.makeTargetCaptured(),
                             DomainWrapper.makeTransactionInfo(
                                     processResultPayment.getTrx().getId(),
