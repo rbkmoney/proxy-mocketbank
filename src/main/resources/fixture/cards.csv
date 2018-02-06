@@ -2,6 +2,7 @@ cardPan, action, paymentSystem
 4242424242424242, Success, Visa
 5555555555554444, Success, MasterCard
 586824160825533338, Success, Maestro
+2201382000000013, Success, MIR
 4012888888881881, 3-D Secure Success, Visa
 5169147129584558, 3-D Secure Success, MasterCard
 4987654321098769, 3-D Secure Failure, Visa
