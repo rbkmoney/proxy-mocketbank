@@ -4,7 +4,6 @@ import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.ExpDate;
 import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.proxy.Intent;
 import com.rbkmoney.damsel.proxy_provider.Invoice;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.*;

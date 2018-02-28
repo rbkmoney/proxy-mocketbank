@@ -3,7 +3,6 @@ package com.rbkmoney.proxy.mocketbank.handler;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.proxy.Intent;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
@@ -324,7 +323,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         TransactionInfo transactionInfo = null;
-        com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        com.rbkmoney.damsel.proxy_provider.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
 
 
         CardUtils cardUtils = new CardUtils(cardList);
@@ -541,7 +540,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         if (validatePaResResponse.getTransactionStatus().equals(MocketBankMpiTransactionStatus.AUTHENTICATION_SUCCESSFUL)) {
             byte[] callbackResponse = new byte[0];
-            com.rbkmoney.damsel.proxy.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+            com.rbkmoney.damsel.proxy_provider.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
 
             TransactionInfo transactionInfo = DomainWrapper.makeTransactionInfo(
                     MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),

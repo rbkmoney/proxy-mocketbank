@@ -1,7 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
 import com.rbkmoney.damsel.base.Timer;
-import com.rbkmoney.damsel.proxy.*;
+import com.rbkmoney.damsel.domain.Failure;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
 
 public class ProxyWrapper {
@@ -56,7 +57,7 @@ public class ProxyWrapper {
     public static Failure makeFailure(String code, String description) {
         Failure failure = new Failure();
         failure.setCode(code);
-        failure.setDescription(description);
+        failure.setReason(description);
         return failure;
     }
 
