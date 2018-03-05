@@ -477,6 +477,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     private PaymentProxyResult refunded(PaymentContext context, Map<String, String> options) {
+        LOGGER.info("Refunded begin: context {}", context);
         InvoicePaymentRefund invoicePaymentRefund = context.getPaymentInfo().getRefund();
 
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
@@ -484,7 +485,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 "refunded".getBytes(),
                 invoicePaymentRefund.getTrx()
         );
-        LOGGER.info("Refunded: proxyResult {}", proxyResult);
+        LOGGER.info("Refunded end: proxyResult {}", proxyResult);
         return proxyResult;
     }
 
