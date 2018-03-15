@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 @Component
 public class HellGateApi {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(HellGateApi.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ProviderProxyHostSrv.Iface providerProxyHostSrv;

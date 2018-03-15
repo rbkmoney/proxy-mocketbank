@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 @RequestMapping(value = "/mocketbank")
 public class MocketBankController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MocketBankController.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private HellGateApi hellGateApi;

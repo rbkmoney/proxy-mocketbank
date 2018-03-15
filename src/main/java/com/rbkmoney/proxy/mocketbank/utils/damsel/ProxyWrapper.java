@@ -2,8 +2,12 @@ package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
 import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.domain.Failure;
+import com.rbkmoney.damsel.payment_processing.errors.PaymentFailure;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
+
+import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
 
 public class ProxyWrapper {
 
@@ -18,11 +22,9 @@ public class ProxyWrapper {
 
     public static Intent makeFinishIntentFailure(String code, String description) {
         FinishIntent finishIntent = new FinishIntent();
-        finishIntent.setStatus(
-                ProxyWrapper.makeFinishStatusFailure(
-                        makeFailure(code, description)
-                )
-        );
+        Failure failure = ErrorMapping.getFailureByCodeAndDescription(code, description);
+        finishIntent.setStatus(ProxyWrapper.makeFinishStatusFailure(failure));
+
         Intent intent = new Intent();
         intent.setFinish(finishIntent);
         return intent;
@@ -58,6 +60,13 @@ public class ProxyWrapper {
         Failure failure = new Failure();
         failure.setCode(code);
         failure.setReason(description);
+        return failure;
+    }
+
+    public static Failure makeFailure(PaymentFailure paymentFailure, String code, String description) {
+        Failure failure = toGeneral(paymentFailure);
+        failure.setCode(code);
+        failure.setReason(code + ":" + description);
         return failure;
     }
 

@@ -35,7 +35,7 @@ import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBank
 @Component
 public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandler.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private CdsApi cds;
@@ -75,9 +75,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         try {
             LOGGER.info("GenerateToken: call CDS. Token {}, session: {}", token, session);
             cardData = cds.getSessionCardData(token, session);
-        } catch (TException e) {
-            LOGGER.error("GenerateToken: CDS Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure("GenerateToken: CDS Exception", e.getMessage());
+        } catch (Exception ex) {
+            String message = "GenerateToken: CDS Exceptiont";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         CardUtils cardUtils = new CardUtils(cardList);
@@ -133,12 +134,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     cardData.getExpDate().getYear(),
                     cardData.getExpDate().getMonth()
             );
-        } catch (IOException e) {
-            LOGGER.error("GenerateToken: Exception in verifyEnrollment", e);
-            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
-                    UNKNOWN_FAILURE.getAction(),
-                    UNKNOWN_FAILURE.getAction()
-            );
+        } catch (IOException ex) {
+            String message = "GenerateToken: Exception in verifyEnrollment";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
@@ -172,9 +171,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         byte[] state;
         try {
             state = Converter.mapToByteArray(extra);
-        } catch (IOException e) {
-            LOGGER.error("GenerateToken: Converter Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure("Converter", e.getMessage());
+        } catch (IOException ex) {
+            String message = "GenerateToken: Converter Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         RecurrentTokenProxyResult result = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
@@ -202,13 +202,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         try {
             parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
             parameters.putAll(Converter.byteBufferToMap(byteBuffer));
-        } catch (Exception e) {
-            LOGGER.error("RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
-                    "error".getBytes(),
-                    "RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception",
-                    e.getMessage()
-            );
+        } catch (Exception ex) {
+            String message = "RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
         LOGGER.info("RecurrentTokenGenerationCallbackResult: merge input parameters {}", parameters);
 
@@ -216,25 +213,19 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         try {
             LOGGER.info("RecurrentTokenGenerationCallbackResult: call CDS. Token {}, session: {}", token, session);
             cardData = cds.getSessionCardData(token, session);
-        } catch (TException e) {
-            LOGGER.error("RecurrentTokenGenerationCallbackResult: CDS Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
-                    "error".getBytes(),
-                    "RecurrentTokenGenerationCallbackResult: CDS Exception",
-                    e.getMessage()
-            );
+        } catch (TException ex) {
+            String message = "RecurrentTokenGenerationCallbackResult: CDS Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         ValidatePaResResponse validatePaResResponse;
         try {
             validatePaResResponse = mocketBankMpiApi.validatePaRes(cardData.getPan(), parameters.get("paRes"));
-        } catch (IOException e) {
-            LOGGER.error("RecurrentTokenGenerationCallbackResult: Exception", e);
-            return ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
-                    "error".getBytes(),
-                    "RecurrentTokenGenerationCallbackResult: Exception",
-                    e.getMessage()
-            );
+        } catch (IOException ex) {
+            String message = "RecurrentTokenGenerationCallbackResult: Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
         LOGGER.info("RecurrentTokenGenerationCallbackResult: validatePaResResponse {}", validatePaResResponse);
 
@@ -276,9 +267,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         return callbackResult;
     }
 
-
-
-    // Тут токен
     @Override
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
 
@@ -304,7 +292,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     private PaymentProxyResult processed(PaymentContext context, Map<String, String> options) {
         LOGGER.info("Processed start");
         com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
-
+        String invoiceId = invoicePayment.getId();
         CardData cardData;
         try {
 
@@ -316,10 +304,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 LOGGER.info("Processed: call CDS. Token {}, session: {}", token, session);
                 cardData = cds.getSessionCardData(token, session);
             }
-
-        } catch (TException e) {
-            LOGGER.error("Processed: CDS Exception", e);
-            return ProxyProviderWrapper.makeProxyResultFailure("Processed: CDS Exception", e.getMessage());
+        } catch (Exception ex) {
+            String message = "Processed: CDS Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         TransactionInfo transactionInfo = null;
@@ -398,12 +386,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     cardData.getExpDate().getYear(),
                     cardData.getExpDate().getMonth()
             );
-        } catch (IOException e) {
-            LOGGER.error("Processed: Exception in verifyEnrollment", e);
-            return ProxyProviderWrapper.makeProxyResultFailure(
-                    UNKNOWN_FAILURE.getAction(),
-                    UNKNOWN_FAILURE.getAction()
-            );
+        } catch (IOException ex) {
+            String message = "Processed: Exception in verifyEnrollment" + invoiceId;
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
@@ -437,10 +423,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         byte[] state;
         try {
             state = Converter.mapToByteArray(extra);
-        } catch (IOException e) {
-
-            LOGGER.error("Processed: Converter Exception", e);
-            return ProxyProviderWrapper.makeProxyResultFailure("Converter", e.getMessage());
+        } catch (IOException ex) {
+            String message = "Processed: Converter Exception " + invoiceId;
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, state, transactionInfo);
@@ -503,13 +489,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         try {
             parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
             parameters.putAll(Converter.byteBufferToMap(byteBuffer));
-        } catch (Exception e) {
-            LOGGER.error("HandlePaymentCallback: Parse ByteBuffer Exception", e);
-            return ProxyProviderWrapper.makeCallbackResultFailure(
-                    "error".getBytes(),
-                    "HandlePaymentCallback: Parse ByteBuffer Exception",
-                    e.getMessage()
-            );
+        } catch (Exception ex) {
+            String message = "HandlePaymentCallback: Parse ByteBuffer Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
         LOGGER.info("HandlePaymentCallback: merge input parameters {}", parameters);
 
@@ -517,25 +500,19 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         try {
             LOGGER.info("HandlePaymentCallback: call CDS. Token {}, session: {}", token, session);
             cardData = cds.getSessionCardData(token, session);
-        } catch (TException e) {
-            LOGGER.error("HandlePaymentCallback: CDS Exception", e);
-            return ProxyProviderWrapper.makeCallbackResultFailure(
-                    "error".getBytes(),
-                    "HandlePaymentCallback: CDS Exception",
-                    e.getMessage()
-            );
+        } catch (Exception ex) {
+            String message = "HandlePaymentCallback: CDS Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
 
         ValidatePaResResponse validatePaResResponse;
         try {
             validatePaResResponse = mocketBankMpiApi.validatePaRes(cardData.getPan(), parameters.get("paRes"));
-        } catch (IOException e) {
-            LOGGER.error("HandlePaymentCallback: Exception", e);
-            return ProxyProviderWrapper.makeCallbackResultFailure(
-                    "error".getBytes(),
-                    "HandlePaymentCallback: Exception",
-                    e.getMessage()
-            );
+        } catch (Exception ex) {
+            String message = "HandlePaymentCallback: Exception";
+            LOGGER.error(message, ex);
+            throw new IllegalArgumentException(message, ex);
         }
         LOGGER.info("HandlePaymentCallback: validatePaResResponse {}", validatePaResResponse);
 

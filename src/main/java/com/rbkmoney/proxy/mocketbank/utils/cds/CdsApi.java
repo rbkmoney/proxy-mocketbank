@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CdsApi {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(CdsApi.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private StorageSrv.Iface storageSrv;

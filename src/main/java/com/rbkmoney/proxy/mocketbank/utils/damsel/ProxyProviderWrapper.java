@@ -4,16 +4,15 @@ import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.ExpDate;
 import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.proxy_provider.Invoice;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
-import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
-
-import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper.makeFailure;
 
 
 public class ProxyProviderWrapper {
@@ -72,10 +71,11 @@ public class ProxyProviderWrapper {
     }
 
     public static RecurrentTokenFinishIntent makeRecurrentTokenStatusFailure(String code, String description) {
-        RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();
-
         RecurrentTokenFinishStatus status = new RecurrentTokenFinishStatus();
-        status.setFailure(makeFailure(code, description));
+        Failure failure = ErrorMapping.getFailureByCodeAndDescription(code, description);
+        status.setFailure(failure);
+
+        RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();
         intent.setStatus(status);
 
         return intent;

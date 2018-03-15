@@ -68,6 +68,11 @@
             <version>1.1.9</version>
         </dependency>
         <dependency>
+            <groupId>com.rbkmoney.geck</groupId>
+            <artifactId>serializer</artifactId>
+            <version>0.6.7</version>
+        </dependency>
+        <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
             <version>1.220-cdf69d5</version>
