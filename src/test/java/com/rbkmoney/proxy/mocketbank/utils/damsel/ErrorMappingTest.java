@@ -7,12 +7,11 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiActi
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
+import static org.junit.Assert.assertEquals;
 
 
 public class ErrorMappingTest {
@@ -27,20 +26,24 @@ public class ErrorMappingTest {
 
     @Test
     public void testMakeFailureByDescription() {
-        List<String> list = new ArrayList<>();
-        list.add(MocketBankMpiAction.UNSUPPORTED_CARD.getAction());
-        list.add(MocketBankMpiAction.THREE_D_SECURE_FAILURE.getAction());
-        list.add(MocketBankMpiAction.THREE_D_SECURE_TIMEOUT.getAction());
-        list.add(MocketBankMpiAction.INSUFFICIENT_FUNDS.getAction());
-        list.add(MocketBankMpiAction.INVALID_CARD.getAction());
-        list.add(MocketBankMpiAction.CVV_MATCH_FAIL.getAction());
-        list.add(MocketBankMpiAction.EXPIRED_CARD.getAction());
-        list.add(MocketBankMpiAction.UNKNOWN_FAILURE.getAction());
 
-        list.forEach(error -> {
-            Failure failure = ErrorMapping.getFailureByCodeAndDescription(error, error);
-            System.out.println(failure);
-        });
+        Map<String, String> map = new HashMap<>();
+        map.put(MocketBankMpiAction.UNSUPPORTED_CARD.getAction(), "Failure(code:authorization_failed, reason:'Unsupported Card' - 'Unsupported Card', sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:card_unsupported))))");
+
+        map.put(MocketBankMpiAction.THREE_D_SECURE_FAILURE.getAction(), "Failure(code:preauthorization_failed, reason:'3-D Secure Failure' - '3-D Secure Failure')");
+        map.put(MocketBankMpiAction.THREE_D_SECURE_TIMEOUT.getAction(), "Failure(code:preauthorization_failed, reason:'3-D Secure Timeout' - '3-D Secure Timeout')");
+        map.put(MocketBankMpiAction.INSUFFICIENT_FUNDS.getAction(), "Failure(code:authorization_failed, reason:'Insufficient Funds' - 'Insufficient Funds', sub:SubFailure(code:insufficient_funds))");
+        map.put(MocketBankMpiAction.INVALID_CARD.getAction(), "Failure(code:authorization_failed, reason:'Invalid Card' - 'Invalid Card', sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:card_number_invalid))))");
+        map.put(MocketBankMpiAction.CVV_MATCH_FAIL.getAction(), "Failure(code:authorization_failed, reason:'CVV Match Fail' - 'CVV Match Fail', sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:cvv_invalid))))");
+        map.put(MocketBankMpiAction.EXPIRED_CARD.getAction(), "Failure(code:authorization_failed, reason:'Expired Card' - 'Expired Card', sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:card_expired))))");
+        map.put(MocketBankMpiAction.UNKNOWN_FAILURE.getAction(), "Failure(code:authorization_failed, reason:'Unknown Failure' - 'Unknown Failure', sub:SubFailure(code:unknown))");
+
+        map.forEach((k, v) -> {
+                    Failure failure = ErrorMapping.getFailureByCodeAndDescription(k, k);
+                    System.out.println(failure);
+                    assertEquals(v, failure.toString());
+                }
+        );
 
     }
 
@@ -67,6 +70,7 @@ public class ErrorMappingTest {
         failure.setCode("authorization_failed");
 
         System.out.println(failure);
+        assertEquals("Failure(code:authorization_failed, sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:card_unsupported))))", failure.toString());
     }
 
 }

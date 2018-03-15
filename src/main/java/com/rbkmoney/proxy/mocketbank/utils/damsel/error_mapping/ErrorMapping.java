@@ -19,68 +19,59 @@ import static com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.PaymentTo
 public class ErrorMapping {
 
     public static Failure getFailureByCodeAndDescription(String code, String description) {
-        Failure failure;
 
         WildCardEM wildcard = WildCardEM.findMatchWithPattern(description);
+
         switch (wildcard) {
 
             case UNSUPPORTED_CARD:
-                failure = authorizationFailed(code, description,
+                return authorizationFailed(code, description,
                         paymentToolRejected(
                                 bankCardReject(cardUnsupported())
                         )
                 );
-                break;
 
             case THREE_D_SECURE_FAILURE:
-                failure = preauthorizationError(code, description);
-                break;
+                return preauthorizationError(code, description);
 
             case THREE_D_SECURE_TIMEOUT:
-                failure = preauthorizationError(code, description);
-                break;
+                return preauthorizationError(code, description);
 
             case INVALID_CARD:
-                failure = authorizationFailed(code, description,
+                return authorizationFailed(code, description,
                         paymentToolRejected(
                                 bankCardReject(cardNumberInvalid())
                         )
                 );
-                break;
 
             case CVV_MATCH_FAIL:
-                failure = authorizationFailed(code, description,
+                return authorizationFailed(code, description,
                         paymentToolRejected(
                                 bankCardReject(cvvInvalid())
                         )
                 );
-                break;
 
             case INSUFFICIENT_FUNDS:
-                failure = authorizationFailed(code, description,
+                return authorizationFailed(code, description,
                         insufficientFunds()
                 );
-                break;
 
             case EXPIRED_CARD:
-                failure = authorizationFailed(code, description,
+                return authorizationFailed(code, description,
                         paymentToolRejected(
                                 bankCardReject(cardExpired())
                         )
                 );
-                break;
 
             case UNKNOWN:
             case UNKNOWN_FAILURE:
-                failure = authorizationFailed(code, description, unknown());
-                break;
+                return authorizationFailed(code, description, unknown());
 
             default:
                 throw new WUndefinedResultException("Mocketbank: undefined error. code " + code + ", description " + description);
 
         }
 
-        return failure;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
@@ -10,10 +11,7 @@ import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiEnrollmentStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiTransactionStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.*;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
@@ -31,11 +29,12 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction.*;
+import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.utils.MocketBankUtils.isUndefinedResultOrUnavailable;
 
 @Component
 public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private CdsApi cds;
@@ -64,22 +63,13 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
      */
     @Override
     public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
-        LOGGER.info("GenerateToken start");
+        String recurrentId = context.getTokenInfo().getPaymentTool().getId();
+        log.info("GenerateToken: start with recurrentId {}", recurrentId);
 
-        String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
         String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
         RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
-
-        CardData cardData;
-        try {
-            LOGGER.info("GenerateToken: call CDS. Token {}, session: {}", token, session);
-            cardData = cds.getSessionCardData(token, session);
-        } catch (Exception ex) {
-            String message = "GenerateToken: CDS Exceptiont";
-            LOGGER.error(message, ex);
-            throw new IllegalArgumentException(message, ex);
-        }
+        CardData cardData = cds.getSessionCardData(context);
 
         CardUtils cardUtils = new CardUtils(cardList);
         Optional<Card> card = cardUtils.getCardByPan(cardData.getPan());
@@ -105,16 +95,16 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     case SUCCESS:
                         RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                                 intent,
-                                "processed".getBytes()
+                                PaymentState.PROCESSED.getBytes()
                         );
-                        LOGGER.info("GenerateToken: success {}", proxyResult);
+                        log.info("GenerateToken: success {} with recurrentId {}", proxyResult, recurrentId);
                         return proxyResult;
                     default:
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
                 RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(error, error);
-                LOGGER.info("GenerateToken: failure {}", proxyResult);
+                log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
                 return proxyResult;
             }
 
@@ -123,7 +113,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     UNSUPPORTED_CARD.getAction(),
                     UNSUPPORTED_CARD.getAction()
             );
-            LOGGER.info("GenerateToken: failure {}", proxyResult);
+            log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
             return proxyResult;
         }
 
@@ -135,14 +125,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     cardData.getExpDate().getMonth()
             );
         } catch (IOException ex) {
-            String message = "GenerateToken: Exception in verifyEnrollment";
-            LOGGER.error(message, ex);
+            String message = "GenerateToken: Exception in verifyEnrollment with recurrentId " + recurrentId;
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
             String tag = MocketBankTag.RECURRENT_SUSPEND_TAG + context.getTokenInfo().getPaymentTool().getId();
-            LOGGER.info("GenerateToken: suspend tag {}", tag);
+            log.info("GenerateToken: suspend tag {} with recurrentId {}", tag, recurrentId);
 
             String url = verifyEnrollmentResponse.getAcsUrl();
             Map<String, String> params = new HashMap<>();
@@ -150,7 +140,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             params.put("MD", tag);
             params.put("TermUrl", MocketBankMpiUtils.getCallbackUrl(callbackUrl, "/mocketbank/term_url{?termination_uri}"));
 
-            LOGGER.info("GenerateToken: prepare redirect params {}", params);
+            log.info("GenerateToken: prepare redirect params {} with recurrentId {}", params, recurrentId);
 
             intent = ProxyProviderWrapper.makeRecurrentTokenWithSuspendIntent(
                     tag, BaseWrapper.makeTimerTimeout(timerTimeout),
@@ -166,14 +156,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         Map<String, String> extra = new HashMap<>();
         extra.put(MocketBankMpiUtils.PA_REQ, verifyEnrollmentResponse.getPaReq());
 
-        LOGGER.info("GenerateToken: Extra map {}", extra);
+        log.info("GenerateToken: Extra map {} with recurrentId {}", extra, recurrentId);
 
         byte[] state;
         try {
             state = Converter.mapToByteArray(extra);
-        } catch (IOException ex) {
-            String message = "GenerateToken: Converter Exception";
-            LOGGER.error(message, ex);
+        } catch (JsonProcessingException ex) {
+            String message = "GenerateToken: can't convert map to byte array with recurrentId " + recurrentId;
+            log.error(message);
             throw new IllegalArgumentException(message, ex);
         }
 
@@ -181,7 +171,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 intent, state
         );
 
-        LOGGER.info("GenerateToken: finish {}", result);
+        log.info("GenerateToken: finish {} with recurrentId {} ", result, recurrentId);
         return result;
     }
 
@@ -191,46 +181,37 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
      */
     @Override
     public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
-        LOGGER.info("RecurrentTokenGenerationCallbackResult: start");
+        String recurrentId = context.getTokenInfo().getPaymentTool().getId();
+        log.info("handleRecurrentTokenCallback start with invoiceId {}", recurrentId);
 
-        String session = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentSessionId();
-        String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
         HashMap<String, String> parameters;
-
-        LOGGER.info("RecurrentTokenGenerationCallbackResult: merge input parameters");
         try {
             parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
             parameters.putAll(Converter.byteBufferToMap(byteBuffer));
+            log.info("handleRecurrentTokenCallback: merge params: recurrentId {}, params {}", recurrentId, parameters);
         } catch (Exception ex) {
-            String message = "RecurrentTokenGenerationCallbackResult: Parse ByteBuffer Exception";
-            LOGGER.error(message, ex);
+            String message = "handleRecurrentTokenCallback:  merge params error with recurrentId " + recurrentId;
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
-        LOGGER.info("RecurrentTokenGenerationCallbackResult: merge input parameters {}", parameters);
 
-        CardData cardData;
-        try {
-            LOGGER.info("RecurrentTokenGenerationCallbackResult: call CDS. Token {}, session: {}", token, session);
-            cardData = cds.getSessionCardData(token, session);
-        } catch (TException ex) {
-            String message = "RecurrentTokenGenerationCallbackResult: CDS Exception";
-            LOGGER.error(message, ex);
-            throw new IllegalArgumentException(message, ex);
-        }
+
+        CardData cardData = cds.getSessionCardData(context);
 
         ValidatePaResResponse validatePaResResponse;
         try {
             validatePaResResponse = mocketBankMpiApi.validatePaRes(cardData.getPan(), parameters.get("paRes"));
         } catch (IOException ex) {
-            String message = "RecurrentTokenGenerationCallbackResult: Exception";
-            LOGGER.error(message, ex);
+            String message = "handleRecurrentTokenCallback: Exception";
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
-        LOGGER.info("RecurrentTokenGenerationCallbackResult: validatePaResResponse {}", validatePaResResponse);
+        log.info("handleRecurrentTokenCallback: validatePaResResponse {}", validatePaResResponse);
 
         if (validatePaResResponse.getTransactionStatus().equals(MocketBankMpiTransactionStatus.AUTHENTICATION_SUCCESSFUL)) {
             byte[] callbackResponse = new byte[0];
+            String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
             RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
             RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
@@ -238,7 +219,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     "processed".getBytes()
             );
 
-            LOGGER.info("RecurrentTokenGenerationCallbackResult: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);
+            log.info("handleRecurrentTokenCallback: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);
             return ProxyProviderWrapper.makeRecurrentTokenCallbackResult(callbackResponse, proxyResult);
         }
 
@@ -260,54 +241,62 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         RecurrentTokenCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
-                "error".getBytes(), "RecurrentTokenGenerationCallbackResult: error", error
+                "error".getBytes(), "error", error
         );
 
-        LOGGER.info("RecurrentTokenGenerationCallbackResult: callbackResult {}", callbackResult);
+        log.info("handleRecurrentTokenCallback finish {}, recurrent {}", callbackResult, recurrentId);
         return callbackResult;
     }
 
     @Override
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("processPayment start with invoiceId {}", invoiceId);
 
         Map<String, String> options = (context.getOptions().size() > 0) ? context.getOptions() : new HashMap<>();
 
         TargetInvoicePaymentStatus target = context.getSession().getTarget();
+        try {
+            if (target.isSetProcessed()) {
+                return processed(context, options);
+            } else if (target.isSetCaptured()) {
+                return captured(context, options);
+            } else if (target.isSetCancelled()) {
+                return cancelled(context, options);
+            } else if (target.isSetRefunded()) {
+                return refunded(context, options);
+            } else {
+                PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
+                        "Unsupported method",
+                        "Unsupported method"
+                );
+                log.error("Error unsupported method. proxyResult {} with invoiceId {}", proxyResult, invoiceId);
+                return proxyResult;
+            }
 
-        if (target.isSetProcessed()) {
-            return processed(context, options);
-        } else if (target.isSetCaptured()) {
-            return captured(context, options);
-        } else if (target.isSetCancelled()) {
-            return cancelled(context, options);
-        } else if (target.isSetRefunded()) {
-            return refunded(context, options);
-        } else {
-            LOGGER.error("Error unsupported method");
-            return ProxyProviderWrapper.makeProxyResultFailure("Unsupported method", "Unsupported method");
+        } catch (Exception ex) {
+            String message = "Exception in processPayment with invoiceId " + invoiceId;
+            if (isUndefinedResultOrUnavailable(ex)) {
+                log.warn(message, ex);
+            } else {
+                log.error(message, ex);
+            }
+            log.error(message, ex);
+            throw ex;
         }
 
     }
 
     private PaymentProxyResult processed(PaymentContext context, Map<String, String> options) {
-        LOGGER.info("Processed start");
         com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
-        String invoiceId = invoicePayment.getId();
-        CardData cardData;
-        try {
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("Processed start with invoiceId {}", invoiceId);
 
-            if(invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
-                cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getRecToken());
-            } else {
-                String session = invoicePayment.getPaymentResource().getDisposablePaymentResource().getPaymentSessionId();
-                String token = invoicePayment.getPaymentResource().getDisposablePaymentResource().getPaymentTool().getBankCard().getToken();
-                LOGGER.info("Processed: call CDS. Token {}, session: {}", token, session);
-                cardData = cds.getSessionCardData(token, session);
-            }
-        } catch (Exception ex) {
-            String message = "Processed: CDS Exception";
-            LOGGER.error(message, ex);
-            throw new IllegalArgumentException(message, ex);
+        CardData cardData;
+        if (invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
+            cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getRecToken());
+        } else {
+            cardData = cds.getSessionCardData(context);
         }
 
         TransactionInfo transactionInfo = null;
@@ -342,17 +331,17 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         );
                         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                                 intent,
-                                "captured".getBytes(),
+                                PaymentState.CAPTURED.getBytes(),
                                 transactionInfo
                         );
-                        LOGGER.info("Processed: success {}", proxyResult);
+                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
                         return proxyResult;
                     default:
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
                 PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(error, error);
-                LOGGER.info("Processed: failure {}", proxyResult);
+                log.info("Processed: failure {} with invoiceId {}", proxyResult, invoiceId);
                 return ProxyProviderWrapper.makeProxyResultFailure(error, error);
             }
 
@@ -361,21 +350,21 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     UNSUPPORTED_CARD.getAction(),
                     UNSUPPORTED_CARD.getAction()
             );
-            LOGGER.info("Processed: failure {}", proxyResult);
+            log.info("Processed: failure {} with invoiceId {}", proxyResult, invoiceId);
             return proxyResult;
         }
 
-        if(invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
+        if (invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
             transactionInfo = DomainWrapper.makeTransactionInfo(
                     MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                     Collections.emptyMap()
             );
             PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                     intent,
-                    "captured".getBytes(),
+                    PaymentState.CAPTURED.getBytes(),
                     transactionInfo
             );
-            LOGGER.info("Processed: success {}", proxyResult);
+            log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
             return proxyResult;
         }
 
@@ -387,14 +376,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     cardData.getExpDate().getMonth()
             );
         } catch (IOException ex) {
-            String message = "Processed: Exception in verifyEnrollment" + invoiceId;
-            LOGGER.error(message, ex);
+            String message = "Processed: Exception in verifyEnrollment with invoiceId " + invoiceId;
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MocketBankMpiEnrollmentStatus.AUTHENTICATION_AVAILABLE)) {
             String tag = MocketBankTag.PAYMENT_SUSPEND_TAG + MocketBankMpiUtils.generateInvoice(context.getPaymentInfo());
-            LOGGER.info("Processed: suspend tag {}", tag);
+            log.info("Processed: suspend tag {} with invoiceId {}", tag, invoiceId);
 
             String url = verifyEnrollmentResponse.getAcsUrl();
             Map<String, String> params = new HashMap<>();
@@ -402,7 +391,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             params.put("MD", tag);
             params.put("TermUrl", MocketBankMpiUtils.getCallbackUrl(callbackUrl, "/mocketbank/term_url{?termination_uri}"));
 
-            LOGGER.info("Processed: prepare redirect params {}", params);
+            log.info("Processed: prepare redirect params {} with invoiceId {}", params, invoiceId);
 
             intent = ProxyWrapper.makeIntentWithSuspendIntent(
                     tag, BaseWrapper.makeTimerTimeout(timerTimeout),
@@ -418,24 +407,26 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         Map<String, String> extra = new HashMap<>();
         extra.put(MocketBankMpiUtils.PA_REQ, verifyEnrollmentResponse.getPaReq());
 
-        LOGGER.info("Processed: Extra map {}", extra);
+        log.info("Processed: Extra map {} with invoiceId {}", extra, invoiceId);
 
         byte[] state;
         try {
             state = Converter.mapToByteArray(extra);
-        } catch (IOException ex) {
-            String message = "Processed: Converter Exception " + invoiceId;
-            LOGGER.error(message, ex);
+        } catch (JsonProcessingException ex) {
+            String message = "Processed: can't convert map to byte array with invoiceId " + invoiceId;
+            log.error(message);
             throw new IllegalArgumentException(message, ex);
         }
 
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, state, transactionInfo);
-        LOGGER.info("Processed: finish {}", proxyResult);
+        log.info("Processed: finish {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
     }
 
     private PaymentProxyResult captured(PaymentContext context, Map<String, String> options) {
-        LOGGER.info("Captured: start");
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("Captured start with invoiceId {}", invoiceId);
+
         com.rbkmoney.damsel.proxy_provider.InvoicePayment payment = context.getPaymentInfo().getPayment();
         TransactionInfo transactionInfoContractor = payment.getTrx();
         TransactionInfo transactionInfo = DomainWrapper.makeTransactionInfo(
@@ -443,78 +434,68 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 transactionInfoContractor.getExtra()
         );
 
-        context.getSession().setState("confirm".getBytes());
+        context.getSession().setState(PaymentState.CONFIRM.getBytes());
 
         Intent intent = ProxyWrapper.makeFinishIntentSuccess();
-        PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, "confirm".getBytes(), transactionInfo);
+        PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, PaymentState.CONFIRM.getBytes(), transactionInfo);
 
-        LOGGER.info("Captured: proxyResult {}", proxyResult);
+        log.info("Captured: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
     }
 
     private PaymentProxyResult cancelled(PaymentContext context, Map<String, String> options) {
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("Cancelled start with invoiceId {}", invoiceId);
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                 ProxyWrapper.makeFinishIntentSuccess(),
-                "cancelled".getBytes(),
+                PaymentState.CANCELLED.getBytes(),
                 context.getPaymentInfo().getPayment().getTrx()
         );
-        LOGGER.info("Cancelled: proxyResult {}", proxyResult);
+        log.info("Cancelled: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
     }
 
     private PaymentProxyResult refunded(PaymentContext context, Map<String, String> options) {
-        LOGGER.info("Refunded begin: context {}", context);
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("Refunded start with invoiceId {}", invoiceId);
         InvoicePaymentRefund invoicePaymentRefund = context.getPaymentInfo().getRefund();
 
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                 ProxyWrapper.makeFinishIntentSuccess(),
-                "refunded".getBytes(),
+                PaymentState.REFUNDED.getBytes(),
                 invoicePaymentRefund.getTrx()
         );
-        LOGGER.info("Refunded end: proxyResult {}", proxyResult);
+        log.info("Refunded end: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
     }
 
     @Override
     public PaymentCallbackResult handlePaymentCallback(ByteBuffer byteBuffer, PaymentContext context) throws TException {
-        LOGGER.info("HandlePaymentCallback: start");
-        InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
-        String session = invoicePayment.getPaymentResource().getDisposablePaymentResource().getPaymentSessionId();
-        String token = invoicePayment.getPaymentResource().getDisposablePaymentResource().getPaymentTool().getBankCard().getToken();
-        Map<String, String> options = context.getOptions();
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+        log.info("handlePaymentCallback start with invoiceId {}", invoiceId);
 
         HashMap<String, String> parameters;
 
-        LOGGER.info("HandlePaymentCallback: merge input parameters");
         try {
             parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
             parameters.putAll(Converter.byteBufferToMap(byteBuffer));
+            log.info("handlePaymentCallback: merge params: invoiceId {}, params {}", invoiceId, parameters);
         } catch (Exception ex) {
-            String message = "HandlePaymentCallback: Parse ByteBuffer Exception";
-            LOGGER.error(message, ex);
-            throw new IllegalArgumentException(message, ex);
-        }
-        LOGGER.info("HandlePaymentCallback: merge input parameters {}", parameters);
-
-        CardData cardData;
-        try {
-            LOGGER.info("HandlePaymentCallback: call CDS. Token {}, session: {}", token, session);
-            cardData = cds.getSessionCardData(token, session);
-        } catch (Exception ex) {
-            String message = "HandlePaymentCallback: CDS Exception";
-            LOGGER.error(message, ex);
+            String message = "handlePaymentCallback: merge params error with invoiceId " + invoiceId;
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
 
+        CardData cardData = cds.getSessionCardData(context);
         ValidatePaResResponse validatePaResResponse;
         try {
             validatePaResResponse = mocketBankMpiApi.validatePaRes(cardData.getPan(), parameters.get("paRes"));
         } catch (Exception ex) {
-            String message = "HandlePaymentCallback: Exception";
-            LOGGER.error(message, ex);
+            String message = "handlePaymentCallback: Exception";
+            log.error(message, ex);
             throw new IllegalArgumentException(message, ex);
         }
-        LOGGER.info("HandlePaymentCallback: validatePaResResponse {}", validatePaResResponse);
+        log.info("handlePaymentCallback: validatePaResResponse {}", validatePaResResponse);
 
         if (validatePaResResponse.getTransactionStatus().equals(MocketBankMpiTransactionStatus.AUTHENTICATION_SUCCESSFUL)) {
             byte[] callbackResponse = new byte[0];
@@ -526,10 +507,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             );
 
             PaymentCallbackProxyResult proxyResult = ProxyProviderWrapper.makeCallbackProxyResult(
-                    intent, "captured".getBytes(), transactionInfo
+                    intent, PaymentState.CAPTURED.getBytes(), transactionInfo
             );
 
-            LOGGER.info("HandlePaymentCallback: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);
+            log.info("handlePaymentCallback: callbackResponse {}, proxyResult {}", callbackResponse, proxyResult);
             return ProxyProviderWrapper.makeCallbackResult(callbackResponse, proxyResult);
         }
 
@@ -554,7 +535,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 "error".getBytes(), "HandlePaymentCallback: error", error
         );
 
-        LOGGER.info("HandlePaymentCallback: callbackResult {}", callbackResult);
+        log.info("handlePaymentCallback finish {}, invoice {}", callbackResult, invoiceId);
         return callbackResult;
     }
 

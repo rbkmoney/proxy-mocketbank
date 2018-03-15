@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import static org.junit.Assert.assertTrue;
                 "cds.url.storage=http://127.0.0.1:8021/v1/storage",
         }
 )
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @Ignore("Integration test")
 public class MocketBankServerHandlerFailIntegrationTest {
 

@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 @RequestMapping(value = "/mocketbank")
 public class MocketBankController {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private HellGateApi hellGateApi;
@@ -30,7 +30,7 @@ public class MocketBankController {
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
 
-        LOGGER.info("Input params: {}", request.getParameterMap());
+        log.info("Input params: {}", request.getParameterMap());
 
         String tag = "";
         ByteBuffer callback = null;
@@ -39,13 +39,13 @@ public class MocketBankController {
         try {
             callback = Converter.mapToByteBuffer(Converter.mapArrayToMap(request.getParameterMap()));
         } catch (IOException e) {
-            LOGGER.warn("Exception Map to ByteBuffer in processCallback", e);
+            log.warn("Exception Map to ByteBuffer in processCallback", e);
         }
 
         if (StringUtils.hasText(request.getParameter("MD"))) {
             tag = request.getParameter("MD");
         } else {
-            LOGGER.warn("Missing a required parameter 'MD' ");
+            log.warn("Missing a required parameter 'MD' ");
         }
 
         // Узнать рекурент или нет, после чего вызвать тот или иной метод
@@ -60,7 +60,7 @@ public class MocketBankController {
 
             resp = new String(response.array(), "UTF-8");
         } catch (TException | UnsupportedEncodingException e) {
-            LOGGER.error("Exception in processCallback", e);
+            log.error("Exception in processCallback", e);
         }
 
         if (StringUtils.hasText(request.getParameter("termination_uri")))
