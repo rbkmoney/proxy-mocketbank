@@ -1,0 +1,56 @@
+[
+  {
+    "code":"Unsupported Card",
+    "description":"Unsupported Card",
+    "regexp":"^Unsupported\\sCard$",
+    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_unsupported"
+  },
+  {
+    "code":"3-D Secure Failure",
+    "description":"3-D Secure Failure",
+    "regexp":"3-D Secure Failure",
+    "mapping":"preauthorization_failed"
+  },
+  {
+    "code":"3-D Secure Timeout",
+    "description":"3-D Secure Timeout",
+    "regexp":"3-D Secure Timeout",
+    "mapping":"preauthorization_failed"
+  },
+  {
+    "code":"Invalid Card",
+    "description":"Invalid Card",
+    "regexp":"Invalid Card",
+    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_number_invalid"
+  },
+  {
+    "code":"CVV Match Fail",
+    "description":"CVV Match Fail",
+    "regexp":"CVV Match Fail",
+    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:cvv_invalid"
+  },
+  {
+    "code":"Expired Card",
+    "description":"Expired Card",
+    "regexp":"Expired Card",
+    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_expired"
+  },
+  {
+    "code":"Insufficient Funds",
+    "description":"Insufficient Funds",
+    "regexp":"Insufficient Funds",
+    "mapping":"authorization_failed:insufficient_funds"
+  },
+  {
+    "code":"Unknown",
+    "description":"Unknown",
+    "regexp":"Unknown",
+    "mapping":"authorization_failed:unknown"
+  },
+  {
+    "code":"Unknown Failure",
+    "description":"Unknown Failure",
+    "regexp":"Unknown Failure",
+    "mapping":"authorization_failed:unknown"
+  }
+]

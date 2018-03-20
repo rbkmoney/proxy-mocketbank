@@ -36,4 +36,5 @@ timer:
 ---
 fixture:
   cards: classpath:fixture/cards.csv
+  errors: classpath:fixture/errors.json
 

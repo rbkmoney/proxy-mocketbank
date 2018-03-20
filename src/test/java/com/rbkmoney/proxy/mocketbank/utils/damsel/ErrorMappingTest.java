@@ -6,6 +6,10 @@ import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +17,12 @@ import java.util.Map;
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
 import static org.junit.Assert.assertEquals;
 
-
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ErrorMappingTest {
+
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     @Test(expected = WRuntimeException.class)
     public void testMakeFailureByDescriptionException() {
@@ -40,7 +48,7 @@ public class ErrorMappingTest {
 
         map.forEach((k, v) -> {
                     Failure failure = ErrorMapping.getFailureByCodeAndDescription(k, k);
-                    System.out.println(failure);
+                    logger.info(failure.toString());
                     assertEquals(v, failure.toString());
                 }
         );
@@ -67,9 +75,8 @@ public class ErrorMappingTest {
                 .getValue();
 
         Failure failure = toGeneral(type);
-        failure.setCode("authorization_failed");
 
-        System.out.println(failure);
+        logger.info(failure.toString());
         assertEquals("Failure(code:authorization_failed, sub:SubFailure(code:payment_tool_rejected, sub:SubFailure(code:bank_card_rejected, sub:SubFailure(code:card_unsupported))))", failure.toString());
     }
 
