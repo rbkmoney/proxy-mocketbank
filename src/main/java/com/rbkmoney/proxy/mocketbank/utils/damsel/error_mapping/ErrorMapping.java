@@ -29,7 +29,7 @@ public class ErrorMapping {
         com.rbkmoney.proxy.mocketbank.utils.model.Error error = findMatchWithPattern(errors, code, description);
 
         Failure failure = toGeneral(error.getMapping());
-        failure.setReason("'" + code + "' - '" + description + "'");
+        failure.setReason(prepareReason(code, description));
         return failure;
     }
 
@@ -48,6 +48,10 @@ public class ErrorMapping {
                 ))
                 .findFirst()
                 .orElseThrow(() -> new WUndefinedResultException("Mocketbank. Undefined error. code " + code + ", description " + description));
+    }
+
+    private static String prepareReason(String code, String description) {
+                return String.format("'%s' - '%s'", code, description);
     }
 
 }
