@@ -100,9 +100,11 @@ public class ErrorMapping {
         }
 
         return errors.stream()
-                .filter(error -> (code.matches(error.getRegexp())
-                        && description.matches(error.getRegexp())
-                ))
+                .filter(error ->
+                        (code.matches(error.getRegexp())
+                                || description.matches(error.getRegexp())
+                        )
+                )
                 .findFirst()
                 .orElseThrow(() -> new WUndefinedResultException(String.format("%s. Undefined error. code %s, description %s", applicationName, code, description)));
     }
