@@ -15,11 +15,11 @@ import java.util.List;
 public class ErrorMappingConfiguration {
 
     @Value("${error-mapping.file}")
-    private org.springframework.core.io.Resource fixtureErrors;
+    private org.springframework.core.io.Resource fileWithErrors;
 
     @Bean
     public List<Error> getListErrors() throws IOException {
-        InputStream inputStream = fixtureErrors.getInputStream();
+        InputStream inputStream = fileWithErrors.getInputStream();
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(inputStream, new TypeReference<List<Error>>() {});
     }
