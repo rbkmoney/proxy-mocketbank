@@ -9,7 +9,7 @@ import com.rbkmoney.damsel.proxy_provider.Invoice;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
+import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

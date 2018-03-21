@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.payment_processing.errors.PaymentFailure;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
+import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
 

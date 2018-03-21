@@ -36,5 +36,8 @@ timer:
 ---
 fixture:
   cards: classpath:fixture/cards.csv
-  errors: classpath:fixture/errors.json
-
+---
+error-mapping:
+  file: classpath:fixture/errors.json
+  name: Mocketbank # default: spring. application.name
+  patternReason: "'%s' - '%s'" # 'code' - 'description'

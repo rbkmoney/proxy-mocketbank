@@ -2,7 +2,7 @@ package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
 
 import com.rbkmoney.damsel.domain.Failure;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.error_mapping.ErrorMapping;
+import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import org.junit.Test;

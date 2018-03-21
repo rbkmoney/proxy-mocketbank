@@ -14,7 +14,7 @@ import java.util.List;
 @Configuration
 public class ErrorMappingConfiguration {
 
-    @Value("${fixture.errors}")
+    @Value("${error-mapping.file}")
     private org.springframework.core.io.Resource fixtureErrors;
 
     @Bean
