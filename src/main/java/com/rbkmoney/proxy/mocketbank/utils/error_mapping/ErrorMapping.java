@@ -104,7 +104,7 @@ public class ErrorMapping {
                         && description.matches(error.getRegexp())
                 ))
                 .findFirst()
-                .orElseThrow(() -> new WUndefinedResultException(applicationName + ". Undefined error. code " + code + ", description " + description));
+                .orElseThrow(() -> new WUndefinedResultException(String.format("%s. Undefined error. code %s, description %s", applicationName, code, description)));
     }
 
 
