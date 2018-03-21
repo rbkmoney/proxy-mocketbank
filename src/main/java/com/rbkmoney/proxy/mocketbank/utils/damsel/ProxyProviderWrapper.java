@@ -72,7 +72,7 @@ public class ProxyProviderWrapper {
 
     public static RecurrentTokenFinishIntent makeRecurrentTokenStatusFailure(String code, String description) {
         RecurrentTokenFinishStatus status = new RecurrentTokenFinishStatus();
-        Failure failure = ErrorMapping.getFailureByCodeAndDescription(code, description);
+        Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(code, description);
         status.setFailure(failure);
 
         RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();

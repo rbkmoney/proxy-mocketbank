@@ -4,9 +4,6 @@ package com.rbkmoney.proxy.mocketbank.utils.error_mapping;
 import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.proxy.mocketbank.utils.model.Error;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -16,50 +13,47 @@ import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
 /**
  * @author Anatoly Cherkasov
  */
-@Component
 public class ErrorMapping {
 
-    private static List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errors;
+    // ------------------------------------------------------------------------
+    // Constants
+    // ------------------------------------------------------------------------
 
-    private static final String PATTERN_REASON_DEFAULT = "'%s' - '%s'";
+    public static final String PATTERN_REASON_DEFAULT = "'%s' - '%s'";
+
+    private static ErrorMapping INSTANCE;
 
     /**
      * Application name
      */
-    private static String applicationName;
+    private String applicationName;
 
     /**
      * Pattern for reason failure
      */
-    private static String patternReason;
+    private String patternReason;
 
     /**
-     * Constructs a new {@link ErrorMapping} instance.
+     * List of errors
      */
-    public ErrorMapping() {
-        // Constructs default a new {@link ErrorMapping} instance.
-    }
-
+    private List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errors;
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
 
     /**
-     * Constructs a new {@link ErrorMapping} instance with the given
-     * initial parameters to be constructed.
-     *
-     * @param errorList the field's errors (see {@link #errors}).
+     * Constructs a new {@link ErrorMapping} instance.
      */
-    @Autowired
-    public ErrorMapping(
-            final List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errorList,
-            final @Value("${error-mapping.name:${spring.application.name}}") String applicationName,
-            final @Value("${error-mapping.patternReason:" + PATTERN_REASON_DEFAULT + "}") String patternReason
-    ) {
-        ErrorMapping.errors = errorList;
-        ErrorMapping.applicationName = applicationName;
-        ErrorMapping.patternReason = patternReason;
+    private ErrorMapping() {
+        // By default, a new instance is not created, use getInstance
+    }
+
+    public static ErrorMapping getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ErrorMapping();
+        }
+        return INSTANCE;
     }
 
 
@@ -74,7 +68,7 @@ public class ErrorMapping {
      * @param description String
      * @return Failure
      */
-    public static Failure getFailureByCodeAndDescription(String code, String description) {
+    public Failure getFailureByCodeAndDescription(String code, String description) {
         com.rbkmoney.proxy.mocketbank.utils.model.Error error = findMatchWithPattern(errors, code, description);
 
         Failure failure = toGeneral(error.getMapping());
@@ -90,7 +84,7 @@ public class ErrorMapping {
      * @param description String
      * @return com.rbkmoney.proxy.mocketbank.utils.model.Error
      */
-    public static com.rbkmoney.proxy.mocketbank.utils.model.Error findMatchWithPattern(
+    private com.rbkmoney.proxy.mocketbank.utils.model.Error findMatchWithPattern(
             List<Error> errors,
             String code,
             String description
@@ -121,8 +115,37 @@ public class ErrorMapping {
      * @param description String
      * @return String
      */
-    private static String prepareReason(String code, String description) {
-        return String.format(patternReason, code, description);
+    private String prepareReason(String code, String description) {
+        return String.format(this.patternReason, code, description);
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Getter and Setter methods
+    // ------------------------------------------------------------------------
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public String getPatternReason() {
+        return patternReason;
+    }
+
+    public void setPatternReason(String patternReason) {
+        this.patternReason = patternReason;
+    }
+
+    public List<Error> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<Error> errors) {
+        this.errors = errors;
     }
 
 }

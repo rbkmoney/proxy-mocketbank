@@ -26,7 +26,7 @@ public class ErrorMappingTest {
 
     @Test(expected = WRuntimeException.class)
     public void testMakeFailureByDescriptionException() {
-        ErrorMapping.getFailureByCodeAndDescription(
+        ErrorMapping.getInstance().getFailureByCodeAndDescription(
                 "wrong code",
                 "wrong description"
         );
@@ -47,7 +47,7 @@ public class ErrorMappingTest {
         map.put(MocketBankMpiAction.UNKNOWN_FAILURE.getAction(), "Failure(code:authorization_failed, reason:'Unknown Failure' - 'Unknown Failure', sub:SubFailure(code:unknown))");
 
         map.forEach((k, v) -> {
-                    Failure failure = ErrorMapping.getFailureByCodeAndDescription(k, k);
+                    Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(k, k);
                     logger.info(failure.toString());
                     assertEquals(v, failure.toString());
                 }

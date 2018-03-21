@@ -22,7 +22,7 @@ public class ProxyWrapper {
 
     public static Intent makeFinishIntentFailure(String code, String description) {
         FinishIntent finishIntent = new FinishIntent();
-        Failure failure = ErrorMapping.getFailureByCodeAndDescription(code, description);
+        Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(code, description);
         finishIntent.setStatus(ProxyWrapper.makeFinishStatusFailure(failure));
 
         Intent intent = new Intent();
