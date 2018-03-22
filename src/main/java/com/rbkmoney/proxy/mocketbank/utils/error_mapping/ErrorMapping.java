@@ -10,8 +10,6 @@ import com.rbkmoney.proxy.mocketbank.utils.model.Error;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
@@ -26,18 +24,13 @@ public class ErrorMapping {
     // Constants
     // ------------------------------------------------------------------------
 
-    private static final String DEFAULT_FILE_PATH = "/opt/java/proxy-test/errors.json";
-
     private static final String DEFAULT_PATTERN_REASON = "'%s' - '%s'";
 
-    private final ObjectMapper mapper;
 
     /**
      * Pattern for reason failure
      */
     private final String patternReason;
-
-    private final String filePath;
 
     /**
      * List of errors
@@ -48,31 +41,27 @@ public class ErrorMapping {
     // Constructors
     // ------------------------------------------------------------------------
 
-    /**
-     * Constructs a new {@link ErrorMapping} instance.
-     */
-    public ErrorMapping() {
-        this(DEFAULT_FILE_PATH);
+
+    public ErrorMapping(InputStream inputStream) {
+        this(inputStream, DEFAULT_PATTERN_REASON);
     }
 
-    public ErrorMapping(String filePath) {
-        this(filePath, DEFAULT_PATTERN_REASON);
+    public ErrorMapping(InputStream inputStream, String patternReason) {
+        this(inputStream, patternReason, new ObjectMapper());
     }
 
-    public ErrorMapping(String filePath, String patternReason) {
-        this(filePath, patternReason, new ObjectMapper());
+    public ErrorMapping(InputStream inputStream, String patternReason, ObjectMapper objectMapper) {
+        this(patternReason, initErrorList(inputStream, objectMapper));
     }
 
-    public ErrorMapping(String filePath, String patternReason, ObjectMapper objectMapper) {
-        this.filePath = filePath;
+    public ErrorMapping(String patternReason, List<Error> errors) {
         this.patternReason = patternReason;
-        this.mapper = objectMapper;
-        this.errors = initErrorList();
+        this.errors = errors;
     }
 
-    private List<com.rbkmoney.proxy.mocketbank.utils.model.Error> initErrorList() {
-        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
-            return mapper.readValue(inputStream, new TypeReference<List<Error>>() {});
+    public static List<com.rbkmoney.proxy.mocketbank.utils.model.Error> initErrorList(InputStream inputStream, ObjectMapper objectMapper) {
+        try {
+            return objectMapper.readValue(inputStream, new TypeReference<List<Error>>() {});
         } catch (JsonParseException e) {
             throw new ErrorMappingException("Json can't parse data from file", e);
         } catch (JsonMappingException e) {

@@ -20,7 +20,7 @@ public class ErrorMappingConfiguration {
 
     @Bean
     ErrorMapping errorMapping() throws IOException {
-        return new ErrorMapping(filePath.getFile().getAbsolutePath(), patternReason);
+        return new ErrorMapping(filePath.getInputStream(), patternReason);
     }
 
 }
