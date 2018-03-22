@@ -14,19 +14,12 @@ public class HellGateApi {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private ProviderProxyHostSrv.Iface providerProxyHostSrv;
+    private final ProviderProxyHostSrv.Iface providerProxyHostSrv;
 
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
-
-    /**
-     * Constructs a new {@link HellGateApi HellGateApi} instance.
-     */
-    public HellGateApi() {
-        // Constructs default a new {@link HellGateApi HellGateApi} instance.
-    }
 
     /**
      * Constructs a new {@link HellGateApi HellGateApi} instance with the given

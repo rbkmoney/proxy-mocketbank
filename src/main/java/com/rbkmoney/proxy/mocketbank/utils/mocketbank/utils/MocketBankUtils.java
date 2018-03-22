@@ -12,7 +12,7 @@ public class MocketBankUtils {
      * Kludge
      */
     public static boolean isUndefinedResultOrUnavailable(Exception exception) {
-        WErrorDefinition definition = null;
+        WErrorDefinition definition;
         if(exception instanceof WRuntimeException) {
             definition = ((WRuntimeException) exception).getErrorDefinition();
         } else {

@@ -9,6 +9,7 @@ import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
+import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.*;
@@ -41,6 +42,9 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
     @Autowired
     private MocketBankMpiApi mocketBankMpiApi;
+
+    @Autowired
+    private ErrorMapping errorMapping;
 
     @Value("${proxy-mocketbank.callbackUrl}")
     private String callbackUrl;
@@ -103,15 +107,19 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(error, error);
+                RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
+                        errorMapping.getFailureByCodeAndDescription(error, error)
+                );
                 log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
                 return proxyResult;
             }
 
         } else {
             RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
-                    UNSUPPORTED_CARD.getAction(),
-                    UNSUPPORTED_CARD.getAction()
+                    errorMapping.getFailureByCodeAndDescription(
+                            UNSUPPORTED_CARD.getAction(),
+                            UNSUPPORTED_CARD.getAction()
+                    )
             );
             log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
             return proxyResult;
@@ -241,7 +249,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         RecurrentTokenCallbackResult callbackResult = ProxyProviderWrapper.makeRecurrentTokenCallbackResultFailure(
-                "error".getBytes(), "error", error
+                "error".getBytes(), errorMapping.getFailureByCodeAndDescription("error", error)
         );
 
         log.info("handleRecurrentTokenCallback finish {}, recurrent {}", callbackResult, recurrentId);
@@ -267,8 +275,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 return refunded(context, options);
             } else {
                 PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
-                        "Unsupported method",
-                        "Unsupported method"
+                        errorMapping.getFailureByCodeAndDescription(
+                                "Unsupported method",
+                                "Unsupported method"
+                        )
                 );
                 log.error("Error unsupported method. proxyResult {} with invoiceId {}", proxyResult, invoiceId);
                 return proxyResult;
@@ -340,16 +350,21 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(error, error);
+                PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
+                        errorMapping.getFailureByCodeAndDescription(error, error)
+                );
                 log.info("Processed: failure {} with invoiceId {}", proxyResult, invoiceId);
-                return ProxyProviderWrapper.makeProxyResultFailure(error, error);
+                return proxyResult;
             }
 
         } else {
             PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
-                    UNSUPPORTED_CARD.getAction(),
-                    UNSUPPORTED_CARD.getAction()
+                    errorMapping.getFailureByCodeAndDescription(
+                            UNSUPPORTED_CARD.getAction(),
+                            UNSUPPORTED_CARD.getAction()
+                    )
             );
+            errorMapping.getFailureByCodeAndDescription(UNSUPPORTED_CARD.getAction(), UNSUPPORTED_CARD.getAction());
             log.info("Processed: failure {} with invoiceId {}", proxyResult, invoiceId);
             return proxyResult;
         }
@@ -532,7 +547,9 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         PaymentCallbackResult callbackResult = ProxyProviderWrapper.makeCallbackResultFailure(
-                "error".getBytes(), "HandlePaymentCallback: error", error
+                "error".getBytes(), errorMapping.getFailureByCodeAndDescription(
+                        "HandlePaymentCallback: error", error
+                )
         );
 
         log.info("handlePaymentCallback finish {}, invoice {}", callbackResult, invoiceId);

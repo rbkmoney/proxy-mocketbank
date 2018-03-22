@@ -17,19 +17,12 @@ public class CdsApi {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private StorageSrv.Iface storageSrv;
+    private final StorageSrv.Iface storageSrv;
 
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
-
-    /**
-     * Constructs a new {@link CdsApi CdsApi} instance.
-     */
-    public CdsApi() {
-        // Constructs default a new {@link CdsApi CdsApi} instance.
-    }
 
     /**
      * Constructs a new {@link CdsApi CdsApi} instance with the given

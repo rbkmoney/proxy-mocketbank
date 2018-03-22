@@ -1,10 +1,17 @@
 package com.rbkmoney.proxy.mocketbank.utils.error_mapping;
 
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.proxy.mocketbank.utils.model.Error;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
@@ -19,24 +26,23 @@ public class ErrorMapping {
     // Constants
     // ------------------------------------------------------------------------
 
-    public static final String PATTERN_REASON_DEFAULT = "'%s' - '%s'";
+    private static final String DEFAULT_FILE_PATH = "/opt/java/proxy-test/errors.json";
 
-    private static ErrorMapping INSTANCE;
+    private static final String DEFAULT_PATTERN_REASON = "'%s' - '%s'";
 
-    /**
-     * Application name
-     */
-    private String applicationName;
+    private final ObjectMapper mapper;
 
     /**
      * Pattern for reason failure
      */
-    private String patternReason;
+    private final String patternReason;
+
+    private final String filePath;
 
     /**
      * List of errors
      */
-    private List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errors;
+    private final List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errors;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -45,15 +51,35 @@ public class ErrorMapping {
     /**
      * Constructs a new {@link ErrorMapping} instance.
      */
-    private ErrorMapping() {
-        // By default, a new instance is not created, use getInstance
+    public ErrorMapping() {
+        this(DEFAULT_FILE_PATH);
     }
 
-    public static ErrorMapping getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ErrorMapping();
+    public ErrorMapping(String filePath) {
+        this(filePath, DEFAULT_PATTERN_REASON);
+    }
+
+    public ErrorMapping(String filePath, String patternReason) {
+        this(filePath, patternReason, new ObjectMapper());
+    }
+
+    public ErrorMapping(String filePath, String patternReason, ObjectMapper objectMapper) {
+        this.filePath = filePath;
+        this.patternReason = patternReason;
+        this.mapper = objectMapper;
+        this.errors = initErrorList();
+    }
+
+    private List<com.rbkmoney.proxy.mocketbank.utils.model.Error> initErrorList() {
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
+            return mapper.readValue(inputStream, new TypeReference<List<Error>>() {});
+        } catch (JsonParseException e) {
+            throw new ErrorMappingException("Json can't parse data from file", e);
+        } catch (JsonMappingException e) {
+            throw new ErrorMappingException("Json can't mapping data from file", e);
+        } catch (IOException e) {
+            throw new ErrorMappingException("Failed to initErrorList", e);
         }
-        return INSTANCE;
     }
 
 
@@ -100,9 +126,8 @@ public class ErrorMapping {
                         )
                 )
                 .findFirst()
-                .orElseThrow(() -> new WUndefinedResultException(String.format("%s. Undefined error. code %s, description %s", applicationName, code, description)));
+                .orElseThrow(() -> new WUndefinedResultException(String.format("Undefined error. code %s, description %s", code, description)));
     }
-
 
     // ------------------------------------------------------------------------
     // Private methods
@@ -117,35 +142,6 @@ public class ErrorMapping {
      */
     private String prepareReason(String code, String description) {
         return String.format(this.patternReason, code, description);
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Getter and Setter methods
-    // ------------------------------------------------------------------------
-
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    public String getPatternReason() {
-        return patternReason;
-    }
-
-    public void setPatternReason(String patternReason) {
-        this.patternReason = patternReason;
-    }
-
-    public List<Error> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<Error> errors) {
-        this.errors = errors;
     }
 
 }

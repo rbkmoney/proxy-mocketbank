@@ -1,45 +1,26 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
-import com.rbkmoney.proxy.mocketbank.utils.model.Error;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
-import static com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping.PATTERN_REASON_DEFAULT;
 
 @Configuration
 public class ErrorMappingConfiguration {
 
     @Value("${error-mapping.file}")
-    private org.springframework.core.io.Resource fileWithErrors;
+    private Resource filePath;
 
-    @Value("${error-mapping.name:${spring.application.name}}")
-    private String applicationName;
-
-    @Value("${error-mapping.patternReason:" + PATTERN_REASON_DEFAULT + "}")
+    @Value("${error-mapping.patternReason:\"'%s' - '%s'\"}")
     private String patternReason;
 
     @Bean
-    public List<Error> getListErrors() throws IOException {
-        InputStream inputStream = fileWithErrors.getInputStream();
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(inputStream, new TypeReference<List<Error>>() {});
-    }
-
-    @Bean
-    public ErrorMapping errorMapping() throws IOException {
-        ErrorMapping errorMapping = ErrorMapping.getInstance();
-        errorMapping.setApplicationName(applicationName);
-        errorMapping.setErrors(getListErrors());
-        errorMapping.setPatternReason(patternReason);
-        return errorMapping;
+    ErrorMapping errorMapping() throws IOException {
+        return new ErrorMapping(filePath.getFile().getAbsolutePath(), patternReason);
     }
 
 }

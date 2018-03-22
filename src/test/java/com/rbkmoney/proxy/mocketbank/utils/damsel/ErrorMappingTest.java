@@ -8,6 +8,7 @@ import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -23,10 +24,12 @@ public class ErrorMappingTest {
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    private ErrorMapping errorMapping;
 
     @Test(expected = WRuntimeException.class)
     public void testMakeFailureByDescriptionException() {
-        ErrorMapping.getInstance().getFailureByCodeAndDescription(
+        errorMapping.getFailureByCodeAndDescription(
                 "wrong code",
                 "wrong description"
         );
@@ -47,7 +50,7 @@ public class ErrorMappingTest {
         map.put(MocketBankMpiAction.UNKNOWN_FAILURE.getAction(), "Failure(code:authorization_failed, reason:'Unknown Failure' - 'Unknown Failure', sub:SubFailure(code:unknown))");
 
         map.forEach((k, v) -> {
-                    Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(k, k);
+                    Failure failure = errorMapping.getFailureByCodeAndDescription(k, k);
                     logger.info(failure.toString());
                     assertEquals(v, failure.toString());
                 }

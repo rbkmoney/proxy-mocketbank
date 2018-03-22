@@ -39,5 +39,4 @@ fixture:
 ---
 error-mapping:
   file: classpath:fixture/errors.json
-  name: Mocketbank # default: spring. application.name
   patternReason: "'%s' - '%s'" # 'code' - 'description'

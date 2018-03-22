@@ -9,7 +9,6 @@ import com.rbkmoney.damsel.proxy_provider.Invoice;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -70,9 +69,8 @@ public class ProxyProviderWrapper {
         return intent;
     }
 
-    public static RecurrentTokenFinishIntent makeRecurrentTokenStatusFailure(String code, String description) {
+    public static RecurrentTokenFinishIntent makeRecurrentTokenStatusFailure(Failure failure) {
         RecurrentTokenFinishStatus status = new RecurrentTokenFinishStatus();
-        Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(code, description);
         status.setFailure(failure);
 
         RecurrentTokenFinishIntent intent = new RecurrentTokenFinishIntent();
@@ -81,9 +79,9 @@ public class ProxyProviderWrapper {
         return intent;
     }
 
-    public static RecurrentTokenIntent makeRecurrentTokenFinishIntentFailure(String code, String description) {
+    public static RecurrentTokenIntent makeRecurrentTokenFinishIntentFailure(Failure failure) {
         RecurrentTokenIntent intent = new RecurrentTokenIntent();
-        intent.setFinish(makeRecurrentTokenStatusFailure(code, description));
+        intent.setFinish(makeRecurrentTokenStatusFailure(failure));
         return intent;
     }
 
@@ -163,8 +161,8 @@ public class ProxyProviderWrapper {
     }
 
 
-    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResultFailure(String code, String description) {
-        return makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(code, description));
+    public static RecurrentTokenProxyResult makeRecurrentTokenProxyResultFailure(Failure failure) {
+        return makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(failure));
     }
 
     // ProxyResult
@@ -184,9 +182,9 @@ public class ProxyProviderWrapper {
         return makePaymentProxyResult(intent, null, null);
     }
 
-    public static PaymentProxyResult makeProxyResultFailure(String code, String description) {
+    public static PaymentProxyResult makeProxyResultFailure(Failure failure) {
         PaymentProxyResult proxyResult = new PaymentProxyResult();
-        proxyResult.setIntent(ProxyWrapper.makeFinishIntentFailure(code, description));
+        proxyResult.setIntent(ProxyWrapper.makeFinishIntentFailure(failure));
         return proxyResult;
     }
 
@@ -317,9 +315,9 @@ public class ProxyProviderWrapper {
         return proxyResult;
     }
 
-    public static PaymentCallbackProxyResult makeCallbackProxyResultFailure(String code, String description) {
+    public static PaymentCallbackProxyResult makeCallbackProxyResultFailure(Failure failure) {
         PaymentCallbackProxyResult proxyResult = new PaymentCallbackProxyResult();
-        proxyResult.setIntent(ProxyWrapper.makeFinishIntentFailure(code, description));
+        proxyResult.setIntent(ProxyWrapper.makeFinishIntentFailure(failure));
         return proxyResult;
     }
 
@@ -330,15 +328,15 @@ public class ProxyProviderWrapper {
         return callbackResult;
     }
 
-    public static PaymentCallbackResult makeCallbackResultFailure(byte[] callbackResponse, String code, String description) {
+    public static PaymentCallbackResult makeCallbackResultFailure(byte[] callbackResponse, Failure failure) {
         PaymentCallbackResult callbackResult = new PaymentCallbackResult();
         callbackResult.setResponse(callbackResponse);
-        callbackResult.setResult(ProxyProviderWrapper.makeCallbackProxyResultFailure(code, description));
+        callbackResult.setResult(ProxyProviderWrapper.makeCallbackProxyResultFailure(failure));
         return callbackResult;
     }
 
-    public static PaymentCallbackResult makeCallbackResultFailure(String code, String description) {
-        return makeCallbackResultFailure("error".getBytes(), code, description);
+    public static PaymentCallbackResult makeCallbackResultFailure(Failure failure) {
+        return makeCallbackResultFailure("error".getBytes(), failure);
     }
 
     // RecurrentTokenCallbackResult
@@ -349,15 +347,15 @@ public class ProxyProviderWrapper {
         return result;
     }
 
-    public static RecurrentTokenCallbackResult makeRecurrentTokenCallbackResultFailure(byte[] callbackResponse, String code, String description) {
+    public static RecurrentTokenCallbackResult makeRecurrentTokenCallbackResultFailure(byte[] callbackResponse, Failure failure) {
         RecurrentTokenCallbackResult result = new RecurrentTokenCallbackResult();
         result.setResponse(callbackResponse);
-        result.setResult(makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(code, description)));
+        result.setResult(makeRecurrentTokenProxyResult(makeRecurrentTokenFinishIntentFailure(failure)));
         return result;
     }
 
-    public static RecurrentTokenCallbackResult makeRecurrentTokenCallbackResultFailure(String code, String description) {
-        return makeRecurrentTokenCallbackResultFailure("error".getBytes(), code, description);
+    public static RecurrentTokenCallbackResult makeRecurrentTokenCallbackResultFailure(Failure failure) {
+        return makeRecurrentTokenCallbackResultFailure("error".getBytes(),failure);
     }
 
 }

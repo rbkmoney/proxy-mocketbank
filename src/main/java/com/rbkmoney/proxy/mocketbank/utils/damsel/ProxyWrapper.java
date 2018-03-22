@@ -5,7 +5,6 @@ import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.payment_processing.errors.PaymentFailure;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
 
@@ -20,9 +19,8 @@ public class ProxyWrapper {
         return intent;
     }
 
-    public static Intent makeFinishIntentFailure(String code, String description) {
+    public static Intent makeFinishIntentFailure(Failure failure) {
         FinishIntent finishIntent = new FinishIntent();
-        Failure failure = ErrorMapping.getInstance().getFailureByCodeAndDescription(code, description);
         finishIntent.setStatus(ProxyWrapper.makeFinishStatusFailure(failure));
 
         Intent intent = new Intent();
