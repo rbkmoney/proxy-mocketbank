@@ -21,7 +21,6 @@ public class ErrorMappingConfiguration {
     @Bean
     ErrorMapping errorMapping() throws IOException {
         ErrorMapping errorMapping = new ErrorMapping(filePath.getInputStream(), patternReason);
-        // Kludge
         errorMapping.validateMappingFormat();
         return new ErrorMapping(filePath.getInputStream(), patternReason);
     }

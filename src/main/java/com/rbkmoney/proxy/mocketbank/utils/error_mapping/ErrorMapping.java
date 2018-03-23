@@ -146,7 +146,7 @@ public class ErrorMapping {
             errors.forEach(error -> StandardError.findByValue(error.getMapping()));
         } catch (IllegalStateException ex) {
             log.error("Exception: validate error mapping", ex);
-            System.exit(0);
+            throw new RuntimeException(ex);
         }
     }
 
