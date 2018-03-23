@@ -141,7 +141,7 @@ public class ErrorMapping {
     /**
      * Validate mapping formate
      */
-    public void validateMappingFormate() {
+    public void validateMappingFormat() {
         try {
             errors.forEach(error -> StandardError.findByValue(error.getMapping()));
         } catch (IllegalStateException ex) {

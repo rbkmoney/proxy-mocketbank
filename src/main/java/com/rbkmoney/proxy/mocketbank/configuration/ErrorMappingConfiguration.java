@@ -21,7 +21,7 @@ public class ErrorMappingConfiguration {
     @Bean
     ErrorMapping errorMapping() throws IOException {
         ErrorMapping errorMapping = new ErrorMapping(filePath.getInputStream(), patternReason);
-        errorMapping.validateMappingFormate();
+        errorMapping.validateMappingFormat();
         return new ErrorMapping(filePath.getInputStream(), patternReason);
     }
 
