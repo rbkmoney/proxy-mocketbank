@@ -6,10 +6,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.domain.Failure;
-import com.rbkmoney.proxy.mocketbank.utils.model.Error;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
@@ -19,6 +21,9 @@ import static com.rbkmoney.geck.serializer.kit.tbase.TErrorUtil.toGeneral;
  * @author Anatoly Cherkasov
  */
 public class ErrorMapping {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 
     // ------------------------------------------------------------------------
     // Constants
@@ -35,7 +40,7 @@ public class ErrorMapping {
     /**
      * List of errors
      */
-    private final List<com.rbkmoney.proxy.mocketbank.utils.model.Error> errors;
+    private final List<Error> errors;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -59,7 +64,7 @@ public class ErrorMapping {
         this.errors = errors;
     }
 
-    public static List<com.rbkmoney.proxy.mocketbank.utils.model.Error> initErrorList(InputStream inputStream, ObjectMapper objectMapper) {
+    public static List<Error> initErrorList(InputStream inputStream, ObjectMapper objectMapper) {
         try {
             return objectMapper.readValue(inputStream, new TypeReference<List<Error>>() {});
         } catch (JsonParseException e) {
@@ -84,7 +89,7 @@ public class ErrorMapping {
      * @return Failure
      */
     public Failure getFailureByCodeAndDescription(String code, String description) {
-        com.rbkmoney.proxy.mocketbank.utils.model.Error error = findMatchWithPattern(errors, code, description);
+        Error error = findMatchWithPattern(errors, code, description);
 
         Failure failure = toGeneral(error.getMapping());
         failure.setReason(prepareReason(code, description));
@@ -99,7 +104,7 @@ public class ErrorMapping {
      * @param description String
      * @return com.rbkmoney.proxy.mocketbank.utils.model.Error
      */
-    private com.rbkmoney.proxy.mocketbank.utils.model.Error findMatchWithPattern(
+    private Error findMatchWithPattern(
             List<Error> errors,
             String code,
             String description
@@ -131,6 +136,18 @@ public class ErrorMapping {
      */
     private String prepareReason(String code, String description) {
         return String.format(this.patternReason, code, description);
+    }
+
+    /**
+     * Validate mapping formate
+     */
+    public void validateMappingFormate() {
+        try {
+            errors.forEach(error -> StandardError.findByValue(error.getMapping()));
+        } catch (IllegalStateException ex) {
+            log.error("Exception: validate error mapping", ex);
+            System.exit(0);
+        }
     }
 
 }

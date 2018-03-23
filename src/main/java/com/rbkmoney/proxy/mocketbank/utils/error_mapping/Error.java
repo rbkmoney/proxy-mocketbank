@@ -1,4 +1,4 @@
-package com.rbkmoney.proxy.mocketbank.utils.model;
+package com.rbkmoney.proxy.mocketbank.utils.error_mapping;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
