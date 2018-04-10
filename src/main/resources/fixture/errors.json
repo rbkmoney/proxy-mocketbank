@@ -48,6 +48,12 @@
     "mapping":"authorization_failed:unknown"
   },
   {
+    "code":"Apple Pay Failure",
+    "description":"Apple Pay Failure",
+    "regexp":"Apple Pay Failure",
+    "mapping":"authorization_failed:unknown"
+  },
+  {
     "code":"Unknown Failure",
     "description":"Unknown Failure",
     "regexp":"Unknown Failure",

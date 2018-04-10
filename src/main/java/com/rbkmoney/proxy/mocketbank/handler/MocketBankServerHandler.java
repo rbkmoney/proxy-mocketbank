@@ -2,6 +2,7 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.damsel.domain.BankCardTokenProvider;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -331,9 +332,28 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     case CVV_MATCH_FAIL:
                         error = CVV_MATCH_FAIL.getAction();
                         break;
+                    case APPLE_PAY_FAILURE:
+                        error = APPLE_PAY_FAILURE.getAction();
+                        break;
+
                     case EXPIRED_CARD:
                         error = EXPIRED_CARD.getAction();
                         break;
+
+                    case APPLE_PAY_SUCCESS:
+
+                        Optional<BankCardTokenProvider> bankCardTokenProvider = Optional.of(
+                                context.getPaymentInfo().getPayment()
+                                        .getPaymentResource().getDisposablePaymentResource()
+                                        .getPaymentTool().getBankCard().getTokenProvider()
+                        );
+
+                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.applepay.equals(bankCardTokenProvider.get())) {
+                            String message = "Processed: bankCardTokenProvider is missing or not APPLE PAY with invoiceId " + invoiceId;
+                            log.error(message);
+                            throw new IllegalArgumentException(message);
+                        }
+
                     case SUCCESS:
                         transactionInfo = DomainWrapper.makeTransactionInfo(
                                 MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),

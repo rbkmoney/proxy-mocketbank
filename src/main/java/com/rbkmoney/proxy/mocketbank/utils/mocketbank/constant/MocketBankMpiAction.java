@@ -15,6 +15,8 @@ public enum MocketBankMpiAction {
     INVALID_CARD("Invalid Card"),
     CVV_MATCH_FAIL("CVV Match Fail"),
     EXPIRED_CARD("Expired Card"),
+    APPLE_PAY_FAILURE("Apple Pay Failure"),
+    APPLE_PAY_SUCCESS("Apple Pay Success"),
     UNKNOWN_FAILURE("Unknown Failure");
 
     private final String action;

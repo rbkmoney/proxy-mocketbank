@@ -22,7 +22,7 @@ public class ErrorMappingConfiguration {
     ErrorMapping errorMapping() throws IOException {
         ErrorMapping errorMapping = new ErrorMapping(filePath.getInputStream(), patternReason);
         errorMapping.validateMappingFormat();
-        return new ErrorMapping(filePath.getInputStream(), patternReason);
+        return errorMapping;
     }
 
 }

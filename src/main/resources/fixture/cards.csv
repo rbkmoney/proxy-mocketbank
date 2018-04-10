@@ -19,3 +19,5 @@ cardPan, action, paymentSystem
 5105105105105100, Expired Card, MasterCard
 4111110000000112, Unknown Failure, Visa
 5124990000000002, Unknown Failure, MasterCard
+5000000000000009, Apple Pay Failure, Visa
+4300000000000777, Apple Pay Success, Visa
