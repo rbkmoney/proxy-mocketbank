@@ -1,7 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
-import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.cds.PutCardDataResult;
+import com.rbkmoney.damsel.cds.*;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
@@ -201,11 +200,16 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest {
         );
     }
 
-    private PutCardDataResult cdsPutCardData(CardData cardData) throws TException, URISyntaxException, IOException {
-        LOGGER.info("CDS: put card");
-        PutCardDataResult putCardDataResponse = cds.putCardData(cardData);
+    protected PutCardDataResult cdsPutCardData(CardData cardData) {
+        LOGGER.info("CDS: put card request start");
 
-        LOGGER.info(putCardDataResponse.toString());
+        Auth3DS auth3DS = CdsWrapper.makeAuth3DS("jKfi3B417+zcCBFYbFp3CBUAAAA=", "5");
+        AuthData authData = CdsWrapper.makeAuthData(auth3DS);
+
+        SessionData sessionData = CdsWrapper.makeSessionData(authData);
+
+        PutCardDataResult putCardDataResponse = cds.putCardData(cardData, sessionData);
+        LOGGER.info("CDS: put card response {}", putCardDataResponse);
         return putCardDataResponse;
     }
 

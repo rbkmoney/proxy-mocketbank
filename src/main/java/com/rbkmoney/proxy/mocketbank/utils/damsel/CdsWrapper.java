@@ -26,6 +26,55 @@ public class CdsWrapper {
         return CdsWrapper.makeCardData(cardholderName, cvv, pan, CdsWrapper.makeExpDate(month, year));
     }
 
+    public static SessionData makeSessionData(AuthData authData) {
+        SessionData sessionData = new SessionData();
+        sessionData.setAuthData(authData);
+        return sessionData;
+    }
+
+    public static AuthData makeAuthData(Auth3DS auth3DS, CardSecurityCode cardSecurityCode) {
+        AuthData authData = new AuthData();
+        authData.setAuth3ds(auth3DS);
+        authData.setCardSecurityCode(cardSecurityCode);
+        return authData;
+    }
+
+    public static AuthData makeAuthData(CardSecurityCode cardSecurityCode) {
+        AuthData authData = new AuthData();
+        authData.setCardSecurityCode(cardSecurityCode);
+        return authData;
+    }
+
+    public static AuthData makeAuthData(Auth3DS auth3DS) {
+        AuthData authData = new AuthData();
+        authData.setAuth3ds(auth3DS);
+        return authData;
+    }
+
+    public static AuthData makeAuthData(Auth3DS auth3DS, String cvv) {
+        AuthData authData = new AuthData();
+        authData.setAuth3ds(auth3DS);
+        authData.setCardSecurityCode(makeCardSecurityCode(cvv));
+        return authData;
+    }
+
+    public static CardSecurityCode makeCardSecurityCode(String cvv) {
+        CardSecurityCode cardSecurityCode = new CardSecurityCode();
+        cardSecurityCode.setValue(cvv);
+        return cardSecurityCode;
+    }
+
+    public static Auth3DS makeAuth3DS(String cryptogram, String eci) {
+        Auth3DS auth3DS = new Auth3DS();
+        auth3DS.setCryptogram(cryptogram);
+        auth3DS.setEci(eci);
+        return auth3DS;
+    }
+
+    public static Auth3DS makeAuth3DS(String cryptogram) {
+        return makeAuth3DS(cryptogram, null);
+    }
+
     public static PutCardDataResult makePutCardDataResult(BankCard bankCard, String session) {
         PutCardDataResult putCardDataResult = new PutCardDataResult();
         putCardDataResult.setBankCard(bankCard);

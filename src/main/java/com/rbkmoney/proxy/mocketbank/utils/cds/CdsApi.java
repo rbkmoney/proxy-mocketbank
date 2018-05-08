@@ -2,11 +2,11 @@ package com.rbkmoney.proxy.mocketbank.utils.cds;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
+import com.rbkmoney.damsel.cds.SessionData;
 import com.rbkmoney.damsel.cds.StorageSrv;
 import com.rbkmoney.damsel.domain.DisposablePaymentResource;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
-import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +15,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class CdsApi {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CdsApi.class);
 
-    private final StorageSrv.Iface storageSrv;
+    private StorageSrv.Iface storageSrv;
 
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
+
+    /**
+     * Constructs a new {@link CdsApi CdsApi} instance.
+     */
+    public CdsApi() {
+        // Constructs default a new {@link CdsApi CdsApi} instance.
+    }
 
     /**
      * Constructs a new {@link CdsApi CdsApi} instance with the given
@@ -48,77 +55,48 @@ public class CdsApi {
      * @throws CdsException
      */
     public CardData getCardData(final String token) {
-        log.info("getCardData: token: {}", token);
+        LOGGER.info("getCardData: token: {}", token);
         try {
             CardData cardData = storageSrv.getCardData(token);
-            log.info("getCardData: response, token: {}");
+            LOGGER.info("getCardData: response, token: {}");
             return cardData;
         } catch (Exception ex) {
             throw new CdsException(String.format("Exception in getCardData with token: %s", token), ex);
         }
     }
 
-    /**
-     * Get the card data with CVV
-     *
-     * @param token   String
-     * @param session String
-     * @return CardData
-     * @throws CdsException
-     */
-    public CardData getSessionCardData(final String token, final String session) {
-        log.info("getSessionCardData: token: {}, session: {} ", token, session);
-        try {
-            CardData cardData = storageSrv.getSessionCardData(token, session);
-            log.info("getSessionCardData: response, token: {}, session: {}", token, session);
-            return cardData;
-        } catch (Exception ex) {
-            throw new CdsException(String.format("Exception in getSessionCardData with token: %s, session: %s", token, session), ex);
+    public CardData getCardData(final PaymentContext context) {
+        String invoiceId = context.getPaymentInfo().getInvoice().getId();
+
+        InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
+        DisposablePaymentResource disposablePaymentResource = invoicePayment.getPaymentResource().getDisposablePaymentResource();
+
+        if (!disposablePaymentResource.getPaymentTool().getBankCard().isSetToken()) {
+            throw new CdsException("getSessionCardData: Token must be set, invoiceId " + invoiceId);
         }
+
+        String token = disposablePaymentResource.getPaymentTool().getBankCard().getToken();
+        return getCardData(token);
     }
 
-    /**
-     * Get the card data with CVV
-     *
-     * @param context PaymentContext
-     * @return CardData
-     * @throws CdsException
-     */
-    public CardData getSessionCardData(final PaymentContext context) {
+    public SessionData getSessionData(final PaymentContext context) {
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
 
         InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
         DisposablePaymentResource disposablePaymentResource = invoicePayment.getPaymentResource().getDisposablePaymentResource();
 
         if (!disposablePaymentResource.isSetPaymentSessionId()) {
-            throw new CdsException("getSessionCardData: Session must be set, invoiceId " + invoiceId);
-        }
-
-        if (!disposablePaymentResource.getPaymentTool().getBankCard().isSetToken()) {
-            throw new CdsException("getSessionCardData: Token must be set, invoiceId " + invoiceId);
+            throw new CdsException("getSessionData: Session must be set, invoiceId " + invoiceId);
         }
 
         String session = disposablePaymentResource.getPaymentSessionId();
-        String token = disposablePaymentResource.getPaymentTool().getBankCard().getToken();
-        return getSessionCardData(token, session);
-    }
-
-    public CardData getSessionCardData(final RecurrentTokenContext context) {
-        String recurrentId = context.getTokenInfo().getPaymentTool().getId();
-
-        DisposablePaymentResource disposablePaymentResource = context.getTokenInfo().getPaymentTool().getPaymentResource();
-
-        if (!disposablePaymentResource.isSetPaymentSessionId()) {
-            throw new CdsException("getSessionCardData: Session must be set, recurrentId " + recurrentId);
+        try {
+            SessionData sessionData = storageSrv.getSessionData(session);
+            LOGGER.info("Storage getSessionData: finish");
+            return sessionData;
+        } catch (Exception ex) {
+            throw new CdsException("Exception in getSessionData with SessionData", ex);
         }
-
-        if (!disposablePaymentResource.getPaymentTool().getBankCard().isSetToken()) {
-            throw new CdsException("getSessionCardData: Token must be set, recurrentId " + recurrentId);
-        }
-
-        String session = disposablePaymentResource.getPaymentSessionId();
-        String token = disposablePaymentResource.getPaymentTool().getBankCard().getToken();
-        return getSessionCardData(token, session);
     }
 
     /**
@@ -128,11 +106,11 @@ public class CdsApi {
      * @return PutCardDataResult
      * @throws CdsException
      */
-    public PutCardDataResult putCardData(CardData cardData) throws CdsException {
-        log.info("Storage putCardData - start");
+    public PutCardDataResult putCardData(CardData cardData, SessionData sessionData) throws CdsException {
+        LOGGER.info("Storage putCardData - start");
         try {
-            PutCardDataResult result = storageSrv.putCardData(cardData);
-            log.info("Storage putCardData: finish");
+            PutCardDataResult result = storageSrv.putCardData(cardData, sessionData);
+            LOGGER.info("Storage putCardData: finish");
             return result;
         } catch (Exception ex) {
             throw new CdsException("Exception in putCardData with cardData", ex);
@@ -140,3 +118,4 @@ public class CdsApi {
     }
 
 }
+
