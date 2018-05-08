@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.228-2dc8a0f-epic</version>
+            <version>1.232-5e54b26</version>
         </dependency>
         <!--Test libs-->
         <dependency>
