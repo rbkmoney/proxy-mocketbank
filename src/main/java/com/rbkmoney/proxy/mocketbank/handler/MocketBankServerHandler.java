@@ -321,6 +321,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             MocketBankMpiAction action = MocketBankMpiAction.findByValue(card.get().getAction());
 
             if (!cardUtils.isEnrolled(card)) {
+
+                Optional<BankCardTokenProvider> bankCardTokenProvider = Optional.of(
+                        context.getPaymentInfo().getPayment()
+                                .getPaymentResource().getDisposablePaymentResource()
+                                .getPaymentTool().getBankCard().getTokenProvider()
+                );
+
+                PaymentProxyResult proxyResult;
                 String error;
                 switch (action) {
                     case INSUFFICIENT_FUNDS:
@@ -342,24 +350,70 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
                     case APPLE_PAY_SUCCESS:
 
-                        Optional<BankCardTokenProvider> bankCardTokenProvider = Optional.of(
-                                context.getPaymentInfo().getPayment()
-                                        .getPaymentResource().getDisposablePaymentResource()
-                                        .getPaymentTool().getBankCard().getTokenProvider()
-                        );
-
                         if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.applepay.equals(bankCardTokenProvider.get())) {
                             String message = "Processed: bankCardTokenProvider is missing or not APPLE PAY with invoiceId " + invoiceId;
                             log.error(message);
                             throw new IllegalArgumentException(message);
                         }
 
+                        transactionInfo = DomainWrapper.makeTransactionInfo(
+                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
+                                Collections.emptyMap()
+                        );
+                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                                intent,
+                                PaymentState.CAPTURED.getBytes(),
+                                transactionInfo
+                        );
+                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
+                        return proxyResult;
+
+                    case GOOGLE_PAY_SUCCESS:
+
+                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.googlepay.equals(bankCardTokenProvider.get())) {
+                            String message = "Processed: bankCardTokenProvider is missing or not GOOGLE PAY with invoiceId " + invoiceId;
+                            log.error(message);
+                            throw new IllegalArgumentException(message);
+                        }
+
+                        transactionInfo = DomainWrapper.makeTransactionInfo(
+                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
+                                Collections.emptyMap()
+                        );
+                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                                intent,
+                                PaymentState.CAPTURED.getBytes(),
+                                transactionInfo
+                        );
+                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
+                        return proxyResult;
+
+                    case SAMSUNG_PAY_SUCCESS:
+
+                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.samsungpay.equals(bankCardTokenProvider.get())) {
+                            String message = "Processed: bankCardTokenProvider is missing or not SAMSUNG PAY with invoiceId " + invoiceId;
+                            log.error(message);
+                            throw new IllegalArgumentException(message);
+                        }
+
+                        transactionInfo = DomainWrapper.makeTransactionInfo(
+                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
+                                Collections.emptyMap()
+                        );
+                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                                intent,
+                                PaymentState.CAPTURED.getBytes(),
+                                transactionInfo
+                        );
+                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
+                        return proxyResult;
+
                     case SUCCESS:
                         transactionInfo = DomainWrapper.makeTransactionInfo(
                                 MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                                 Collections.emptyMap()
                         );
-                        PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                                 intent,
                                 PaymentState.CAPTURED.getBytes(),
                                 transactionInfo
@@ -370,7 +424,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
+                proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
                         errorMapping.getFailureByCodeAndDescription(error, error)
                 );
                 log.info("Processed: failure {} with invoiceId {}", proxyResult, invoiceId);

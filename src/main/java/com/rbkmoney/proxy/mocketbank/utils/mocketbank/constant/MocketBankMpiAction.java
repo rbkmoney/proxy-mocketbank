@@ -17,6 +17,10 @@ public enum MocketBankMpiAction {
     EXPIRED_CARD("Expired Card"),
     APPLE_PAY_FAILURE("Apple Pay Failure"),
     APPLE_PAY_SUCCESS("Apple Pay Success"),
+    GOOGLE_PAY_FAILURE("Google Pay Failure"),
+    GOOGLE_PAY_SUCCESS("Google Pay Success"),
+    SAMSUNG_PAY_FAILURE("Samsung Pay Failure"),
+    SAMSUNG_PAY_SUCCESS("Samsung Pay Success"),
     UNKNOWN_FAILURE("Unknown Failure");
 
     private final String action;
