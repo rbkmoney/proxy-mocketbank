@@ -2,10 +2,10 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.domain.BankCardTokenProvider;
-import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
-import com.rbkmoney.damsel.domain.TransactionInfo;
+import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
+import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
 import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
@@ -322,12 +322,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
             if (!cardUtils.isEnrolled(card)) {
 
-                Optional<BankCardTokenProvider> bankCardTokenProvider = Optional.of(
-                        context.getPaymentInfo().getPayment()
-                                .getPaymentResource().getDisposablePaymentResource()
-                                .getPaymentTool().getBankCard().getTokenProvider()
-                );
-
+                Optional<BankCardTokenProvider> bankCardTokenProvider;
                 PaymentProxyResult proxyResult;
                 String error;
                 switch (action) {
@@ -350,6 +345,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
                     case APPLE_PAY_SUCCESS:
 
+                        bankCardTokenProvider = getBankCardTokenProvider(context);
                         if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.applepay.equals(bankCardTokenProvider.get())) {
                             String message = "Processed: bankCardTokenProvider is missing or not APPLE PAY with invoiceId " + invoiceId;
                             log.error(message);
@@ -370,6 +366,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
                     case GOOGLE_PAY_SUCCESS:
 
+                        bankCardTokenProvider = getBankCardTokenProvider(context);
                         if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.googlepay.equals(bankCardTokenProvider.get())) {
                             String message = "Processed: bankCardTokenProvider is missing or not GOOGLE PAY with invoiceId " + invoiceId;
                             log.error(message);
@@ -390,6 +387,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
                     case SAMSUNG_PAY_SUCCESS:
 
+                        bankCardTokenProvider = getBankCardTokenProvider(context);
                         if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.samsungpay.equals(bankCardTokenProvider.get())) {
                             String message = "Processed: bankCardTokenProvider is missing or not SAMSUNG PAY with invoiceId " + invoiceId;
                             log.error(message);
@@ -628,6 +626,16 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         log.info("handlePaymentCallback finish {}, invoice {}", callbackResult, invoiceId);
         return callbackResult;
+    }
+
+    public static Optional<BankCardTokenProvider> getBankCardTokenProvider(PaymentContext context) {
+         return Optional.of(context.getPaymentInfo())
+                .map(PaymentInfo::getPayment)
+                .map(InvoicePayment::getPaymentResource)
+                .map(PaymentResource::getDisposablePaymentResource)
+                .map(DisposablePaymentResource::getPaymentTool)
+                .map(PaymentTool::getBankCard)
+                .map(BankCard::getTokenProvider);
     }
 
 }
