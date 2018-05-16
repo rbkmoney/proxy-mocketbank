@@ -629,7 +629,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     public static Optional<BankCardTokenProvider> getBankCardTokenProvider(PaymentContext context) {
-         return Optional.of(context.getPaymentInfo())
+         return Optional.ofNullable(context.getPaymentInfo())
                 .map(PaymentInfo::getPayment)
                 .map(InvoicePayment::getPaymentResource)
                 .map(PaymentResource::getDisposablePaymentResource)
