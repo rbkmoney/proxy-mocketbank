@@ -339,6 +339,14 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = APPLE_PAY_FAILURE.getAction();
                         break;
 
+                    case SAMSUNG_PAY_FAILURE:
+                        error = SAMSUNG_PAY_FAILURE.getAction();
+                        break;
+
+                    case GOOGLE_PAY_FAILURE:
+                        error = GOOGLE_PAY_FAILURE.getAction();
+                        break;
+
                     case EXPIRED_CARD:
                         error = EXPIRED_CARD.getAction();
                         break;
