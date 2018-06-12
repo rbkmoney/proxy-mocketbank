@@ -2,11 +2,9 @@ package com.rbkmoney.proxy.mocketbank.utils.mocketbank;
 
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URISyntaxException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 public class MocketBankMpiUtils {
@@ -24,16 +22,10 @@ public class MocketBankMpiUtils {
     public final static String PURCHASE_XID = "purchaseXId";
 
     public static String getCallbackUrl(String callbackUrl, String path) {
-        String prepareCallbackUrl = null;
-        try {
-            URIBuilder b = new URIBuilder(callbackUrl);
-            prepareCallbackUrl = b.setPath(path)
-                    .build()
-                    .toString();
-        } catch (URISyntaxException e) {
-            LOGGER.error("Exception in getCallbackUrl", e);
-        }
-        return prepareCallbackUrl;
+        return UriComponentsBuilder.fromUriString(callbackUrl)
+                .path(path)
+                .build()
+                .toUriString();
     }
 
     public static String generateInvoice(PaymentInfo payment) {
