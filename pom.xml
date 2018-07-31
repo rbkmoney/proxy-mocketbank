@@ -71,7 +71,12 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.232-5e54b26</version>
+            <version>1.248-dcc7146-epic</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>identdocstore-proto</artifactId>
+            <version>1.6-ccd301e</version>
         </dependency>
         <!--Test libs-->
         <dependency>

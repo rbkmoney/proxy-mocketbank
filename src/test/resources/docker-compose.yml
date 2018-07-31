@@ -2,7 +2,7 @@ version: '2'
 services:
 
   cds:
-    image: dr.rbkmoney.com/rbkmoney/cds:b2f40fa0353c6b067c71a18316277a6499e0b707
+    image: dr.rbkmoney.com/rbkmoney/cds:a02376ae8a30163a6177d41edec9d8ce2ff85e4f
     environment:
       - SERVICE_NAME=cds
     ports:
@@ -12,7 +12,7 @@ services:
   holmes:
     depends_on:
       - cds
-    image: dr.rbkmoney.com/rbkmoney/holmes:a8ec6a15ddc60a2c1dc4f3a40a756ba527b21f77
+    image: dr.rbkmoney.com/rbkmoney/holmes:410acfc28a30dfb552a803e62dcfe3f559d18b95
     environment:
       - SERVICE_NAME=holmes
 

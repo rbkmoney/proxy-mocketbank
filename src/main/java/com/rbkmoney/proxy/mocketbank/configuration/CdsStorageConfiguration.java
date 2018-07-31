@@ -13,13 +13,23 @@ import java.io.IOException;
 public class CdsStorageConfiguration {
 
     @Value("${cds.url.storage}")
-    private Resource resource;
+    private Resource resourceStorage;
+
+    @Value("${cds.url.idStorage}")
+    private Resource resourceIdStorage;
 
     @Bean
     public StorageSrv.Iface storageSrv() throws IOException {
         return new THSpawnClientBuilder()
-                .withAddress(resource.getURI())
+                .withAddress(resourceStorage.getURI())
                 .build(StorageSrv.Iface.class);
+    }
+
+    @Bean
+    public com.rbkmoney.identdocstore.identity_document_storage.IdentityDocumentStorageSrv.Iface identityDocumentStorageSrv() throws IOException {
+        return new THSpawnClientBuilder()
+                .withAddress(resourceIdStorage.getURI())
+                .build(com.rbkmoney.identdocstore.identity_document_storage.IdentityDocumentStorageSrv.Iface.class);
     }
 
 }

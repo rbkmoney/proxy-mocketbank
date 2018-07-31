@@ -8,7 +8,7 @@ import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
 import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
+import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
@@ -39,7 +39,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private CdsApi cds;
+    private CdsStorageApi cds;
 
     @Autowired
     private MocketBankMpiApi mocketBankMpiApi;

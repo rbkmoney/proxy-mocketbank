@@ -27,6 +27,7 @@ cds:
   url:
     keyring: http://127.0.0.1:8021/v1/keyring
     storage: http://127.0.0.1:8021/v1/storage
+    idStorage: http://127.0.0.1:8021/v1/identity_document_storage
 ---
 hellgate:
   url: http://127.0.0.1:8023/v1/proxyhost/provider

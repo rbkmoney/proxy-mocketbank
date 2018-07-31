@@ -8,7 +8,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
+import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
@@ -62,7 +62,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
     private MocketBankServerHandler handler;
 
     @Autowired
-    private CdsApi cds;
+    private CdsStorageApi cds;
 
     @Value("${merchant.id}")
     private String merchantId;
