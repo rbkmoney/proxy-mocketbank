@@ -1,11 +1,13 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p.withdrawal;
 
+import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.Withdrawal;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsIDStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.withdrawals.WithdrawalsDomainWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.withdrawals.WithdrawalsProviderAdapterWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.rbkmoney.proxy.mocketbank.utils.damsel.withdrawals.WithdrawalsProviderAdapterWrapper.makeProcessResultFailure;
+
 
 @Component
 public class WithdrawalHandler {
@@ -23,6 +27,8 @@ public class WithdrawalHandler {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final CdsIDStorageApi cdsIdStorageApi;
+
+    private ErrorMapping errorMapping;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -33,12 +39,15 @@ public class WithdrawalHandler {
      * initial parameters to be constructed.
      *
      * @param cdsIdStorageApi the field's cdsIdStorageApi (see {@link #cdsIdStorageApi}).
+     * @param errorMapping the field's errorMapping (see {@link #errorMapping}).
      */
     @Autowired
     public WithdrawalHandler(
-            CdsIDStorageApi cdsIdStorageApi
+            CdsIDStorageApi cdsIdStorageApi,
+            ErrorMapping errorMapping
     ) {
         this.cdsIdStorageApi = cdsIdStorageApi;
+        this.errorMapping = errorMapping;
     }
 
     public ProcessResult handler(
@@ -48,10 +57,17 @@ public class WithdrawalHandler {
     ) throws TException {
         String withdrawalId = withdrawal.getId();
 
-        String identityDocumentToken = getIdentityDocumentToken(withdrawal);
-        com.rbkmoney.identdocstore.identity_document_storage.IdentityDocument identityDocument = cdsIdStorageApi.get(identityDocumentToken);
-        if (!identityDocument.isSetRussianDomesticPassport()) {
-            throw new IllegalArgumentException("Not a passport");
+        try {
+            String identityDocumentToken = getIdentityDocumentToken(withdrawal);
+            com.rbkmoney.identdocstore.identity_document_storage.IdentityDocument identityDocument = cdsIdStorageApi.get(identityDocumentToken);
+            if (!identityDocument.isSetRussianDomesticPassport()) {
+                throw new IllegalArgumentException("Not a passport");
+            }
+        } catch (IllegalArgumentException ex) {
+            Failure failure = errorMapping.getFailureByCodeAndDescription("Unknown", "Unknown");
+            ProcessResult processResult = makeProcessResultFailure(failure);
+            log.warn("Withdrawal: failure {} with withdrawalId {}", processResult, withdrawalId);
+            return processResult;
         }
 
         return WithdrawalsProviderAdapterWrapper.makeProcessResult(

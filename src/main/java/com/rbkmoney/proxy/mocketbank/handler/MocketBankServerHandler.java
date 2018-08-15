@@ -292,7 +292,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             } else {
                 log.error(message, ex);
             }
-            log.error(message, ex);
             throw ex;
         }
 

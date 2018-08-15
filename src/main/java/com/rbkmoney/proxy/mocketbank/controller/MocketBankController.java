@@ -2,8 +2,8 @@ package com.rbkmoney.proxy.mocketbank.controller;
 
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateApi;
+import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateException;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 @RestController
@@ -59,8 +58,10 @@ public class MocketBankController {
             }
 
             resp = new String(response.array(), "UTF-8");
-        } catch (TException | UnsupportedEncodingException e) {
-            log.error("Exception in processCallback", e);
+        } catch (HellGateException e) {
+            log.warn("Exception in processPaymentCallback", e);
+        } catch (Exception e) {
+            log.error("Exception in processPaymentCallback", e);
         }
 
         if (StringUtils.hasText(request.getParameter("termination_uri")))
