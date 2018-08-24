@@ -1,6 +1,5 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p.withdrawal;
 
-import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.Withdrawal;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.rbkmoney.proxy.mocketbank.utils.damsel.withdrawals.WithdrawalsProviderAdapterWrapper.makeProcessResultFailure;
 
 
 @Component
@@ -57,6 +54,8 @@ public class WithdrawalHandler {
     ) throws TException {
         String withdrawalId = withdrawal.getId();
 
+        // TODO: temporarily comment
+        /**
         try {
             String identityDocumentToken = getIdentityDocumentToken(withdrawal);
             com.rbkmoney.identdocstore.identity_document_storage.IdentityDocument identityDocument = cdsIdStorageApi.get(identityDocumentToken);
@@ -72,6 +71,7 @@ public class WithdrawalHandler {
             log.warn("Withdrawal: failure {} with withdrawalId {}", processResult, withdrawalId);
             return processResult;
         }
+         */
 
         return WithdrawalsProviderAdapterWrapper.makeProcessResult(
                 WithdrawalsProviderAdapterWrapper.makeFinishIntentSuccess(
