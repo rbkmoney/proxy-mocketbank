@@ -64,6 +64,9 @@ public class WithdrawalHandler {
                 throw new IllegalArgumentException("Not a passport");
             }
         } catch (IllegalArgumentException ex) {
+            String message = "Exception in withdrawal with withdrawalId " + withdrawalId;
+            log.warn(message, ex);
+
             Failure failure = errorMapping.getFailureByCodeAndDescription("Unknown", "Unknown");
             ProcessResult processResult = makeProcessResultFailure(failure);
             log.warn("Withdrawal: failure {} with withdrawalId {}", processResult, withdrawalId);
