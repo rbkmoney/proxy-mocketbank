@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.248-dcc7146-epic</version>
+            <version>1.249-7b46d07-epic</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>

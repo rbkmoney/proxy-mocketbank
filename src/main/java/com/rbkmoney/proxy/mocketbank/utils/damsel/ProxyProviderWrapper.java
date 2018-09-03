@@ -1,6 +1,5 @@
 package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
-import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.ExpDate;
 import com.rbkmoney.damsel.domain.*;
@@ -15,6 +14,8 @@ import java.util.Map;
 
 
 public class ProxyProviderWrapper {
+
+    public static final String DEFAULT_ERROR_CODE = "error";
 
     public static TargetInvoicePaymentStatus makeTargetProcessed() {
         TargetInvoicePaymentStatus target = new TargetInvoicePaymentStatus();
@@ -91,13 +92,13 @@ public class ProxyProviderWrapper {
         return intent;
     }
 
-    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer, UserInteraction userInteraction) {
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, int timer, UserInteraction userInteraction) {
         RecurrentTokenIntent intent = new RecurrentTokenIntent();
         intent.setSuspend(ProxyWrapper.makeSuspendIntent(tag, timer, userInteraction));
         return intent;
     }
 
-    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer) {
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, int timer) {
         return makeRecurrentTokenWithSuspendIntent(tag, timer, null);
     }
 
