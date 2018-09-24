@@ -32,7 +32,7 @@ public class DomainWrapper {
     }
 
     public static DisposablePaymentResource makeDisposablePaymentResource(ClientInfo clientInfo, String paymentSessionId, PaymentTool paymentTool) {
-        return new DisposablePaymentResource(paymentTool, clientInfo).setPaymentSessionId(paymentSessionId);
+        return new DisposablePaymentResource(paymentTool).setClientInfo(clientInfo).setPaymentSessionId(paymentSessionId);
     }
 
     public static PaymentResourcePayer makePaymentResourcePayer(ContactInfo contactInfo, DisposablePaymentResource disposablePaymentResource) {
