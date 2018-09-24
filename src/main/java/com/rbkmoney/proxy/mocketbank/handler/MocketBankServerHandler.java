@@ -75,6 +75,15 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
 
+        RecurrentTokenProxyResult proxyResult;
+        // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
+        Optional<BankCardTokenProvider> bankCardTokenProvider = getBankCardTokenProvider(context);
+        if(bankCardTokenProvider.isPresent()) {
+            proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(intent);
+            log.info("Processed: success {} with invoiceId {}", proxyResult, recurrentId);
+            return proxyResult;
+        }
+
         CardData cardData = cds.getCardData(token);
 
         CardUtils cardUtils = new CardUtils(cardList);
@@ -99,7 +108,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = EXPIRED_CARD.getAction();
                         break;
                     case SUCCESS:
-                        RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
+                        proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                                 intent,
                                 PaymentState.PROCESSED.getBytes()
                         );
@@ -109,7 +118,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
+                proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                         errorMapping.getFailureByCodeAndDescription(error, error)
                 );
                 log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
@@ -117,7 +126,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             }
 
         } else {
-            RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
+            proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                     errorMapping.getFailureByCodeAndDescription(
                             UNSUPPORTED_CARD.getAction(),
                             UNSUPPORTED_CARD.getAction()
@@ -603,6 +612,22 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     .map(PaymentInfo::getPayment)
                     .map(InvoicePayment::getPaymentResource)
                     .map(PaymentResource::getDisposablePaymentResource)
+                    .map(DisposablePaymentResource::getPaymentTool)
+                    .map(PaymentTool::getBankCard)
+                    .map(BankCard::getTokenProvider);
+        }
+
+        return Optional.empty();
+    }
+
+    public static Optional<BankCardTokenProvider> getBankCardTokenProvider(RecurrentTokenContext context) {
+
+        Optional<DisposablePaymentResource> paymentResource = Optional.ofNullable(context.getTokenInfo())
+                .map(RecurrentTokenInfo::getPaymentTool)
+                .map(RecurrentPaymentTool::getPaymentResource);
+
+        if(paymentResource.isPresent()) {
+            return paymentResource
                     .map(DisposablePaymentResource::getPaymentTool)
                     .map(PaymentTool::getBankCard)
                     .map(BankCard::getTokenProvider);

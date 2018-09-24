@@ -22,19 +22,7 @@ public class CdsStorageApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CdsStorageApi.class);
 
-    private StorageSrv.Iface storageSrv;
-
-
-    // ------------------------------------------------------------------------
-    // Constructors
-    // ------------------------------------------------------------------------
-
-    /**
-     * Constructs a new {@link CdsStorageApi CdsApi} instance.
-     */
-    public CdsStorageApi() {
-        // Constructs default a new {@link CdsApi CdsApi} instance.
-    }
+    private final StorageSrv.Iface storageSrv;
 
     /**
      * Constructs a new {@link CdsStorageApi CdsApi} instance with the given
@@ -63,7 +51,7 @@ public class CdsStorageApi {
         LOGGER.info("getCardData: token: {}", token);
         try {
             CardData cardData = storageSrv.getCardData(token);
-            LOGGER.info("getCardData: response, token: {}");
+            LOGGER.info("getCardData: response, token: {}", token);
             return cardData;
         } catch (Exception ex) {
             throw new CdsException(String.format("Exception in getCardData with token: %s", token), ex);

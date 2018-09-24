@@ -15,10 +15,14 @@ public class HellGateConfiguration {
     @Value("${hellgate.url}")
     private Resource resource;
 
+    @Value("${hellgate.timeout:5000}")
+    private int timeout;
+
     @Bean
     public ProviderProxyHostSrv.Iface providerProxyHost() throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resource.getURI())
+                .withNetworkTimeout(timeout)
                 .build(ProviderProxyHostSrv.Iface.class);
     }
 

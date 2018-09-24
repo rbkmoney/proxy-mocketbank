@@ -18,10 +18,14 @@ public class CdsStorageConfiguration {
     @Value("${cds.url.idStorage}")
     private Resource resourceIdStorage;
 
+    @Value("${cds.timeout:5000}")
+    private int timeout;
+
     @Bean
     public StorageSrv.Iface storageSrv() throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resourceStorage.getURI())
+                .withNetworkTimeout(timeout)
                 .build(StorageSrv.Iface.class);
     }
 
@@ -29,6 +33,7 @@ public class CdsStorageConfiguration {
     public com.rbkmoney.identdocstore.identity_document_storage.IdentityDocumentStorageSrv.Iface identityDocumentStorageSrv() throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resourceIdStorage.getURI())
+                .withNetworkTimeout(timeout)
                 .build(com.rbkmoney.identdocstore.identity_document_storage.IdentityDocumentStorageSrv.Iface.class);
     }
 
