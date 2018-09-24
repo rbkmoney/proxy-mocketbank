@@ -491,6 +491,9 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         context.getSession().setState(PaymentState.CONFIRM.getBytes());
 
+
+        log.info("Payment {}", context.getPaymentInfo().getPayment());
+
         Intent intent = ProxyWrapper.makeFinishIntentSuccess();
         if((context.getPaymentInfo().getPayment().isSetMakeRecurrent()
                 && context.getPaymentInfo().getPayment().isMakeRecurrent())) {
