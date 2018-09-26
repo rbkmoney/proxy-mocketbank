@@ -177,7 +177,8 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
                         "2016-06-02",
                         getPaymentResource(putCardDataResponse),
                         getCost(),
-                        transactionInfo
+                        transactionInfo,
+                        Boolean.TRUE
                 )
         );
     }

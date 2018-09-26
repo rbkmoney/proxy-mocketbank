@@ -282,7 +282,8 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest {
                         "2016-06-02",
                         paymentResource,
                         getCost(),
-                        transactionInfo
+                        transactionInfo,
+                        Boolean.FALSE
                 )
         );
     }

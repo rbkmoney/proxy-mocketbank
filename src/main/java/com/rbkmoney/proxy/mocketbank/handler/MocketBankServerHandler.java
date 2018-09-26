@@ -313,7 +313,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         CardData cardData;
         if (invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
-            cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getRecToken());
+            cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getPaymentTool().getBankCard().getToken());
         } else {
             cardData = cds.getCardData(context);
         }

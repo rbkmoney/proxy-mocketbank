@@ -286,13 +286,18 @@ public class ProxyProviderWrapper {
         return paymentResource;
     }
 
-    public static InvoicePayment makeInvoicePaymentWithTrX(String invoicePaymentId, String created_at, PaymentResource paymentResource, com.rbkmoney.damsel.proxy_provider.Cash cost, TransactionInfo transactionInfo) {
+    public static InvoicePayment makeInvoicePaymentWithTrX(String invoicePaymentId,
+                                                           String created_at,
+                                                           PaymentResource paymentResource,
+                                                           com.rbkmoney.damsel.proxy_provider.Cash cost,
+                                                           TransactionInfo transactionInfo, Boolean makeRecurrent) {
         InvoicePayment invoicePayment = new InvoicePayment();
         invoicePayment.setId(invoicePaymentId);
         invoicePayment.setCreatedAt(created_at);
         invoicePayment.setPaymentResource(paymentResource);
         invoicePayment.setCost(cost);
         invoicePayment.setTrx(transactionInfo);
+        invoicePayment.setMakeRecurrent(makeRecurrent);
         return invoicePayment;
     }
 

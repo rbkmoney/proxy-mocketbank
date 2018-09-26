@@ -154,7 +154,8 @@ public class MocketBankServerHandlerFailIApplePayntegrationTest {
                         "2016-06-02",
                         getPaymentResource(putCardDataResponse),
                         getCost(),
-                        transactionInfo
+                        transactionInfo,
+                        Boolean.FALSE
                 )
         );
     }
