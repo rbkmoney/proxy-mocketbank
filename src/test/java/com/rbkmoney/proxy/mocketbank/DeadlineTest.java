@@ -38,7 +38,8 @@ import static org.junit.Assert.fail;
         properties = {
                 "restTemplate.networkTimeout=10000",
                 "server.port=7021",
-                "proxy-mocketbank-mpi.url=http://127.0.0.1:7021"
+                "server.secondary.ports=7022",
+                "proxy-mocketbank-mpi.url=http://127.0.0.1:${server.port}"
         }
 )
 public class DeadlineTest {
