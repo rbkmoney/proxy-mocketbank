@@ -36,7 +36,7 @@ import static org.junit.Assert.fail;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
-                "estTemplate.networkTimeout=5000",
+                "restTemplate.networkTimeout=10000",
                 "proxy-mocketbank-mpi.url=http://127.0.0.1:8022"
         }
 )
