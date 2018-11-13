@@ -10,6 +10,7 @@ import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Map;
 
 
@@ -134,6 +135,7 @@ public class ProxyProviderWrapper {
     public static RecurrentPaymentTool makeRecurrentPaymentTool(String id, DisposablePaymentResource disposablePaymentResource, com.rbkmoney.damsel.proxy_provider.Cash cash) {
         RecurrentPaymentTool recurrentPaymentTool = new RecurrentPaymentTool();
         recurrentPaymentTool.setPaymentResource(disposablePaymentResource);
+        recurrentPaymentTool.setCreatedAt(Instant.now().toString());
         recurrentPaymentTool.setMinimalPaymentCost(cash);
         recurrentPaymentTool.setId(id);
         return recurrentPaymentTool;
