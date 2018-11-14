@@ -48,6 +48,7 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
+    // TODO: 14/11/2018 fix integrations test: change {@Autowired ServerHandler serverHandler} to thriftClient 
     @RequestScope
     public RestTemplate restTemplate(HttpComponentsClientHttpRequestFactory requestFactory) {
         int executionTimeout = ContextUtils.getExecutionTimeout(TraceContext.getCurrentTraceData().getServiceSpan(), networkTimeout);
