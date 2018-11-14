@@ -1,7 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.cds.PutCardDataResult;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
 import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
@@ -9,7 +8,6 @@ import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
 import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
@@ -27,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makeCurrency;
+import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makePaymentTool;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper.*;
 import static com.rbkmoney.woody.api.flow.error.WErrorType.UNEXPECTED_ERROR;
 import static org.junit.Assert.assertEquals;
@@ -102,10 +101,6 @@ public class DeadlineTest {
     }
 
     private void deadlineTest() throws TException {
-        PutCardDataResult response = new PutCardDataResult(
-                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan"),
-                "session_id"
-        );
         RecurrentTokenContext context = new RecurrentTokenContext();
         context.setSession(new RecurrentTokenSession());
         context.setTokenInfo(
@@ -113,8 +108,10 @@ public class DeadlineTest {
                         makeRecurrentPaymentTool(
                                 "Recurrent" + (int) (Math.random() * 500 + 1),
                                 makeDisposablePaymentResource(
-                                        response.getSessionId(),
-                                        DomainWrapper.makePaymentTool(response.getBankCard())
+                                        "session_id",
+                                        makePaymentTool(
+                                                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan")
+                                        )
                                 ),
                                 makeCash(
                                         makeCurrency("Rubles", (short) 643, "RUB", (short) 1),
