@@ -1,4 +1,4 @@
-package com.rbkmoney.proxy.mocketbank;
+package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.PutCardDataResult;
