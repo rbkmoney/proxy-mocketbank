@@ -116,6 +116,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest {
         PutCardDataResult putCardDataResponse = cdsPutCardData(cardData);
 
         RecurrentTokenContext context = new RecurrentTokenContext();
+        context.setSession(new RecurrentTokenSession());
         context.setTokenInfo(
                 makeRecurrentTokenInfo(
                         makeRecurrentPaymentTool(
