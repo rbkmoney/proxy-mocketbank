@@ -55,12 +55,10 @@ public class DeadlineTest {
     @MockBean
     private CdsStorageApi cds;
 
-    private String recurrentId;
     private ProviderProxySrv.Iface client;
 
     @Before
     public void setup() throws Exception {
-        createRecurrentId();
         createThriftClient();
         mockCdsBean();
     }
@@ -82,35 +80,6 @@ public class DeadlineTest {
         deadlineTest();
     }
 
-    private void deadlineTest() throws TException {
-        PutCardDataResult response = new PutCardDataResult(
-                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan"),
-                "session_id"
-        );
-        RecurrentTokenContext context = new RecurrentTokenContext();
-        context.setSession(new RecurrentTokenSession());
-        context.setTokenInfo(
-                makeRecurrentTokenInfo(
-                        makeRecurrentPaymentTool(
-                                recurrentId,
-                                makeDisposablePaymentResource(
-                                        response.getSessionId(),
-                                        DomainWrapper.makePaymentTool(response.getBankCard())
-                                ),
-                                makeCash(
-                                        makeCurrency("Rubles", (short) 643, "RUB", (short) 1),
-                                        1000L
-                                )
-                        )
-                )
-        );
-        client.generateToken(context);
-    }
-
-    private void createRecurrentId() {
-        recurrentId = "Recurrent" + (int) (Math.random() * 500 + 1);
-    }
-
     private void createThriftClient() throws URISyntaxException {
         client = new THSpawnClientBuilder()
                 .withAddress(new URI("http://localhost:" + port + "/proxy/mocketbank"))
@@ -130,5 +99,30 @@ public class DeadlineTest {
                 Byte.parseByte("12"),
                 Short.parseShort("2020")
         );
+    }
+
+    private void deadlineTest() throws TException {
+        PutCardDataResult response = new PutCardDataResult(
+                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan"),
+                "session_id"
+        );
+        RecurrentTokenContext context = new RecurrentTokenContext();
+        context.setSession(new RecurrentTokenSession());
+        context.setTokenInfo(
+                makeRecurrentTokenInfo(
+                        makeRecurrentPaymentTool(
+                                "Recurrent" + (int) (Math.random() * 500 + 1),
+                                makeDisposablePaymentResource(
+                                        response.getSessionId(),
+                                        DomainWrapper.makePaymentTool(response.getBankCard())
+                                ),
+                                makeCash(
+                                        makeCurrency("Rubles", (short) 643, "RUB", (short) 1),
+                                        1000L
+                                )
+                        )
+                )
+        );
+        client.generateToken(context);
     }
 }
