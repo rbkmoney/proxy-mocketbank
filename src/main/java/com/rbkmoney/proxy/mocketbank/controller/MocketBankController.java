@@ -1,8 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.controller;
 
+import com.rbkmoney.adapter.helpers.hellgate.HellgateClient;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateApi;
-import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateException;
+import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class MocketBankController {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private HellGateApi hellGateApi;
+    private HellgateClient hellgateClient;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -52,13 +52,13 @@ public class MocketBankController {
 
             ByteBuffer response;
             if (tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG)) {
-                response = hellGateApi.processRecurrentTokenCallback(tag, callback);
+                response = hellgateClient.processRecurrentTokenCallback(tag, callback);
             } else {
-                response = hellGateApi.processPaymentCallback(tag, callback);
+                response = hellgateClient.processPaymentCallback(tag, callback);
             }
 
             resp = new String(response.array(), "UTF-8");
-        } catch (HellGateException e) {
+        } catch (HellgateException e) {
             log.warn("Exception in processPaymentCallback", e);
         } catch (Exception e) {
             log.error("Exception in processPaymentCallback", e);
