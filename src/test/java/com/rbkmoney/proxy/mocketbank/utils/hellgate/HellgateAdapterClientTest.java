@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.utils.hellgate;
 
-import com.rbkmoney.adapter.helpers.hellgate.HellgateClient;
+import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,13 +11,13 @@ import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertEquals;
 
-public class HellgateClientTest {
+public class HellgateAdapterClientTest {
 
     private ByteBuffer bbuf = ByteBuffer.wrap("some_byte".getBytes());
     private ByteBuffer response = ByteBuffer.wrap("some_response_byte".getBytes());
 
     @Mock
-    private HellgateClient hellgateClient;
+    private HellgateAdapterClient hellgateAdapterClient;
 
     @Before
     public void setUp() throws Exception {
@@ -29,15 +29,15 @@ public class HellgateClientTest {
     @Test
     public void testProcessCallback() throws Exception {
         String tag = "common_tag";
-        Mockito.when(hellgateClient.processPaymentCallback(tag, bbuf)).thenReturn(response);
-        assertEquals(response, hellgateClient.processPaymentCallback(tag, bbuf));
+        Mockito.when(hellgateAdapterClient.processPaymentCallback(tag, bbuf)).thenReturn(response);
+        assertEquals(response, hellgateAdapterClient.processPaymentCallback(tag, bbuf));
     }
 
     @Test
     public void testProcessRecurrentTokenCallback() throws Exception {
         String tag = "recurrent_tag";
-        Mockito.when(hellgateClient.processRecurrentTokenCallback(tag, bbuf)).thenReturn(response);
-        assertEquals(response, hellgateClient.processRecurrentTokenCallback(tag, bbuf));
+        Mockito.when(hellgateAdapterClient.processRecurrentTokenCallback(tag, bbuf)).thenReturn(response);
+        assertEquals(response, hellgateAdapterClient.processRecurrentTokenCallback(tag, bbuf));
     }
 
 }

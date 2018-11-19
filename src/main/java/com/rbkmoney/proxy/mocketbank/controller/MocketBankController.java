@@ -1,8 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.controller;
 
-import com.rbkmoney.adapter.helpers.hellgate.HellgateClient;
-import com.rbkmoney.proxy.mocketbank.utils.Converter;
+import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
+import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class MocketBankController {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private HellgateClient hellgateClient;
+    private HellgateAdapterClient hellgateClient;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
