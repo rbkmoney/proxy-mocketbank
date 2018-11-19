@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>hellgate-adapter-client</artifactId>
-            <version>1.268-45c8524</version>
+            <version>1.268-45c8524-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.woody</groupId>
