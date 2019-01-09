@@ -37,6 +37,7 @@ public class RestTemplateConfiguration {
         return HttpClients.custom()
                 .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .setSSLContext(sslContext)
+                .disableAutomaticRetries()
                 .build();
     }
 
