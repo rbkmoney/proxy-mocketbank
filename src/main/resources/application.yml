@@ -8,9 +8,6 @@ management:
     export:
       statsd:
         flavor: etsy
-  endpoint:
-    health:
-      enabled: true
 ---
 info:
   version: @version@
