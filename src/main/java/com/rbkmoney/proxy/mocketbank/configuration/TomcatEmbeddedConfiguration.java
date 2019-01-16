@@ -2,8 +2,8 @@ package com.rbkmoney.proxy.mocketbank.configuration;
 
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the configuration class for configuring the {@link EmbeddedServletContainerFactory}
+ * This is the configuration class for configuring the {@link ServletWebServerFactory}
  *
  * @author Anatoly Cherkasov
  * @see Connector
- * @see EmbeddedServletContainerFactory
+ * @see ServletWebServerFactory
  */
 @Configuration
 public class TomcatEmbeddedConfiguration {
@@ -27,8 +27,8 @@ public class TomcatEmbeddedConfiguration {
     private List<String> secondaryPorts;
 
     @Bean
-    public EmbeddedServletContainerFactory servletContainer() {
-        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+    public ServletWebServerFactory servletContainer() {
+        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
 
         Connector[] additionalConnectors = this.additionalConnector();
         if (additionalConnectors.length > 0) {

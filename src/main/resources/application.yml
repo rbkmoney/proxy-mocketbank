@@ -3,14 +3,19 @@ spring:
     name: @name@
     description: @description@
 ---
+management:
+  metrics:
+    export:
+      statsd:
+        flavor: etsy
+  endpoint:
+    health:
+      enabled: true
+---
 info:
   version: @version@
   responsible: Anatoly Cherkasov
   stage: dev
----
-endpoints:
-  health:
-    sensitive: false
 ---
 server:
   port: @service.port@

@@ -18,6 +18,7 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 
 @Configuration
 public class RestTemplateConfiguration {
@@ -54,9 +55,9 @@ public class RestTemplateConfiguration {
     public RestTemplate restTemplate(HttpComponentsClientHttpRequestFactory requestFactory) {
         int executionTimeout = ContextUtils.getExecutionTimeout(TraceContext.getCurrentTraceData().getServiceSpan(), networkTimeout);
         return new RestTemplateBuilder()
-                .requestFactory(requestFactory)
-                .setConnectTimeout(executionTimeout)
-                .setReadTimeout(executionTimeout)
+                .requestFactory(() -> requestFactory)
+                .setConnectTimeout(Duration.ofMillis(executionTimeout))
+                .setReadTimeout(Duration.ofMillis(executionTimeout))
                 .build();
     }
 
