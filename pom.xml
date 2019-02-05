@@ -19,10 +19,9 @@
     <description>Проксик для тестирования и эмуляции запросов к банку</description>
 
     <properties>
-        <service.port>8022</service.port>
-        <service.secondary.ports>8080</service.secondary.ports>
-        <server.port>${service.port} ${service.secondary.ports}</server.port>
-        <exposed.ports>${server.port}</exposed.ports>
+        <server.port>8022</server.port>
+        <server.rest.port>8080</server.rest.port>
+        <exposed.ports>${server.port} ${server.rest.port}</exposed.ports>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.maintainer>Anatoly Cherkasov &lt;a.cherkasov@rbkmoney.com&gt;</project.maintainer>
         <dockerfile.base.service.tag>2a8b44ac628c1bdb729abd04ed7a2a54676e574b</dockerfile.base.service.tag>

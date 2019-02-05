@@ -15,9 +15,10 @@ info:
   stage: dev
 ---
 server:
-  port: @service.port@
-  secondary:
-    ports: @service.secondary.ports@
+  port: @server.port@
+  rest:
+    port: @server.rest.port@
+    endpoint: mocketbank
 ---
 proxy-mocketbank-mpi:
   url: http://127.0.0.1:8018
