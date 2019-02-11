@@ -16,9 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
         properties = {
                 "restTemplate.networkTimeout=10000",
                 "server.port=7021",
-                "server.secondary.ports=7022",
+                "server.rest.port=7022",
                 "proxy-mocketbank-mpi.url=http://127.0.0.1:${server.port}"
         }
 )

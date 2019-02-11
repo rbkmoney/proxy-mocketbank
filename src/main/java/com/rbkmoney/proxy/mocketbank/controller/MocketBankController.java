@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 @RestController
-@RequestMapping(value = "/mocketbank")
+@RequestMapping("/${server.rest.endpoint}")
 public class MocketBankController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());

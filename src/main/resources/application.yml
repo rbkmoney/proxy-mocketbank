@@ -3,19 +3,22 @@ spring:
     name: @name@
     description: @description@
 ---
+management:
+  metrics:
+    export:
+      statsd:
+        flavor: etsy
+---
 info:
   version: @version@
   responsible: Anatoly Cherkasov
   stage: dev
 ---
-endpoints:
-  health:
-    sensitive: false
----
 server:
-  port: @service.port@
-  secondary:
-    ports: @service.secondary.ports@
+  port: @server.port@
+  rest:
+    port: @server.rest.port@
+    endpoint: mocketbank
 ---
 proxy-mocketbank-mpi:
   url: http://127.0.0.1:8018
