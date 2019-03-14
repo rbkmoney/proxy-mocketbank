@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.annotation.RequestScope;
 
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
@@ -51,7 +50,7 @@ public class RestTemplateConfiguration {
 
     @Bean
     // TODO: 14/11/2018 fix integrations test: change {@Autowired ServerHandler serverHandler} to thriftClient 
-    @RequestScope
+    //@RequestScope
     public RestTemplate restTemplate(HttpComponentsClientHttpRequestFactory requestFactory) {
         int executionTimeout = ContextUtils.getExecutionTimeout(TraceContext.getCurrentTraceData().getServiceSpan(), networkTimeout);
         return new RestTemplateBuilder()

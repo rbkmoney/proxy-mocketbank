@@ -17,13 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * This is the configuration class for configuring the {@link ServletWebServerFactory}
- *
- * @author Anatoly Cherkasov
- * @see Connector
- * @see ServletWebServerFactory
- */
+
 @Configuration
 public class TomcatEmbeddedConfiguration {
 

@@ -1,15 +1,18 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.UserInteractionWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
@@ -17,9 +20,8 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.*;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -33,13 +35,12 @@ import java.util.*;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction.*;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.utils.MocketBankUtils.isUndefinedResultOrUnavailable;
 
+@Slf4j
 @Component
 public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
-    private CdsStorageApi cds;
+    private CdsClientStorage cds;
 
     @Autowired
     private MocketBankMpiApi mocketBankMpiApi;
@@ -63,9 +64,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         cardList = CardUtils.getCardListFromFile(fixtureCards.getInputStream());
     }
 
-    /**
-     * Запрос к прокси на создание многоразового токена
-     */
     @Override
     public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
         String recurrentId = context.getTokenInfo().getPaymentTool().getId();
@@ -78,7 +76,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         RecurrentTokenProxyResult proxyResult;
         // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
         Optional<BankCardTokenProvider> bankCardTokenProvider = getBankCardTokenProvider(context);
-        if(bankCardTokenProvider.isPresent()) {
+        if (bankCardTokenProvider.isPresent()) {
             proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(intent);
             log.info("Processed: success {} with invoiceId {}", proxyResult, recurrentId);
             return proxyResult;
@@ -194,10 +192,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         return result;
     }
 
-    /**
-     * Запрос к прокси на обработку обратного вызова от провайдера в рамках сессии получения
-     * многоразового токена.
-     */
     @Override
     public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
         String recurrentId = context.getTokenInfo().getPaymentTool().getId();
@@ -324,7 +318,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         PaymentProxyResult proxyResult;
         // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
         Optional<BankCardTokenProvider> bankCardTokenProvider = getBankCardTokenProvider(context);
-        if(bankCardTokenProvider.isPresent()) {
+        if (bankCardTokenProvider.isPresent()) {
             transactionInfo = DomainWrapper.makeTransactionInfo(
                     MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                     Collections.emptyMap()
@@ -492,7 +486,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         context.getSession().setState(PaymentState.CONFIRM.getBytes());
 
         Intent intent = ProxyWrapper.makeFinishIntentSuccess();
-        if(context.getPaymentInfo().getPayment().isSetMakeRecurrent()
+        if (context.getPaymentInfo().getPayment().isSetMakeRecurrent()
                 && context.getPaymentInfo().getPayment().isMakeRecurrent()) {
             intent = ProxyWrapper.makeFinishIntentSuccessWithToken(invoiceId);
         }
@@ -607,7 +601,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 .map(PaymentInfo::getPayment)
                 .map(InvoicePayment::getPaymentResource);
 
-        if(paymentResource.isPresent() && paymentResource.get().isSetDisposablePaymentResource()) {
+        if (paymentResource.isPresent() && paymentResource.get().isSetDisposablePaymentResource()) {
             return Optional.ofNullable(context.getPaymentInfo())
                     .map(PaymentInfo::getPayment)
                     .map(InvoicePayment::getPaymentResource)
@@ -626,7 +620,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                 .map(RecurrentTokenInfo::getPaymentTool)
                 .map(RecurrentPaymentTool::getPaymentResource);
 
-        if(paymentResource.isPresent()) {
+        if (paymentResource.isPresent()) {
             return paymentResource
                     .map(DisposablePaymentResource::getPaymentTool)
                     .map(PaymentTool::getBankCard)

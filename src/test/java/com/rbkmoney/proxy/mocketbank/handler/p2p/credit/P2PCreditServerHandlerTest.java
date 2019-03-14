@@ -2,17 +2,15 @@ package com.rbkmoney.proxy.mocketbank.handler.p2p.credit;
 
 import com.rbkmoney.damsel.cds.*;
 import com.rbkmoney.damsel.domain.Currency;
+import com.rbkmoney.damsel.identity_document_storage.IdentityDocumentStorageSrv;
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.damsel.withdrawals.domain.*;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.Cash;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.Withdrawal;
-import com.rbkmoney.identdocstore.identity_document_storage.RussianDomesticPassport;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.handler.IntegrationBaseRule;
 import com.rbkmoney.proxy.mocketbank.handler.p2p.P2PCreditServerHandler;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsIDStorageApi;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import org.apache.thrift.TException;
 import org.junit.ClassRule;
@@ -31,15 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.rbkmoney.damsel.identity_document_storage.IdentityDocument.russian_domestic_passport;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
-                "cds.url.keyring=http://127.0.0.1:8021/v1/keyring",
-                "cds.url.storage=http://127.0.0.1:8021/v1/storage",
-                "cds.url.idStorage=http://127.0.0.1:8021/v1/identity_document_storage",
+                "cds.client.url.identity-document-storage.url=http://127.0.0.1:8021/v1/identity_document_storage",
+                "cds.client.url.storage.url=http://127.0.0.1:8021/v1/storage",
         }
 )
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -52,10 +50,10 @@ public class P2PCreditServerHandlerTest {
     public final static IntegrationBaseRule rule = new IntegrationBaseRule();
 
     @Autowired
-    protected CdsStorageApi cds;
+    protected com.rbkmoney.damsel.cds.StorageSrv.Iface cds;
 
     @Autowired
-    protected CdsIDStorageApi cdsIDStorageApi;
+    protected IdentityDocumentStorageSrv.Iface cdsIDStorageApi;
 
     @Autowired
     protected P2PCreditServerHandler creditHandler;
@@ -134,7 +132,7 @@ public class P2PCreditServerHandlerTest {
         return options;
     }
 
-    protected PutCardDataResult cdsPutCardData(CardData cardData) {
+    protected PutCardDataResult cdsPutCardData(CardData cardData) throws TException {
         log.info("CDS: put card request start");
 
         Auth3DS auth3DS = CdsWrapper.makeAuth3DS("jKfi3B417+zcCBFYbFp3CBUAAAA=", "5");
@@ -148,22 +146,18 @@ public class P2PCreditServerHandlerTest {
     }
 
     protected String cdsPutIdentityDocument() throws TException {
+        com.rbkmoney.damsel.identity_document_storage.RussianDomesticPassport passport = new com.rbkmoney.damsel.identity_document_storage.RussianDomesticPassport();
+        passport.setSeries("series")
+                .setNumber("number")
+                .setIssuer("issuer")
+                .setIssuerCode("issuer_code")
+                .setIssuedAt("2016-03-22T06:12:27Z")
+                .setFamilyName("Петров")
+                .setFirstName("Николай")
+                .setBirthDate("2016-03-22T06:12:27Z")
+                .setBirthPlace("2016-03-22T06:12:27Z");
 
-        RussianDomesticPassport passport = new RussianDomesticPassport();
-        passport.setSeries("series");
-        passport.setNumber("number");
-        passport.setIssuer("issuer");
-        passport.setIssuerCode("issuer_code");
-        passport.setIssuedAt("2016-03-22T06:12:27Z");
-        passport.setFamilyName("Петров");
-        passport.setFirstName("Николай");
-        passport.setBirthDate("2016-03-22T06:12:27Z");
-        passport.setBirthPlace("2016-03-22T06:12:27Z");
-
-        com.rbkmoney.identdocstore.identity_document_storage.IdentityDocument document = new com.rbkmoney.identdocstore.identity_document_storage.IdentityDocument();
-        document.setRussianDomesticPassport(passport);
-
-        return cdsIDStorageApi.put(document);
+        return cdsIDStorageApi.put(russian_domestic_passport(passport));
     }
 
 }

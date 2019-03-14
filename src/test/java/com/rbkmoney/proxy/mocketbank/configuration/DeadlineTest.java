@@ -1,12 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
+import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
 import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsStorageApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
@@ -52,7 +52,7 @@ public class DeadlineTest {
     private int port;
 
     @MockBean
-    private CdsStorageApi cds;
+    private CdsClientStorage cds;
 
     private ProviderProxySrv.Iface client;
 
