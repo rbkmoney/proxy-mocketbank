@@ -25,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.maintainer>Anatoly Cherkasov &lt;a.cherkasov@rbkmoney.com&gt;</project.maintainer>
         <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
-        <dockerfile.registry>${env.REGISTRY}</dockerfile.registry>
+        <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.6</shared.resources.version>
     </properties>
 
