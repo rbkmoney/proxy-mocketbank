@@ -36,7 +36,7 @@ build('proxy-mocketbank', 'java-maven') {
                 }
                 // Push under 'withRegistry' generates 2d record with 'long name' in local docker registry.
                 // Untag the long-name
-                sh "docker rmi dr.rbkmoney.com/${imgShortName}"
+                sh "docker rmi dr2.rbkmoney.com/${imgShortName}"
             }
         }
     }
