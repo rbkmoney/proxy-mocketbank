@@ -12,6 +12,11 @@
             <checkCachePeriod>5000</checkCachePeriod>
         </triggeringPolicy>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <layout class="com.rbkmoney.logback.mask.PatternMaskingLayout">
+            <maskPattern>\D\d{6}(\d{2,9})\d{4}\D</maskPattern>
+            <maskPattern>\D(\d{3})\D</maskPattern>
+                <pattern>%-5p [%d{ISO8601,UTC}] [%thread] %c: %m%n%rootException</pattern>
+            </layout>
             <providers>
                 <mdc/>
                 <threadName/>
@@ -21,6 +26,7 @@
                 <context/>
                 <pattern>
                     <pattern>
+
                         {
                         "@timestamp": "%date{yyy-MM-dd'T'HH:mm:ss.SSSXXX, UTC}",
                         "@severity": "%level",
@@ -39,7 +45,17 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.rbkmoney.logback.mask.PatternMaskingLayout">
+                <maskPattern>\D\d{6}(\d{2,9})\d{4}\D</maskPattern>
+                <maskPattern>\D(\d{3})\D</maskPattern>
+                <pattern>%-5p [%d{ISO8601,UTC}] [%thread] %c: %m%n%rootException</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <root level="ALL">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>

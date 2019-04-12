@@ -51,6 +51,11 @@
         <!--RBK libs-->
         <dependency>
             <groupId>com.rbkmoney</groupId>
+            <artifactId>elon</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
             <artifactId>shared-resources</artifactId>
             <version>${shared.resources.version}</version>
         </dependency>

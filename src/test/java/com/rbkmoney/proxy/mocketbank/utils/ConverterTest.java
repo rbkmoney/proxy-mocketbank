@@ -92,7 +92,7 @@ public class ConverterTest {
                 new TypeReference<Map<String, Object>>() {
                 });
 
-        LOGGER.info("Expected mapObject key1={}", mapObject.get("key1"));
+        LOGGER.info("Expected mapObject key1234567890123456={}", mapObject.get("key1"));
 
         assertEquals("value1", mapObject.get("key1"));
     }
