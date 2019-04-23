@@ -109,6 +109,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
                     Short.parseShort("2020")
             );
             processPaymentSuccess(cardData);
+            LOGGER.info("cardData: {}", cardData);
         }
 
     }
