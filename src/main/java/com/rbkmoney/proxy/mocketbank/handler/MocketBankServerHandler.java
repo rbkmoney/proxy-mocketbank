@@ -311,6 +311,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         } else {
             cardData = cds.getCardData(context);
         }
+        log.info("CardData: {}, pan: {}", cardData, cardData.getPan());
 
         TransactionInfo transactionInfo = null;
         com.rbkmoney.damsel.proxy_provider.Intent intent = ProxyWrapper.makeFinishIntentSuccess();

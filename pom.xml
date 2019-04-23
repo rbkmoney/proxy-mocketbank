@@ -109,6 +109,11 @@
             <artifactId>identdocstore-proto</artifactId>
             <version>1.6-ccd301e</version>
         </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>elon</artifactId>
+            <version>1.0.2</version>
+        </dependency>
         <!--Test libs-->
         <dependency>
             <groupId>org.jsoup</groupId>
