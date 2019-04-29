@@ -314,7 +314,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         log.info("CardData: {}, pan: {}", cardData, cardData.getPan());
 
         TransactionInfo transactionInfo = null;
-        com.rbkmoney.damsel.proxy_provider.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        if (context.getPaymentInfo().getPayment().isSetMakeRecurrent()
+                && context.getPaymentInfo().getPayment().isMakeRecurrent()) {
+            intent = ProxyWrapper.makeFinishIntentSuccessWithToken(invoiceId);
+        }
 
         PaymentProxyResult proxyResult;
         // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
