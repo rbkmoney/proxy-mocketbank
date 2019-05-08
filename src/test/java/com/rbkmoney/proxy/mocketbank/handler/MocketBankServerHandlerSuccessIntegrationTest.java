@@ -93,14 +93,14 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
         String[] cards = {
-            "4242424242424242",
-            "5555555555554444",
-            "586824160825533338",
-            "2201382000000013",
+                "4242424242424242",
+                "5555555555554444",
+                "586824160825533338",
+                "2201382000000013",
         };
 
         // Put the card and save the response to a subsequent request
-        for (String card: cards) {
+        for (String card : cards) {
             CardData cardData = CdsWrapper.makeCardDataWithExpDate(
                     "NONAME",
                     "123",
