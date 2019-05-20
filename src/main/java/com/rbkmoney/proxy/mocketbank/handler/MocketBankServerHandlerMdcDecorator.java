@@ -48,10 +48,6 @@ public class MocketBankServerHandlerMdcDecorator implements ProviderProxySrv.Ifa
         try {
             PaymentProxyResult proxyResult = handler.processPayment(context);
             return proxyResult;
-        } catch (Exception ex) {
-            String message = "Exception in processPayment with invoiceId " + context.getPaymentInfo().getInvoice().getId();
-            log.error(message, ex);
-            throw ex;
         } finally {
             mdcRemove();
         }
@@ -63,10 +59,6 @@ public class MocketBankServerHandlerMdcDecorator implements ProviderProxySrv.Ifa
         try {
             PaymentCallbackResult result = handler.handlePaymentCallback(callback, context);
             return result;
-        } catch (Exception ex) {
-            String message = "handlePaymentCallback: Exception";
-            log.error(message, ex);
-            throw ex;
         } finally {
             mdcRemove();
         }
