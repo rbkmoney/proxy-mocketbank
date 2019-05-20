@@ -197,7 +197,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         String recurrentId = context.getTokenInfo().getPaymentTool().getId();
         log.info("handleRecurrentTokenCallback start with invoiceId {}", recurrentId);
 
-
         HashMap<String, String> parameters;
         try {
             parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
@@ -259,8 +258,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         log.info("handleRecurrentTokenCallback finish {}, recurrent {}", callbackResult, recurrentId);
         return callbackResult;
     }
-
-
 
     @Override
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {

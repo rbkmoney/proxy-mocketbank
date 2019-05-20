@@ -14,7 +14,7 @@ public class MocketBankServerHandlerMdcDecorator implements ProviderProxySrv.Ifa
 
     private final MocketBankServerHandler handler;
 
-    public MocketBankServerHandlerMdcDecorator(final MocketBankServerHandler rtn){
+    public MocketBankServerHandlerMdcDecorator(final MocketBankServerHandler rtn) {
         this.handler = rtn;
     }
 
@@ -45,18 +45,30 @@ public class MocketBankServerHandlerMdcDecorator implements ProviderProxySrv.Ifa
     @Override
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
         mdcPut(context);
-        PaymentProxyResult proxyResult = handler.processPayment(context);
-        mdcRemove();
-        return proxyResult;
-
-
+        try {
+            PaymentProxyResult proxyResult = handler.processPayment(context);
+            return proxyResult;
+        } catch (Exception ex) {
+            String message = "Exception in processPayment with invoiceId " + context.getPaymentInfo().getInvoice().getId();
+            log.error(message, ex);
+            throw ex;
+        } finally {
+            mdcRemove();
+        }
     }
 
     @Override
     public PaymentCallbackResult handlePaymentCallback(ByteBuffer callback, PaymentContext context) throws TException {
         mdcPut(context);
-        PaymentCallbackResult result = handler.handlePaymentCallback(callback, context);
-        mdcRemove();
-        return result;
+        try {
+            PaymentCallbackResult result = handler.handlePaymentCallback(callback, context);
+            return result;
+        } catch (Exception ex) {
+            String message = "handlePaymentCallback: Exception";
+            log.error(message, ex);
+            throw ex;
+        } finally {
+            mdcRemove();
+        }
     }
 }
