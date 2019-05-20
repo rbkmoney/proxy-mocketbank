@@ -22,7 +22,6 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResp
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -261,24 +260,12 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         return callbackResult;
     }
 
-    public void mdcPut(PaymentContext context) {
-        String invoiceId = context.getPaymentInfo().getInvoice().getId();
-        String paymentId = context.getPaymentInfo().getPayment().getId();
-        MDC.put("invoiceId", invoiceId);
-        MDC.put("paymentId", paymentId);
-    }
 
-    public void mdcRemove() {
-        MDC.remove("invoiceId");
-        MDC.remove("paymentId");
-    }
 
     @Override
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
-        mdcPut(context);
         log.info("processPayment start with invoiceId {}", invoiceId);
-        mdcRemove();
         Map<String, String> options = (context.getOptions().size() > 0) ? context.getOptions() : new HashMap<>();
 
         TargetInvoicePaymentStatus target = context.getSession().getTarget();
@@ -311,13 +298,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             }
             throw ex;
         }
-
     }
 
     private PaymentProxyResult processed(PaymentContext context, Map<String, String> options) {
         com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
-        mdcPut(context);
         log.info("Processed start with invoiceId {}", invoiceId);
         CardData cardData;
         if (invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
@@ -486,13 +471,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, state, transactionInfo);
         log.info("Processed: finish {} with invoiceId {}", proxyResult, invoiceId);
-        mdcRemove();
         return proxyResult;
     }
 
     private PaymentProxyResult captured(PaymentContext context, Map<String, String> options) {
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
-        mdcPut(context);
         log.info("Captured start with invoiceId {}", invoiceId);
 
         com.rbkmoney.damsel.proxy_provider.InvoicePayment payment = context.getPaymentInfo().getPayment();
@@ -513,7 +496,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, PaymentState.CONFIRM.getBytes(), transactionInfo);
 
         log.info("Captured: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
-        mdcRemove();
         return proxyResult;
     }
 

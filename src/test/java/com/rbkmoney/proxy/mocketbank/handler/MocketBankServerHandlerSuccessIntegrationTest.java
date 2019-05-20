@@ -57,7 +57,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
     public final static IntegrationBaseRule rule = new IntegrationBaseRule();
 
     @Autowired
-    private MocketBankServerHandler handler;
+    private MocketBankServerHandlerMdcDecorator handler;
 
     @Autowired
     protected com.rbkmoney.damsel.cds.StorageSrv.Iface cds;

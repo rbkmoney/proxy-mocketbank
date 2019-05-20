@@ -1,7 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.servlet;
 
 import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
-import com.rbkmoney.proxy.mocketbank.handler.MocketBankServerHandler;
+import com.rbkmoney.proxy.mocketbank.handler.MocketBankServerHandlerMdcDecorator;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 public class ProxyServlet extends GenericServlet {
 
     @Autowired
-    private MocketBankServerHandler handler;
+    private MocketBankServerHandlerMdcDecorator handler;
 
     private Servlet servlet;
 
