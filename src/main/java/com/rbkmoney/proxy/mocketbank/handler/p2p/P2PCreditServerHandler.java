@@ -1,9 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
 import com.rbkmoney.damsel.msgpack.Value;
-import com.rbkmoney.damsel.withdrawals.provider_adapter.AdapterSrv;
-import com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult;
-import com.rbkmoney.damsel.withdrawals.provider_adapter.Withdrawal;
+import com.rbkmoney.damsel.withdrawals.provider_adapter.*;
+import com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification;
 import com.rbkmoney.proxy.mocketbank.handler.p2p.withdrawal.WithdrawalHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,7 @@ import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.utils.MocketBankUti
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class P2PCreditServerHandler  implements AdapterSrv.Iface  {
+public class P2PCreditServerHandler implements AdapterSrv.Iface {
 
     private final WithdrawalHandler withdrawalHandler;
 
@@ -42,4 +41,26 @@ public class P2PCreditServerHandler  implements AdapterSrv.Iface  {
             throw ex;
         }
     }
+
+    @Override
+    public Quote getQuote(GetQuoteParams getQuoteParams, Map<String, String> map) throws TException {
+        String idempotencyId = getQuoteParams.getIdempotencyId();
+        log.info("getQuote: start with idempotency Id {}", idempotencyId);
+        try {
+            Quote quote = withdrawalHandler.getQuote(getQuoteParams, map);
+            log.info("getQuote: finish {} with idempotency Id {}", quote, idempotencyId);
+            return quote;
+        } catch (Exception ex) {
+            String message = "Exception in getQuote with idempotency Id " + idempotencyId;
+
+            if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
+                log.warn(message, ex);
+            } else {
+                log.error(message, ex);
+            }
+
+            throw ex;
+        }
+    }
+
 }

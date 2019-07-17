@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.289-ef27dd7</version>
+            <version>1.319-21ea944</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.geck</groupId>

@@ -64,12 +64,4 @@ public class CdsWrapper {
         return new PutCardDataResult(bankCard, session);
     }
 
-    public static UnlockStatus makeUnlockStatusUnlocked() {
-        return UnlockStatus.unlocked(new Unlocked());
-    }
-
-    public static UnlockStatus makeUnlockStatusMoreKeysNeeded(short value) {
-        return UnlockStatus.more_keys_needed(value);
-    }
-
 }
