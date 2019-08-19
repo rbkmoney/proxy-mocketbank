@@ -111,8 +111,8 @@
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
-            <artifactId>elon</artifactId>
-            <version>1.0.2</version>
+            <artifactId>adapter-common-lib</artifactId>
+            <version>0.0.8</version>
         </dependency>
         <!--Test libs-->
         <dependency>
