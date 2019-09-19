@@ -3,19 +3,22 @@ spring:
     name: @name@
     description: @description@
 ---
+management:
+  metrics:
+    export:
+      statsd:
+        flavor: etsy
+---
 info:
   version: @version@
   responsible: Anatoly Cherkasov
   stage: dev
 ---
-endpoints:
-  health:
-    sensitive: false
----
 server:
-  port: @service.port@
-  secondary:
-    ports: @service.secondary.ports@
+  port: @server.port@
+  rest:
+    port: @server.rest.port@
+    endpoint: mocketbank
 ---
 proxy-mocketbank-mpi:
   url: http://127.0.0.1:8018
@@ -24,18 +27,28 @@ proxy-mocketbank:
   callbackUrl: http://127.0.0.1:8019
 ---
 cds:
-  url:
-    keyring: http://127.0.0.1:8021/v1/keyring
-    storage: http://127.0.0.1:8021/v1/storage
+  client:
+    identity-document-storage:
+      url: http://127.0.0.1:8021/v1/identity_document_storage
+      networkTimeout: 5000
+    storage:
+      url: http://127.0.0.1:8021/v1/storage
+      networkTimeout: 5000
 ---
 hellgate:
-  url: http://127.0.0.1:8023/v1/proxyhost/provider
+  client:
+    adapter:
+      url: http://127.0.0.1:8023/v1/proxyhost/provider
+      networkTimeout: 30000
 ---
 timer:
   timeout: 600
 ---
 fixture:
   cards: classpath:fixture/cards.csv
+---
+restTemplate:
+  networkTimeout: 5000
 ---
 error-mapping:
   file: classpath:fixture/errors.json

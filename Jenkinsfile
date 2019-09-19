@@ -23,18 +23,20 @@ build('proxy-mocketbank', 'java-maven') {
     def imgShortName = 'rbkmoney/' + "${serviceName}" + ':' + '$COMMIT_ID';
     getCommitId()
     runStage('Build Service image') {
-        serviceImage = docker.build(imgShortName, '-f ./target/Dockerfile ./target')
+        docker.withRegistry('https://dr2.rbkmoney.com/v2/', 'jenkins_harbor') {
+            serviceImage = docker.build(imgShortName, '-f ./target/Dockerfile ./target')
+        }
     }
 
     try {
         if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME.startsWith('epic')) {
             runStage('Push Service image') {
-                docker.withRegistry('https://dr.rbkmoney.com/v2/', 'dockerhub-rbkmoneycibot') {
+                docker.withRegistry('https://dr2.rbkmoney.com/v2/', 'jenkins_harbor') {
                     serviceImage.push();
                 }
                 // Push under 'withRegistry' generates 2d record with 'long name' in local docker registry.
                 // Untag the long-name
-                sh "docker rmi dr.rbkmoney.com/${imgShortName}"
+                sh "docker rmi dr2.rbkmoney.com/${imgShortName}"
             }
         }
     }

@@ -15,7 +15,10 @@
             <providers>
                 <mdc/>
                 <threadName/>
-                <message/>
+                <provider class="com.rbkmoney.adapter.common.logback.mask.PatternMaskingMessageJsonProvider">
+                    <maskPattern>\b\d{6}(\d{2,9})\d{4}\b</maskPattern>
+                    <maskPattern>(\b\d{3}\b)</maskPattern>
+                </provider>
                 <version/>
                 <loggerName/>
                 <context/>

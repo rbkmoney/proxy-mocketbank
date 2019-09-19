@@ -5,7 +5,6 @@ import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
@@ -44,8 +43,7 @@ import static org.junit.Assert.assertTrue;
                 "merchant.acquirerBin=422538",
                 "merchant.password=",
                 "merchant.countryCode=643",
-                "cds.url.keyring=http://127.0.0.1:8021/v1/keyring",
-                "cds.url.storage=http://127.0.0.1:8021/v1/storage",
+                "cds.client.url.storage.url=http://127.0.0.1:8021/v1/storage",
                 "proxy-mocketbank-mpi.url=http://127.0.0.1:8018",
         }
 )
@@ -62,7 +60,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
     private MocketBankServerHandler handler;
 
     @Autowired
-    private CdsApi cds;
+    protected com.rbkmoney.damsel.cds.StorageSrv.Iface cds;
 
     @Value("${merchant.id}")
     private String merchantId;
@@ -177,7 +175,8 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
                         "2016-06-02",
                         getPaymentResource(putCardDataResponse),
                         getCost(),
-                        transactionInfo
+                        transactionInfo,
+                        Boolean.FALSE
                 )
         );
     }
@@ -217,11 +216,11 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
         );
     }
 
-    protected PutCardDataResult cdsPutCardData(CardData cardData) {
+    protected PutCardDataResult cdsPutCardData(CardData cardData) throws TException {
         LOGGER.info("CDS: put card request start");
 
         Auth3DS auth3DS = CdsWrapper.makeAuth3DS("jKfi3B417+zcCBFYbFp3CBUAAAA=", "5");
-        AuthData authData = CdsWrapper.makeAuthData(auth3DS);
+        AuthData authData = CdsWrapper.makeAuthDataWithAuth3DS(auth3DS);
 
         SessionData sessionData = CdsWrapper.makeSessionData(authData);
 

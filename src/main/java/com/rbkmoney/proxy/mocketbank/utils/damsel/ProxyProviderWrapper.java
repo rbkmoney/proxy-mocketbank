@@ -1,6 +1,5 @@
 package com.rbkmoney.proxy.mocketbank.utils.damsel;
 
-import com.rbkmoney.damsel.base.Timer;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.ExpDate;
 import com.rbkmoney.damsel.domain.*;
@@ -11,10 +10,13 @@ import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Map;
 
 
 public class ProxyProviderWrapper {
+
+    public static final String DEFAULT_ERROR_CODE = "error";
 
     public static TargetInvoicePaymentStatus makeTargetProcessed() {
         TargetInvoicePaymentStatus target = new TargetInvoicePaymentStatus();
@@ -91,13 +93,13 @@ public class ProxyProviderWrapper {
         return intent;
     }
 
-    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer, UserInteraction userInteraction) {
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, int timer, UserInteraction userInteraction) {
         RecurrentTokenIntent intent = new RecurrentTokenIntent();
         intent.setSuspend(ProxyWrapper.makeSuspendIntent(tag, timer, userInteraction));
         return intent;
     }
 
-    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, Timer timer) {
+    public static RecurrentTokenIntent makeRecurrentTokenWithSuspendIntent(String tag, int timer) {
         return makeRecurrentTokenWithSuspendIntent(tag, timer, null);
     }
 
@@ -133,6 +135,7 @@ public class ProxyProviderWrapper {
     public static RecurrentPaymentTool makeRecurrentPaymentTool(String id, DisposablePaymentResource disposablePaymentResource, com.rbkmoney.damsel.proxy_provider.Cash cash) {
         RecurrentPaymentTool recurrentPaymentTool = new RecurrentPaymentTool();
         recurrentPaymentTool.setPaymentResource(disposablePaymentResource);
+        recurrentPaymentTool.setCreatedAt(Instant.now().toString());
         recurrentPaymentTool.setMinimalPaymentCost(cash);
         recurrentPaymentTool.setId(id);
         return recurrentPaymentTool;
@@ -285,13 +288,18 @@ public class ProxyProviderWrapper {
         return paymentResource;
     }
 
-    public static InvoicePayment makeInvoicePaymentWithTrX(String invoicePaymentId, String created_at, PaymentResource paymentResource, com.rbkmoney.damsel.proxy_provider.Cash cost, TransactionInfo transactionInfo) {
+    public static InvoicePayment makeInvoicePaymentWithTrX(String invoicePaymentId,
+                                                           String created_at,
+                                                           PaymentResource paymentResource,
+                                                           com.rbkmoney.damsel.proxy_provider.Cash cost,
+                                                           TransactionInfo transactionInfo, Boolean makeRecurrent) {
         InvoicePayment invoicePayment = new InvoicePayment();
         invoicePayment.setId(invoicePaymentId);
         invoicePayment.setCreatedAt(created_at);
         invoicePayment.setPaymentResource(paymentResource);
         invoicePayment.setCost(cost);
         invoicePayment.setTrx(transactionInfo);
+        invoicePayment.setMakeRecurrent(makeRecurrent);
         return invoicePayment;
     }
 

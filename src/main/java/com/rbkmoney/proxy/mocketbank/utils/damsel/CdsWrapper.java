@@ -6,69 +6,54 @@ import com.rbkmoney.damsel.domain.BankCard;
 
 public class CdsWrapper {
 
+    public static final String DEFAULT_CARDHOLDER_NAME = "NONAME";
+
     public static ExpDate makeExpDate(byte month, short year) {
-        ExpDate expDate = new ExpDate();
-        expDate.setMonth(month);
-        expDate.setYear(year);
-        return expDate;
+        return new ExpDate(month, year);
+    }
+
+    public static ExpDate makeExpDate(String month, String year) {
+        return makeExpDate(Byte.parseByte(month), Short.parseShort(year));
     }
 
     public static CardData makeCardData(String cardholderName, String cvv, String pan, ExpDate expDate) {
-        CardData cardData = new CardData();
-        cardData.setCardholderName(cardholderName);
-        cardData.setCvv(cvv);
-        cardData.setPan(pan);
-        cardData.setExpDate(expDate);
-        return cardData;
+        return new CardData(pan, expDate).setCardholderName(cardholderName).setCvv(cvv);
     }
 
     public static CardData makeCardDataWithExpDate(String cardholderName, String cvv, String pan, byte month, short year) {
-        return CdsWrapper.makeCardData(cardholderName, cvv, pan, CdsWrapper.makeExpDate(month, year));
+        return makeCardData(cardholderName, cvv, pan, makeExpDate(month, year));
+    }
+
+    public static CardData makeCardDataWithExpDate(String cardholderName, String cvv, String pan, String month, String year) {
+        return makeCardData(cardholderName, cvv, pan, makeExpDate(month, year));
     }
 
     public static SessionData makeSessionData(AuthData authData) {
-        SessionData sessionData = new SessionData();
-        sessionData.setAuthData(authData);
-        return sessionData;
-    }
-
-    public static AuthData makeAuthData(Auth3DS auth3DS, CardSecurityCode cardSecurityCode) {
-        AuthData authData = new AuthData();
-        authData.setAuth3ds(auth3DS);
-        authData.setCardSecurityCode(cardSecurityCode);
-        return authData;
+        return new SessionData(authData);
     }
 
     public static AuthData makeAuthData(CardSecurityCode cardSecurityCode) {
-        AuthData authData = new AuthData();
-        authData.setCardSecurityCode(cardSecurityCode);
-        return authData;
+        return AuthData.card_security_code(cardSecurityCode);
     }
 
-    public static AuthData makeAuthData(Auth3DS auth3DS) {
-        AuthData authData = new AuthData();
-        authData.setAuth3ds(auth3DS);
-        return authData;
-    }
-
-    public static AuthData makeAuthData(Auth3DS auth3DS, String cvv) {
-        AuthData authData = new AuthData();
-        authData.setAuth3ds(auth3DS);
-        authData.setCardSecurityCode(makeCardSecurityCode(cvv));
-        return authData;
+    public static AuthData makeAuthDataWithAuth3DS(Auth3DS auth3DS) {
+        return AuthData.auth_3ds(auth3DS);
     }
 
     public static CardSecurityCode makeCardSecurityCode(String cvv) {
-        CardSecurityCode cardSecurityCode = new CardSecurityCode();
-        cardSecurityCode.setValue(cvv);
-        return cardSecurityCode;
+        return new CardSecurityCode(cvv);
     }
 
     public static Auth3DS makeAuth3DS(String cryptogram, String eci) {
-        Auth3DS auth3DS = new Auth3DS();
-        auth3DS.setCryptogram(cryptogram);
-        auth3DS.setEci(eci);
-        return auth3DS;
+        return new Auth3DS(cryptogram).setEci(eci);
+    }
+
+    public static AuthData makeAuthDataWithCryptogramAndEci(String cryptogram, String eci) {
+        return AuthData.auth_3ds(makeAuth3DS(cryptogram, eci));
+    }
+
+    public static AuthData makeAuthDataWithCardSecurityCode(String cvv) {
+        return AuthData.card_security_code(makeCardSecurityCode(cvv));
     }
 
     public static Auth3DS makeAuth3DS(String cryptogram) {
@@ -76,22 +61,7 @@ public class CdsWrapper {
     }
 
     public static PutCardDataResult makePutCardDataResult(BankCard bankCard, String session) {
-        PutCardDataResult putCardDataResult = new PutCardDataResult();
-        putCardDataResult.setBankCard(bankCard);
-        putCardDataResult.setSessionId(session);
-        return putCardDataResult;
-    }
-
-    public static UnlockStatus makeUnlockStatusUnlocked() {
-        UnlockStatus unlockStatus = new UnlockStatus();
-        unlockStatus.setUnlocked(new Unlocked());
-        return unlockStatus;
-    }
-
-    public static UnlockStatus makeUnlockStatusMoreKeysNeeded(short value) {
-        UnlockStatus unlockStatus = new UnlockStatus();
-        unlockStatus.setMoreKeysNeeded(value);
-        return unlockStatus;
+        return new PutCardDataResult(bankCard, session);
     }
 
 }

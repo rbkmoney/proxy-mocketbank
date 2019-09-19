@@ -1,15 +1,18 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.*;
-import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.utils.CardUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.cds.CdsApi;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.*;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.damsel.UserInteractionWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MocketBankMpiUtils;
@@ -17,9 +20,8 @@ import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.*;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -33,13 +35,12 @@ import java.util.*;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction.*;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.utils.MocketBankUtils.isUndefinedResultOrUnavailable;
 
+@Slf4j
 @Component
 public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
-    private CdsApi cds;
+    private CdsClientStorage cds;
 
     @Autowired
     private MocketBankMpiApi mocketBankMpiApi;
@@ -63,9 +64,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         cardList = CardUtils.getCardListFromFile(fixtureCards.getInputStream());
     }
 
-    /**
-     * Запрос к прокси на создание многоразового токена
-     */
     @Override
     public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
         String recurrentId = context.getTokenInfo().getPaymentTool().getId();
@@ -74,6 +72,15 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         String token = context.getTokenInfo().getPaymentTool().getPaymentResource().getPaymentTool().getBankCard().getToken();
 
         RecurrentTokenIntent intent = ProxyProviderWrapper.makeRecurrentTokenFinishIntentSuccess(token);
+
+        RecurrentTokenProxyResult proxyResult;
+        // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
+        Optional<BankCardTokenProvider> bankCardTokenProvider = getBankCardTokenProvider(context);
+        if (bankCardTokenProvider.isPresent()) {
+            proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(intent);
+            log.info("Processed: success {} with invoiceId {}", proxyResult, recurrentId);
+            return proxyResult;
+        }
 
         CardData cardData = cds.getCardData(token);
 
@@ -99,7 +106,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = EXPIRED_CARD.getAction();
                         break;
                     case SUCCESS:
-                        RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
+                        proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResult(
                                 intent,
                                 PaymentState.PROCESSED.getBytes()
                         );
@@ -109,7 +116,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = UNKNOWN_FAILURE.getAction();
 
                 }
-                RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
+                proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                         errorMapping.getFailureByCodeAndDescription(error, error)
                 );
                 log.info("GenerateToken: failure {} with recurrentId {}", proxyResult, recurrentId);
@@ -117,7 +124,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             }
 
         } else {
-            RecurrentTokenProxyResult proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
+            proxyResult = ProxyProviderWrapper.makeRecurrentTokenProxyResultFailure(
                     errorMapping.getFailureByCodeAndDescription(
                             UNSUPPORTED_CARD.getAction(),
                             UNSUPPORTED_CARD.getAction()
@@ -153,7 +160,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             log.info("GenerateToken: prepare redirect params {} with recurrentId {}", params, recurrentId);
 
             intent = ProxyProviderWrapper.makeRecurrentTokenWithSuspendIntent(
-                    tag, BaseWrapper.makeTimerTimeout(timerTimeout),
+                    tag, timerTimeout,
                     UserInteractionWrapper.makeUserInteraction(
                             UserInteractionWrapper.makeBrowserPostRequest(
                                     url,
@@ -185,15 +192,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         return result;
     }
 
-    /**
-     * Запрос к прокси на обработку обратного вызова от провайдера в рамках сессии получения
-     * многоразового токена.
-     */
     @Override
     public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
         String recurrentId = context.getTokenInfo().getPaymentTool().getId();
         log.info("handleRecurrentTokenCallback start with invoiceId {}", recurrentId);
-
 
         HashMap<String, String> parameters;
         try {
@@ -261,7 +263,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
         log.info("processPayment start with invoiceId {}", invoiceId);
-
         Map<String, String> options = (context.getOptions().size() > 0) ? context.getOptions() : new HashMap<>();
 
         TargetInvoicePaymentStatus target = context.getSession().getTarget();
@@ -292,27 +293,45 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             } else {
                 log.error(message, ex);
             }
-            log.error(message, ex);
             throw ex;
         }
-
     }
 
     private PaymentProxyResult processed(PaymentContext context, Map<String, String> options) {
         com.rbkmoney.damsel.proxy_provider.InvoicePayment invoicePayment = context.getPaymentInfo().getPayment();
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
         log.info("Processed start with invoiceId {}", invoiceId);
-
         CardData cardData;
         if (invoicePayment.getPaymentResource().isSetRecurrentPaymentResource()) {
-            cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getRecToken());
+            cardData = cds.getCardData(invoicePayment.getPaymentResource().getRecurrentPaymentResource().getPaymentTool().getBankCard().getToken());
         } else {
             cardData = cds.getCardData(context);
         }
+        log.info("CardData: {}, pan: {}", cardData, cardData.getPan());
 
         TransactionInfo transactionInfo = null;
-        com.rbkmoney.damsel.proxy_provider.Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        if (context.getPaymentInfo().getPayment().isSetMakeRecurrent()
+                && context.getPaymentInfo().getPayment().isMakeRecurrent()) {
+            intent = ProxyWrapper.makeFinishIntentSuccessWithToken(invoiceId);
+        }
 
+        PaymentProxyResult proxyResult;
+        // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
+        Optional<BankCardTokenProvider> bankCardTokenProvider = getBankCardTokenProvider(context);
+        if (bankCardTokenProvider.isPresent()) {
+            transactionInfo = DomainWrapper.makeTransactionInfo(
+                    MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
+                    Collections.emptyMap()
+            );
+            proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+                    intent,
+                    PaymentState.CAPTURED.getBytes(),
+                    transactionInfo
+            );
+            log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
+            return proxyResult;
+        }
 
         CardUtils cardUtils = new CardUtils(cardList);
         Optional<Card> card = cardUtils.getCardByPan(cardData.getPan());
@@ -322,8 +341,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
             if (!cardUtils.isEnrolled(card)) {
 
-                Optional<BankCardTokenProvider> bankCardTokenProvider;
-                PaymentProxyResult proxyResult;
                 String error;
                 switch (action) {
                     case INSUFFICIENT_FUNDS:
@@ -351,69 +368,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                         error = EXPIRED_CARD.getAction();
                         break;
 
-                    case APPLE_PAY_SUCCESS:
-
-                        bankCardTokenProvider = getBankCardTokenProvider(context);
-                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.applepay.equals(bankCardTokenProvider.get())) {
-                            String message = "Processed: bankCardTokenProvider is missing or not APPLE PAY with invoiceId " + invoiceId;
-                            log.error(message);
-                            throw new IllegalArgumentException(message);
-                        }
-
-                        transactionInfo = DomainWrapper.makeTransactionInfo(
-                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
-                                Collections.emptyMap()
-                        );
-                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
-                                intent,
-                                PaymentState.CAPTURED.getBytes(),
-                                transactionInfo
-                        );
-                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
-                        return proxyResult;
-
-                    case GOOGLE_PAY_SUCCESS:
-
-                        bankCardTokenProvider = getBankCardTokenProvider(context);
-                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.googlepay.equals(bankCardTokenProvider.get())) {
-                            String message = "Processed: bankCardTokenProvider is missing or not GOOGLE PAY with invoiceId " + invoiceId;
-                            log.error(message);
-                            throw new IllegalArgumentException(message);
-                        }
-
-                        transactionInfo = DomainWrapper.makeTransactionInfo(
-                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
-                                Collections.emptyMap()
-                        );
-                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
-                                intent,
-                                PaymentState.CAPTURED.getBytes(),
-                                transactionInfo
-                        );
-                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
-                        return proxyResult;
-
-                    case SAMSUNG_PAY_SUCCESS:
-
-                        bankCardTokenProvider = getBankCardTokenProvider(context);
-                        if (!bankCardTokenProvider.isPresent() || !BankCardTokenProvider.samsungpay.equals(bankCardTokenProvider.get())) {
-                            String message = "Processed: bankCardTokenProvider is missing or not SAMSUNG PAY with invoiceId " + invoiceId;
-                            log.error(message);
-                            throw new IllegalArgumentException(message);
-                        }
-
-                        transactionInfo = DomainWrapper.makeTransactionInfo(
-                                MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
-                                Collections.emptyMap()
-                        );
-                        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
-                                intent,
-                                PaymentState.CAPTURED.getBytes(),
-                                transactionInfo
-                        );
-                        log.info("Processed: success {} with invoiceId {}", proxyResult, invoiceId);
-                        return proxyResult;
-
                     case SUCCESS:
                         transactionInfo = DomainWrapper.makeTransactionInfo(
                                 MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
@@ -438,7 +392,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             }
 
         } else {
-            PaymentProxyResult proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
+            proxyResult = ProxyProviderWrapper.makeProxyResultFailure(
                     errorMapping.getFailureByCodeAndDescription(
                             UNSUPPORTED_CARD.getAction(),
                             UNSUPPORTED_CARD.getAction()
@@ -454,7 +408,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
                     MocketBankMpiUtils.generateInvoice(context.getPaymentInfo()),
                     Collections.emptyMap()
             );
-            PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
+            proxyResult = ProxyProviderWrapper.makePaymentProxyResult(
                     intent,
                     PaymentState.CAPTURED.getBytes(),
                     transactionInfo
@@ -463,7 +417,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             return proxyResult;
         }
 
-        VerifyEnrollmentResponse verifyEnrollmentResponse = null;
+        VerifyEnrollmentResponse verifyEnrollmentResponse;
         try {
             verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                     cardData.getPan(),
@@ -489,7 +443,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             log.info("Processed: prepare redirect params {} with invoiceId {}", params, invoiceId);
 
             intent = ProxyWrapper.makeIntentWithSuspendIntent(
-                    tag, BaseWrapper.makeTimerTimeout(timerTimeout),
+                    tag, timerTimeout,
                     UserInteractionWrapper.makeUserInteraction(
                             UserInteractionWrapper.makeBrowserPostRequest(
                                     url,
@@ -503,7 +457,6 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         extra.put(MocketBankMpiUtils.PA_REQ, verifyEnrollmentResponse.getPaReq());
 
         log.info("Processed: Extra map {} with invoiceId {}", extra, invoiceId);
-
         byte[] state;
         try {
             state = Converter.mapToByteArray(extra);
@@ -513,7 +466,7 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             throw new IllegalArgumentException(message, ex);
         }
 
-        PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, state, transactionInfo);
+        proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, state, transactionInfo);
         log.info("Processed: finish {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
     }
@@ -532,6 +485,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         context.getSession().setState(PaymentState.CONFIRM.getBytes());
 
         Intent intent = ProxyWrapper.makeFinishIntentSuccess();
+        if (context.getPaymentInfo().getPayment().isSetMakeRecurrent()
+                && context.getPaymentInfo().getPayment().isMakeRecurrent()) {
+            intent = ProxyWrapper.makeFinishIntentSuccessWithToken(invoiceId);
+        }
+
         PaymentProxyResult proxyResult = ProxyProviderWrapper.makePaymentProxyResult(intent, PaymentState.CONFIRM.getBytes(), transactionInfo);
 
         log.info("Captured: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
@@ -637,13 +595,38 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
     }
 
     public static Optional<BankCardTokenProvider> getBankCardTokenProvider(PaymentContext context) {
-         return Optional.ofNullable(context.getPaymentInfo())
+
+        Optional<PaymentResource> paymentResource = Optional.ofNullable(context.getPaymentInfo())
                 .map(PaymentInfo::getPayment)
-                .map(InvoicePayment::getPaymentResource)
-                .map(PaymentResource::getDisposablePaymentResource)
-                .map(DisposablePaymentResource::getPaymentTool)
-                .map(PaymentTool::getBankCard)
-                .map(BankCard::getTokenProvider);
+                .map(InvoicePayment::getPaymentResource);
+
+        if (paymentResource.isPresent() && paymentResource.get().isSetDisposablePaymentResource()) {
+            return Optional.ofNullable(context.getPaymentInfo())
+                    .map(PaymentInfo::getPayment)
+                    .map(InvoicePayment::getPaymentResource)
+                    .map(PaymentResource::getDisposablePaymentResource)
+                    .map(DisposablePaymentResource::getPaymentTool)
+                    .map(PaymentTool::getBankCard)
+                    .map(BankCard::getTokenProvider);
+        }
+
+        return Optional.empty();
+    }
+
+    public static Optional<BankCardTokenProvider> getBankCardTokenProvider(RecurrentTokenContext context) {
+
+        Optional<DisposablePaymentResource> paymentResource = Optional.ofNullable(context.getTokenInfo())
+                .map(RecurrentTokenInfo::getPaymentTool)
+                .map(RecurrentPaymentTool::getPaymentResource);
+
+        if (paymentResource.isPresent()) {
+            return paymentResource
+                    .map(DisposablePaymentResource::getPaymentTool)
+                    .map(PaymentTool::getBankCard)
+                    .map(BankCard::getTokenProvider);
+        }
+
+        return Optional.empty();
     }
 
 }

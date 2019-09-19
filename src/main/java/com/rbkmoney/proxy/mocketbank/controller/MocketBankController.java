@@ -1,9 +1,9 @@
 package com.rbkmoney.proxy.mocketbank.controller;
 
+import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
+import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.hellgate.HellGateApi;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 @RestController
-@RequestMapping(value = "/mocketbank")
+@RequestMapping("/${server.rest.endpoint}")
 public class MocketBankController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private HellGateApi hellGateApi;
+    private HellgateAdapterClient hellgateClient;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -53,14 +52,16 @@ public class MocketBankController {
 
             ByteBuffer response;
             if (tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG)) {
-                response = hellGateApi.processRecurrentTokenCallback(tag, callback);
+                response = hellgateClient.processRecurrentTokenCallback(tag, callback);
             } else {
-                response = hellGateApi.processPaymentCallback(tag, callback);
+                response = hellgateClient.processPaymentCallback(tag, callback);
             }
 
             resp = new String(response.array(), "UTF-8");
-        } catch (TException | UnsupportedEncodingException e) {
-            log.error("Exception in processCallback", e);
+        } catch (HellgateException e) {
+            log.warn("Exception in processPaymentCallback", e);
+        } catch (Exception e) {
+            log.error("Exception in processPaymentCallback", e);
         }
 
         if (StringUtils.hasText(request.getParameter("termination_uri")))
