@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>proxy-mocketbank</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>proxy-mocketbank</name>
@@ -72,17 +72,17 @@
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-storage</artifactId>
-            <version>2.1.8</version>
+            <version>2.1.10</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-identity-document-storage</artifactId>
-            <version>2.1.8</version>
+            <version>2.1.10</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel-utils</artifactId>
-            <version>2.1.8</version>
+            <version>2.1.10</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -92,12 +92,12 @@
         <dependency>
             <groupId>com.rbkmoney.woody</groupId>
             <artifactId>woody-thrift</artifactId>
-            <version>1.1.15</version>
+            <version>1.1.16</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.319-21ea944</version>
+            <version>1.363-3074af1</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.geck</groupId>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>adapter-common-lib</artifactId>
-            <version>0.0.8</version>
+            <version>0.0.12</version>
         </dependency>
         <!--Test libs-->
         <dependency>

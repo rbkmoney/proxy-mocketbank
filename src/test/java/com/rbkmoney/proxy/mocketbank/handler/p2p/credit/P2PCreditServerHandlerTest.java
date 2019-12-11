@@ -141,6 +141,7 @@ public class P2PCreditServerHandlerTest {
         SessionData sessionData = CdsWrapper.makeSessionData(authData);
 
         PutCardDataResult putCardDataResponse = cds.putCardData(cardData, sessionData);
+        putCardDataResponse.getBankCard().setExpDate(TestData.makeBankCard().getExpDate());
         log.info("CDS: put card response {}", putCardDataResponse);
         return putCardDataResponse;
     }

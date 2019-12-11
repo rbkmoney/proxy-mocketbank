@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractBankCard;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankMpiAction.*;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.utils.MocketBankUtils.isUndefinedResultOrUnavailable;
 
@@ -136,10 +137,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
 
         VerifyEnrollmentResponse verifyEnrollmentResponse = null;
         try {
+            BankCard bankCard = extractBankCard(context);
             verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                     cardData.getPan(),
-                    cardData.getExpDate().getYear(),
-                    cardData.getExpDate().getMonth()
+                    bankCard.getExpDate().getYear(),
+                    bankCard.getExpDate().getMonth()
             );
         } catch (IOException ex) {
             String message = "GenerateToken: Exception in verifyEnrollment with recurrentId " + recurrentId;
@@ -418,11 +420,12 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         VerifyEnrollmentResponse verifyEnrollmentResponse;
+        BankCard bankCard = extractBankCard(context);
         try {
             verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                     cardData.getPan(),
-                    cardData.getExpDate().getYear(),
-                    cardData.getExpDate().getMonth()
+                    bankCard.getExpDate().getYear(),
+                    bankCard.getExpDate().getMonth()
             );
         } catch (IOException ex) {
             String message = "Processed: Exception in verifyEnrollment with invoiceId " + invoiceId;
