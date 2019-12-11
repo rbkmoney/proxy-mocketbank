@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createBankCardExpDate;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makeCurrency;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makePaymentTool;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper.*;
@@ -110,7 +111,7 @@ public class DeadlineTest {
                                 makeDisposablePaymentResource(
                                         "session_id",
                                         makePaymentTool(
-                                                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan")
+                                                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan").setExpDate(createBankCardExpDate("12","2020"))
                                         )
                                 ),
                                 makeCash(
