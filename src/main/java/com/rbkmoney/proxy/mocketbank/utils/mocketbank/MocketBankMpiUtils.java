@@ -2,14 +2,9 @@ package com.rbkmoney.proxy.mocketbank.utils.mocketbank;
 
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 public class MocketBankMpiUtils {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankMpiUtils.class);
 
     public final static String MASK_CHAR = "*";
 

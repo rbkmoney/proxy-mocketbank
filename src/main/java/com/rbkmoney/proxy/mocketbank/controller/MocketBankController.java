@@ -4,8 +4,7 @@ import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@Slf4j
 @RestController
 @RequestMapping("/${server.rest.endpoint}")
 public class MocketBankController {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private HellgateAdapterClient hellgateClient;

@@ -3,19 +3,18 @@ package com.rbkmoney.proxy.mocketbank.servlet;
 import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
 import com.rbkmoney.proxy.mocketbank.handler.MocketBankServerHandlerMdcDecorator;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 
+@RequiredArgsConstructor
 @WebServlet("/proxy/mocketbank")
-public class ProxyServlet extends GenericServlet {
+public class AdapterServletPayment extends GenericServlet {
 
-    @Autowired
-    private MocketBankServerHandlerMdcDecorator handler;
-
-    private Servlet servlet;
+    private final transient MocketBankServerHandlerMdcDecorator handler;
+    private transient Servlet servlet;
 
     @Override
     public void init(ServletConfig config) throws ServletException {

@@ -1,0 +1,11 @@
+phone, operator, action
+79151111111, mts, Success
+79151111112, mts, Insufficient Funds
+79001111111, beeline, Success
+79001111112, beeline, Insufficient Funds
+79021111111, megafon, Success
+79021111112, megafon, Insufficient Funds
+79041111111, tele2, Success
+79041111112, tele2, Insufficient Funds
+79991111111, yota, Success
+79991111112, yota, Insufficient Funds

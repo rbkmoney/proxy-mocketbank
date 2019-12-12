@@ -1,8 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
+@Getter
+@RequiredArgsConstructor
 public enum MocketBankMpiAction {
 
     UNKNOWN("Unknown"),
@@ -24,14 +28,6 @@ public enum MocketBankMpiAction {
     UNKNOWN_FAILURE("Unknown Failure");
 
     private final String action;
-
-    MocketBankMpiAction(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
 
     public static MocketBankMpiAction findByValue(String value) {
         return Arrays.stream(values()).filter((action) -> action.getAction().equals(value))

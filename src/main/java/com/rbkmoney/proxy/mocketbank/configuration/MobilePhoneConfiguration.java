@@ -1,0 +1,40 @@
+package com.rbkmoney.proxy.mocketbank.configuration;
+
+import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@Configuration
+public class MobilePhoneConfiguration {
+
+    @Value("${fixture.mobilephone}")
+    private Resource fixtureMobilePhone;
+
+    @Bean
+    public List<MobilePhone> mobilePhoneList() throws IOException {
+        return extractMobilePhoneListFromFile(fixtureMobilePhone.getInputStream());
+    }
+
+    private static List<MobilePhone> extractMobilePhoneListFromFile(InputStream is) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        return br.lines().skip(1).map(mapToMobilePhone).collect(Collectors.toList());
+    }
+
+    private static Function<String, MobilePhone> mapToMobilePhone = line -> {
+        String[] p = line.split(", ");
+        return new MobilePhone(p[0], p[1], p[2]);
+    };
+}
+
+
+

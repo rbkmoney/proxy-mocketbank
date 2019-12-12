@@ -1,15 +1,17 @@
-package com.rbkmoney.proxy.mocketbank.utils.withdrawal;
+package com.rbkmoney.proxy.mocketbank.handler.oct.converter;
 
 import com.rbkmoney.damsel.withdrawals.provider_adapter.GetQuoteParams;
+import com.rbkmoney.proxy.mocketbank.handler.oct.constant.CryptoCurrencies;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CurrencyConverter {
 
-    private static final String[] CRYPTO_CURRENCY = new String[]{"BTC", "BCH", "LTC", "XRP", "ETH", "ZEC"};
-
     public static boolean isCryptoCurrency(com.rbkmoney.damsel.domain.Currency currency) {
-        return Arrays.asList(CRYPTO_CURRENCY).contains(currency.getSymbolicCode());
+        return Arrays.asList(CryptoCurrencies.toArraySymbol()).contains(currency.getSymbolicCode());
     }
 
     public static boolean isCurrencyEquals(com.rbkmoney.damsel.domain.Currency currencyFrom, com.rbkmoney.damsel.domain.Currency currencyTo) {

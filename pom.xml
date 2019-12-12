@@ -60,11 +60,6 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.logback</groupId>
-            <artifactId>nop-rolling</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>hellgate-adapter-client</artifactId>
             <version>2.1.8</version>
@@ -98,6 +93,11 @@
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
             <version>1.319-21ea944</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>Moneypenny-proto</artifactId>
+            <version>1.4-0cf6620</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.geck</groupId>
