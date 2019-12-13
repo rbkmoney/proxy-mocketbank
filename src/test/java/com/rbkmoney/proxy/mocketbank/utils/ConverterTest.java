@@ -19,7 +19,7 @@ public class ConverterTest {
 
     @Test
     public void testMe() {
-        String tag = SuspendPrefix.RECURRENT + "1112";
+        String tag = SuspendPrefix.RECURRENT.getPrefix() + "1112";
         assertTrue(tag.startsWith(SuspendPrefix.RECURRENT.getPrefix()));
 
         tag = SuspendPrefix.PAYMENT.getPrefix() + "1112";
