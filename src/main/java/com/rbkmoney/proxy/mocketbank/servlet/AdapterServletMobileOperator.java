@@ -1,7 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.servlet;
 
-import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
-import com.rbkmoney.proxy.mocketbank.decorator.MobileServerHandlerLog;
+import com.rbkmoney.mnp.MnpSrv;
+import com.rbkmoney.proxy.mocketbank.decorator.MobileOperatorServerHandlerLog;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
 import lombok.RequiredArgsConstructor;
 
@@ -10,16 +10,16 @@ import javax.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-@WebServlet("/proxy/mocketbank/mobile")
-public class AdapterServletMobile extends GenericServlet {
+@WebServlet("/proxy/mocketbank/mobile/operator")
+public class AdapterServletMobileOperator extends GenericServlet {
 
-    private final transient MobileServerHandlerLog handler;
+    private final transient MobileOperatorServerHandlerLog handler;
     private transient Servlet servlet;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        servlet = new THServiceBuilder().build(ProviderProxySrv.Iface.class, handler);
+        servlet = new THServiceBuilder().build(MnpSrv.Iface.class, handler);
     }
 
     @Override

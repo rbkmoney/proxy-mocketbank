@@ -23,5 +23,5 @@ http(s)//{host}:8080/mocketbank - для внешних запросов
 http(s)//{host}:8022/proxy/mocketbank - для трифтовых запросов (эквайринг)
 http(s)//{host}:8022/proxy/mocketbank/p2p-credit - для трифтовых запросов (p2p credit)
 http(s)//{host}:8022/proxy/mocketbank/mobile/operator - для трифтовых запросов для определения оператора мобильного телефона
-
+http(s)//{host}:8022/proxy/mocketbank/operator - для трифтовых запросов для проведения оплаты с мобильного телефона
 ```

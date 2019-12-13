@@ -1,7 +1,9 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.proxy.mocketbank.decorator.MobileOperatorServerHandlerLog;
+import com.rbkmoney.proxy.mocketbank.decorator.MobileServerHandlerLog;
 import com.rbkmoney.proxy.mocketbank.decorator.WithdrawalServerHandlerLog;
+import com.rbkmoney.proxy.mocketbank.handler.mobile.MobileServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.operator.MobileOperatorServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.oct.OctServerHandler;
 import org.springframework.context.annotation.Bean;
@@ -22,5 +24,12 @@ public class HandlerConfiguration {
     public MobileOperatorServerHandlerLog mobileServerHandlerLog(MobileOperatorServerHandler mobileServerHandler) {
         return new MobileOperatorServerHandlerLog(mobileServerHandler);
     }
+
+    @Bean
+    @Primary
+    public MobileServerHandlerLog mobileServerHandlerLog(MobileServerHandler mobileServerHandler) {
+        return new MobileServerHandlerLog(mobileServerHandler);
+    }
+
 
 }
