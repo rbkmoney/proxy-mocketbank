@@ -21,8 +21,8 @@ public class HandlerConfiguration {
 
     @Bean
     @Primary
-    public MobileOperatorServerHandlerLog mobileServerHandlerLog(MobileOperatorServerHandler mobileServerHandler) {
-        return new MobileOperatorServerHandlerLog(mobileServerHandler);
+    public MobileOperatorServerHandlerLog mobileOperatorServerHandlerLog(MobileOperatorServerHandler mobileOperatorServerHandler) {
+        return new MobileOperatorServerHandlerLog(mobileOperatorServerHandler);
     }
 
     @Bean
@@ -30,6 +30,5 @@ public class HandlerConfiguration {
     public MobileServerHandlerLog mobileServerHandlerLog(MobileServerHandler mobileServerHandler) {
         return new MobileServerHandlerLog(mobileServerHandler);
     }
-
 
 }
