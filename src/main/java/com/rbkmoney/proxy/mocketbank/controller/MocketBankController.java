@@ -3,7 +3,7 @@ package com.rbkmoney.proxy.mocketbank.controller;
 import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
+import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
@@ -49,13 +50,13 @@ public class MocketBankController {
         try {
 
             ByteBuffer response;
-            if (tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG)) {
+            if (tag.startsWith(SuspendPrefix.RECURRENT.getPrefix())) {
                 response = hellgateClient.processRecurrentTokenCallback(tag, callback);
             } else {
                 response = hellgateClient.processPaymentCallback(tag, callback);
             }
 
-            resp = new String(response.array(), "UTF-8");
+            resp = new String(response.array(), StandardCharsets.UTF_8);
         } catch (HellgateException e) {
             log.warn("Exception in processPaymentCallback", e);
         } catch (Exception e) {

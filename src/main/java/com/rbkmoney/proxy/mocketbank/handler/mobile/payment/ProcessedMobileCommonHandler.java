@@ -15,7 +15,7 @@ import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhoneAction;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhoneUtils;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.PaymentState;
+import com.rbkmoney.proxy.mocketbank.utils.state.constant.PaymentState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -62,7 +62,7 @@ public class ProcessedMobileCommonHandler implements CommonMobileHandler {
         TransactionInfo transactionInfo = createTransactionInfo(
                 PaymentUtils.generateTransactionId(context.getPaymentInfo()), Collections.emptyMap()
         );
-        return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo);
+        return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getState().getBytes(), transactionInfo);
     }
 
 }

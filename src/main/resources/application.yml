@@ -20,7 +20,7 @@ server:
     port: @server.rest.port@
     endpoint: mocketbank
 ---
-proxy-mocketbank-mpi:
+adapter-mock-mpi:
   url: http://127.0.0.1:8018
 ---
 proxy-mocketbank:

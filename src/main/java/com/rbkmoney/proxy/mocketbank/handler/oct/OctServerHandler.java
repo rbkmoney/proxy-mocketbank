@@ -51,11 +51,15 @@ public class OctServerHandler implements AdapterSrv.Iface {
                 .setCashTo(cashTo)
                 .setCashFrom(cashFrom)
                 .setQuoteData(quoteData)
-                .setCreatedAt(String.valueOf(Instant.EPOCH.toEpochMilli()))
-                .setExpiresOn(String.valueOf(Instant.EPOCH
+                .setCreatedAt(getCurrentDateTimeByPattern(Instant.EPOCH.toEpochMilli()))
+                .setExpiresOn(getCurrentDateTimeByPattern(Instant.EPOCH
                         .plus(15, ChronoUnit.MINUTES)
                         .toEpochMilli())
                 );
+    }
+
+    private static String getCurrentDateTimeByPattern(Long timestamp) {
+        return Instant.ofEpochMilli(timestamp).toString();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant;
 
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +8,7 @@ import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
-public enum MocketBankMpiAction {
+public enum MpiAction {
 
     UNKNOWN("Unknown"),
     UNSUPPORTED_CARD("Unsupported Card"),
@@ -29,10 +30,27 @@ public enum MocketBankMpiAction {
 
     private final String action;
 
-    public static MocketBankMpiAction findByValue(String value) {
+    public static MpiAction findByValue(String value) {
         return Arrays.stream(values()).filter((action) -> action.getAction().equals(value))
                 .findFirst()
                 .orElse(UNKNOWN);
+    }
+
+    public static boolean isCardEnrolled(Card card) {
+        MpiAction action = MpiAction.findByValue(card.getAction());
+        return MpiAction.isCardEnrolled(action);
+    }
+
+    public static boolean isCardEnrolled(MpiAction action) {
+        return Arrays.asList(enrolledCard()).contains(action);
+    }
+
+    private static MpiAction[] enrolledCard() {
+        return new MpiAction[]{
+                THREE_D_SECURE_FAILURE,
+                THREE_D_SECURE_TIMEOUT,
+                THREE_D_SECURE_SUCCESS
+        };
     }
 
 }
