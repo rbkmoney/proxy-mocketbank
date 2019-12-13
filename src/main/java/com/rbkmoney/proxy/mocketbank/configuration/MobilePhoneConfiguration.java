@@ -35,6 +35,3 @@ public class MobilePhoneConfiguration {
         return new MobilePhone(p[0], p[1], p[2]);
     };
 }
-
-
-
