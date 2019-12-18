@@ -19,7 +19,7 @@ public class CapturedMobileCommonHandler implements CommonMobileHandler {
 
     @Override
     public boolean filter(TargetInvoicePaymentStatus targetInvoicePaymentStatus, PaymentResource paymentResource) {
-        return (targetInvoicePaymentStatus.isSetCaptured());
+        return targetInvoicePaymentStatus.isSetCaptured();
     }
 
     @Override

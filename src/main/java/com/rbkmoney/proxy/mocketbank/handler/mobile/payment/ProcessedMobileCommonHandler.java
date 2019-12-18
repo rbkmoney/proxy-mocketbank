@@ -7,8 +7,7 @@ import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
-import com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors;
-import com.rbkmoney.proxy.mocketbank.extractor.ProxyProviderPackageExtractorsExtends;
+import com.rbkmoney.proxy.mocketbank.extractor.ProxyProviderPackageExtractors;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.CommonMobileHandler;
 import com.rbkmoney.proxy.mocketbank.utils.PaymentUtils;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
@@ -38,13 +37,13 @@ public class ProcessedMobileCommonHandler implements CommonMobileHandler {
 
     @Override
     public boolean filter(TargetInvoicePaymentStatus targetInvoicePaymentStatus, PaymentResource paymentResource) {
-        return (targetInvoicePaymentStatus.isSetProcessed());
+        return targetInvoicePaymentStatus.isSetProcessed();
     }
 
     @Override
     public PaymentProxyResult handler(PaymentContext context) throws TException {
-        PaymentResource paymentResource = ProxyProviderPackageExtractors.extractPaymentResource(context);
-        PaymentTool paymentTool = ProxyProviderPackageExtractorsExtends.extractPaymentTool(paymentResource);
+        PaymentResource paymentResource = com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(context);
+        PaymentTool paymentTool = ProxyProviderPackageExtractors.extractPaymentTool(paymentResource);
         String phoneNumber = MobilePhoneUtils.preparePhoneNumber(paymentTool.getMobileCommerce().getPhone());
         Optional<MobilePhone> mobilePhone = MobilePhoneUtils.extractPhoneByNumber(mobilePhones, phoneNumber);
 

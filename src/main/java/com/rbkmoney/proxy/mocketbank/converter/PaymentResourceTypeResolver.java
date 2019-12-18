@@ -23,8 +23,4 @@ public class PaymentResourceTypeResolver {
                 : PaymentResourceType.PAYMENT.name();
     }
 
-    public enum PaymentResourceType {
-        RECURRENT,
-        PAYMENT
-    }
 }
