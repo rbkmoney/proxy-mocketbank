@@ -13,7 +13,7 @@ public interface BeanReader<R> {
 
     default List<R> extractListFromFile(InputStream is, Function<String, R> func) {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        return br.lines().skip(1).map(ob ->  func.apply(ob)).collect(Collectors.toList());
+        return br.lines().skip(1).map(func).collect(Collectors.toList());
     }
 
 }
