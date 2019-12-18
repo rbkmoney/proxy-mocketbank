@@ -1,10 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.utils.extractor;
 
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.List;
 
+@Component
 public class MobilePhoneReader implements BeanReader<MobilePhone> {
 
     private static final String REGEXP = ", ";

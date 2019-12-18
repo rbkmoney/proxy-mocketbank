@@ -1,10 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.utils.extractor;
 
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.List;
 
+@Component
 public class CardReader implements BeanReader<Card> {
 
     private static final String REGEXP = ", ";

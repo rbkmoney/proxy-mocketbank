@@ -17,8 +17,8 @@ public class CardListConfiguration {
     private Resource fixtureCards;
 
     @Bean
-    public List<Card> cardList() throws IOException {
-        return new CardReader().readList(fixtureCards.getInputStream());
+    public List<Card> cardList(CardReader reader) throws IOException {
+        return reader.readList(fixtureCards.getInputStream());
     }
 
 }

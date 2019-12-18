@@ -17,8 +17,8 @@ public class MobilePhoneConfiguration {
     private Resource fixtureMobilePhone;
 
     @Bean
-    public List<MobilePhone> mobilePhoneList() throws IOException {
-        return new MobilePhoneReader().readList(fixtureMobilePhone.getInputStream());
+    public List<MobilePhone> mobilePhoneList(MobilePhoneReader reader) throws IOException {
+        return reader.readList(fixtureMobilePhone.getInputStream());
     }
 
 }
