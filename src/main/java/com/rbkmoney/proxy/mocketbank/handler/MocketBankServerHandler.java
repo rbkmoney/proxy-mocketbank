@@ -481,11 +481,18 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         String invoiceId = context.getPaymentInfo().getInvoice().getId();
         log.info("Refunded start with invoiceId {}", invoiceId);
         InvoicePaymentRefund invoicePaymentRefund = context.getPaymentInfo().getRefund();
+        TransactionInfo paymentRefundTrx = invoicePaymentRefund.getTrx();
+        TransactionInfo transactionInfo;
+        if (paymentRefundTrx == null || paymentRefundTrx.getId() == null) {
+            transactionInfo = createTransactionInfo(invoicePaymentRefund.getId(), options);
+        } else {
+            transactionInfo = paymentRefundTrx;
+        }
 
         PaymentProxyResult proxyResult = createPaymentProxyResult(
                 createFinishIntentSuccess(),
                 PaymentState.REFUNDED.getState().getBytes(),
-                invoicePaymentRefund.getTrx()
+                transactionInfo
         );
         log.info("Refunded end: proxyResult {} with invoiceId {}", proxyResult, invoiceId);
         return proxyResult;
