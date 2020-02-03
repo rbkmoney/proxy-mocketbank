@@ -1,32 +1,35 @@
 package com.rbkmoney.proxy.mocketbank.utils.mocketbank.model;
 
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiRequestField;
+import com.rbkmoney.proxy.mocketbank.utils.model.CreditCardUtils;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-public class ValidatePaResRequest {
+@Data
+@Builder
+@RequiredArgsConstructor
+public class ValidatePaResRequest implements PrepareFieldsObject {
 
-    private String pan;
-    private String paRes;
+    private final String pan;
+    private final String paRes;
 
-    public String getPan() {
-        return pan;
-    }
-
-    public void setPan(String pan) {
-        this.pan = pan;
-    }
-
-    public String getPaRes() {
-        return paRes;
-    }
-
-    public void setPaRes(String paRes) {
-        this.paRes = paRes;
+    @Override
+    public MultiValueMap<String, Object> prepareFields() {
+        MultiValueMap<String, Object> prepareFields = new LinkedMultiValueMap<>();
+        prepareFields.add(MpiRequestField.PAN.getValue(), pan);
+        prepareFields.add(MpiRequestField.PARES.getValue(), paRes);
+        return prepareFields;
     }
 
     @Override
     public String toString() {
         return "ValidatePaResRequest{" +
-                "pan='" + pan + '\'' +
+                "pan='" + CreditCardUtils.maskNumber(pan) + '\'' +
                 ", paRes='" + paRes + '\'' +
                 '}';
     }
+
 }

@@ -2,10 +2,9 @@ package com.rbkmoney.proxy.mocketbank.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MocketBankTag;
+import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,20 +14,16 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
+@Slf4j
 public class ConverterTest {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(ConverterTest.class);
 
     @Test
     public void testMe() {
-        String tag = MocketBankTag.RECURRENT_SUSPEND_TAG + "1112";
+        String tag = SuspendPrefix.RECURRENT.getPrefix() + "1112";
+        assertTrue(tag.startsWith(SuspendPrefix.RECURRENT.getPrefix()));
 
-        assertTrue(tag.startsWith(MocketBankTag.RECURRENT_SUSPEND_TAG));
-
-        tag = MocketBankTag.PAYMENT_SUSPEND_TAG + "1112";
-
-        assertTrue(tag.startsWith(MocketBankTag.PAYMENT_SUSPEND_TAG));
+        tag = SuspendPrefix.PAYMENT.getPrefix() + "1112";
+        assertTrue(tag.startsWith(SuspendPrefix.PAYMENT.getPrefix()));
     }
 
     @Test
@@ -82,9 +77,9 @@ public class ConverterTest {
         String json = objectMapper.writeValueAsString(map);
         byte[] bytes = json.getBytes();
 
-        LOGGER.info(json);
-        LOGGER.info(bytes.toString());
-        LOGGER.info(new String(bytes));
+        log.info(json);
+        log.info(bytes.toString());
+        log.info(new String(bytes));
 
         ByteBuffer buffer = ByteBuffer.wrap(json.getBytes());
 
@@ -92,8 +87,7 @@ public class ConverterTest {
                 new TypeReference<Map<String, Object>>() {
                 });
 
-        LOGGER.info("Expected mapObject key1={}", mapObject.get("key1"));
-
+        log.info("Expected mapObject key1={}", mapObject.get("key1"));
         assertEquals("value1", mapObject.get("key1"));
     }
 

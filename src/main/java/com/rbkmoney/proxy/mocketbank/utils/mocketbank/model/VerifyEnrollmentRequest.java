@@ -1,40 +1,35 @@
 package com.rbkmoney.proxy.mocketbank.utils.mocketbank.model;
 
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiRequestField;
+import com.rbkmoney.proxy.mocketbank.utils.model.CreditCardUtils;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-public class VerifyEnrollmentRequest {
+@Data
+@Builder
+@RequiredArgsConstructor
+public class VerifyEnrollmentRequest implements PrepareFieldsObject {
 
-    private String pan;
-    private String year;
-    private String month;
+    private final String pan;
+    private final short year;
+    private final byte month;
 
-    public String getPan() {
-        return pan;
-    }
-
-    public void setPan(String pan) {
-        this.pan = pan;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public String getMonth() {
-        return month;
-    }
-
-    public void setMonth(String month) {
-        this.month = month;
+    @Override
+    public MultiValueMap<String, Object> prepareFields() {
+        MultiValueMap<String, Object> prepareFields = new LinkedMultiValueMap<>();
+        prepareFields.add(MpiRequestField.PAN.getValue(), pan);
+        prepareFields.add(MpiRequestField.YEAR.getValue(), String.valueOf(year));
+        prepareFields.add(MpiRequestField.MONTH.getValue(), String.valueOf(month));
+        return prepareFields;
     }
 
     @Override
     public String toString() {
         return "VerifyEnrollmentRequest{" +
-                "pan='" + pan + '\'' +
+                "pan='" + CreditCardUtils.maskNumber(pan) + '\'' +
                 ", year='" + year + '\'' +
                 ", month='" + month + '\'' +
                 '}';

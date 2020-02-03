@@ -20,7 +20,7 @@ server:
     port: @server.rest.port@
     endpoint: mocketbank
 ---
-proxy-mocketbank-mpi:
+adapter-mock-mpi:
   url: http://127.0.0.1:8018
 ---
 proxy-mocketbank:
@@ -46,9 +46,14 @@ timer:
 ---
 fixture:
   cards: classpath:fixture/cards.csv
+  mobilephone: classpath:fixture/mobilephone.csv
 ---
-restTemplate:
-  networkTimeout: 5000
+rest-template:
+  requestTimeout: 60000
+  poolTimeout: 10000
+  connectionTimeout: 10000
+  maxTotalPooling: 200
+  defaultMaxPerRoute: 200
 ---
 error-mapping:
   file: classpath:fixture/errors.json

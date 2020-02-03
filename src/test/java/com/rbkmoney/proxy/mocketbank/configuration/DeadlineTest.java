@@ -9,7 +9,7 @@ import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
-import com.rbkmoney.woody.api.flow.error.WUndefinedResultException;
+import com.rbkmoney.woody.api.flow.error.WUnavailableResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import org.apache.thrift.TException;
 import org.junit.Before;
@@ -28,7 +28,7 @@ import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.crea
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makeCurrency;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makePaymentTool;
 import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper.*;
-import static com.rbkmoney.woody.api.flow.error.WErrorType.UNEXPECTED_ERROR;
+import static com.rbkmoney.woody.api.flow.error.WErrorType.UNAVAILABLE_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -70,11 +70,11 @@ public class DeadlineTest {
             deadlineTest();
             fail();
         } catch (WRuntimeException ex) {
-            assertEquals(UNEXPECTED_ERROR, ex.getErrorDefinition().getErrorType());
+            assertEquals(UNAVAILABLE_RESULT, ex.getErrorDefinition().getErrorType());
         }
     }
 
-    @Test(expected = WUndefinedResultException.class)
+    @Test(expected = WUnavailableResultException.class)
     public void moreThenDeadlineTest() throws TException {
         SLEEP_FOR_BANK_CONTROLLER = TIMEOUT + 2000;
         deadlineTest();
