@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
 import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.PaymentUtils;
 import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
@@ -36,6 +37,7 @@ import java.util.*;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTransactionInfo;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
+import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractBankCard;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isUndefinedResultOrUnavailable;
 import static com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiAction.*;
 
@@ -131,11 +133,15 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             return proxyResult;
         }
 
+        BankCard bankCard = extractBankCard(context);
+
+        byte month = prepareMonth(cardData, bankCard);
+        short year = prepareYear(cardData, bankCard);
         VerifyEnrollmentResponse verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                 VerifyEnrollmentRequest.builder()
                         .pan(cardData.getPan())
-                        .year(cardData.getExpDate().getYear())
-                        .month(cardData.getExpDate().getMonth())
+                        .year(year)
+                        .month(month)
                         .build());
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE.getStatus())) {
@@ -197,10 +203,10 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         CardData cardData = cds.getCardData(token);
 
         ValidatePaResResponse validatePaResResponse = mocketBankMpiApi.validatePaRes(
-                    ValidatePaResRequest.builder()
-                    .pan(cardData.getPan())
-                    .paRes(parameters.get("paRes"))
-                    .build());
+                ValidatePaResRequest.builder()
+                        .pan(cardData.getPan())
+                        .paRes(parameters.get("paRes"))
+                        .build());
 
         log.info("handleRecurrentTokenCallback: validatePaResResponse {}", validatePaResResponse);
 
@@ -397,12 +403,15 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
             return proxyResult;
         }
 
+        BankCard bankCard = ProxyProviderPackageExtractors.extractBankCard(context);
+        byte month = prepareMonth(cardData, bankCard);
+        short year = prepareYear(cardData, bankCard);
         VerifyEnrollmentResponse verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
-                    VerifyEnrollmentRequest.builder()
-                    .pan(cardData.getPan())
-                    .year(cardData.getExpDate().getYear())
-                    .month(cardData.getExpDate().getMonth())
-                    .build());
+                VerifyEnrollmentRequest.builder()
+                        .pan(cardData.getPan())
+                        .year(year)
+                        .month(month)
+                        .build());
 
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE.getStatus())) {
@@ -599,6 +608,29 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         return Optional.empty();
+    }
+
+
+    private short prepareYear(CardData cardData, BankCard bankCard) {
+        short year;
+        if (cardData.isSetExpDate()) {
+            year = cardData.getExpDate().getYear();
+        } else if (bankCard.isSetExpDate()) {
+            year = bankCard.getExpDate().getYear();
+        } else {
+            throw new RuntimeException("Can't get ExpDate");
+        }
+        return year;
+    }
+
+    private byte prepareMonth(CardData cardData, BankCard bankCard) {
+        if (cardData.isSetExpDate()) {
+            return cardData.getExpDate().getMonth();
+        } else if (bankCard.isSetExpDate()) {
+            return bankCard.getExpDate().getMonth();
+        } else {
+            throw new RuntimeException("Can't get ExpDate Month");
+        }
     }
 
 }

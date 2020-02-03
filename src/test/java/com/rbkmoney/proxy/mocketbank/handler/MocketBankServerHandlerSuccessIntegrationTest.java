@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
+import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
@@ -225,6 +226,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest {
         SessionData sessionData = CdsWrapper.makeSessionData(authData);
 
         PutCardDataResult putCardDataResponse = cds.putCardData(cardData, sessionData);
+        putCardDataResponse.getBankCard().setExpDate(TestData.makeBankCard().getExpDate());
         LOGGER.info("CDS: put card response {}", putCardDataResponse);
         return putCardDataResponse;
     }

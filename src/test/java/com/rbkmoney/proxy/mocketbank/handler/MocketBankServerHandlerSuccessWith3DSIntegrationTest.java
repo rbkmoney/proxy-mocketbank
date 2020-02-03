@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.cds.*;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
 import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
@@ -225,6 +226,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
         SessionData sessionData = CdsWrapper.makeSessionData(authData);
 
         PutCardDataResult putCardDataResponse = cds.putCardData(cardData, sessionData);
+        putCardDataResponse.getBankCard().setExpDate(TestData.makeBankCard().getExpDate());
         LOGGER.info("CDS: put card response {}", putCardDataResponse);
         return putCardDataResponse;
     }
