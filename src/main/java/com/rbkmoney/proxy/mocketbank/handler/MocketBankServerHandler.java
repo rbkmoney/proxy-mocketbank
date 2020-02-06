@@ -134,14 +134,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         BankCard bankCard = extractBankCard(context);
-
-        byte month = prepareMonth(cardData, bankCard);
-        short year = prepareYear(cardData, bankCard);
         VerifyEnrollmentResponse verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                 VerifyEnrollmentRequest.builder()
                         .pan(cardData.getPan())
-                        .year(year)
-                        .month(month)
+                        .year(prepareYear(cardData, bankCard))
+                        .month(prepareMonth(cardData, bankCard))
                         .build());
 
         if (verifyEnrollmentResponse.getEnrolled().equals(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE.getStatus())) {
@@ -404,13 +401,11 @@ public class MocketBankServerHandler implements ProviderProxySrv.Iface {
         }
 
         BankCard bankCard = ProxyProviderPackageExtractors.extractBankCard(context);
-        byte month = prepareMonth(cardData, bankCard);
-        short year = prepareYear(cardData, bankCard);
         VerifyEnrollmentResponse verifyEnrollmentResponse = mocketBankMpiApi.verifyEnrollment(
                 VerifyEnrollmentRequest.builder()
                         .pan(cardData.getPan())
-                        .year(year)
-                        .month(month)
+                        .year(prepareYear(cardData, bankCard))
+                        .month(prepareMonth(cardData, bankCard))
                         .build());
 
 
