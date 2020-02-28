@@ -1,9 +1,10 @@
 package com.rbkmoney.proxy.mocketbank.extractor;
 
 import com.rbkmoney.damsel.p2p_adapter.Context;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class P2pAdapterExtractors {
 
     public static String extractOperationId(Context context) {

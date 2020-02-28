@@ -2,6 +2,7 @@ package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
 import com.rbkmoney.damsel.p2p_adapter.*;
 import com.rbkmoney.proxy.mocketbank.creator.P2pAdapterCreator;
+import com.rbkmoney.proxy.mocketbank.exception.UnsupportedOperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Component;

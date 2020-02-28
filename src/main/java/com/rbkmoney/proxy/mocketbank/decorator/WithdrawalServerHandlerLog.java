@@ -17,13 +17,13 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
     @Override
     public ProcessResult processWithdrawal(Withdrawal withdrawal, Value state, Map<String, String> options) throws TException {
         String withdrawalId = withdrawal.getId();
-        log.info("processWithdrawal: start with withdrawalId='{}'", withdrawalId);
+        log.info("processWithdrawal: start with withdrawalId={}", withdrawalId);
         try {
             ProcessResult processResult = handler.processWithdrawal(withdrawal, state, options);
-            log.info("processWithdrawal: finish {} with withdrawalId='{}'", processResult, withdrawalId);
+            log.info("processWithdrawal: finish {} with withdrawalId={}", processResult, withdrawalId);
             return processResult;
         } catch (Exception ex) {
-            String message = String.format("Failed processWithdrawal with withdrawalId='%s'", withdrawalId);
+            String message = String.format("Failed processWithdrawal with withdrawalId=%s", withdrawalId);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }
@@ -32,13 +32,13 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
     @Override
     public Quote getQuote(GetQuoteParams params, Map<String, String> options) throws TException {
         String idempotencyId = params.getIdempotencyId();
-        log.info("getQuote: start with idempotencyId='{}'", idempotencyId);
+        log.info("getQuote: start with idempotencyId={}", idempotencyId);
         try {
             Quote quote = handler.getQuote(params, options);
-            log.info("getQuote: finish {} with idempotencyId='{}'", quote, idempotencyId);
+            log.info("getQuote: finish {} with idempotencyId={}", quote, idempotencyId);
             return quote;
         } catch (Exception ex) {
-            String message = String.format("Failed getQuote with idempotencyId='%s'", idempotencyId);
+            String message = String.format("Failed getQuote with idempotencyId=%s", idempotencyId);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }

@@ -13,13 +13,13 @@ public class MobileOperatorServerHandlerLog implements MnpSrv.Iface {
 
     @Override
     public ResponseData lookup(RequestParams requestParams) throws BadPhoneFormat, OperatorNotFound, TException {
-        log.info("Lookup: start with requestParams='{}'", requestParams);
+        log.info("Lookup: start with requestParams={}", requestParams);
         try {
             ResponseData responseData = handler.lookup(requestParams);
-            log.info("Lookup: finish {} with requestParams='{}'", responseData, requestParams);
+            log.info("Lookup: finish {} with requestParams={}", responseData, requestParams);
             return responseData;
         } catch (Exception ex) {
-            String message = String.format("Failed Lookup with requestParams='%s'", requestParams);
+            String message = String.format("Failed Lookup with requestParams=%s", requestParams);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }

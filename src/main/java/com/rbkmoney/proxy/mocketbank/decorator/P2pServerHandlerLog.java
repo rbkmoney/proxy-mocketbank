@@ -15,13 +15,13 @@ public class P2pServerHandlerLog implements P2PAdapterSrv.Iface {
     @Override
     public ProcessResult process(Context context) throws TException {
         String sessionId = P2pAdapterExtractors.extractSessionId(context);
-        log.info("Process started with sessionId='{}'", sessionId);
+        log.info("Process started with sessionId={}", sessionId);
         try {
             ProcessResult result = handler.process(context);
-            log.info("Process finished {} with sessionId='{}'", result, sessionId);
+            log.info("Process finished {} with sessionId={}", result, sessionId);
             return result;
         } catch (Exception ex) {
-            String message = String.format("Failed handle Process with sessionId='%s'", sessionId);
+            String message = String.format("Failed handle Process with sessionId=%s", sessionId);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }
@@ -30,13 +30,13 @@ public class P2pServerHandlerLog implements P2PAdapterSrv.Iface {
     @Override
     public CallbackResult handleCallback(Callback callback, Context context) throws TException {
         String sessionId = P2pAdapterExtractors.extractSessionId(context);
-        log.info("HandleCallback started with sessionId='{}'", sessionId);
+        log.info("HandleCallback started with sessionId={}", sessionId);
         try {
             CallbackResult result = handler.handleCallback(callback, context);
-            log.info("HandleCallback finished {} with sessionId='{}'", result, sessionId);
+            log.info("HandleCallback finished {} with sessionId={}", result, sessionId);
             return result;
         } catch (Exception ex) {
-            String message = String.format("Failed handle HandleCallback with sessionId='%s'", sessionId);
+            String message = String.format("Failed handle HandleCallback with sessionId=%s", sessionId);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }

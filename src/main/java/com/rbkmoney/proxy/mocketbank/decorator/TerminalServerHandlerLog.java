@@ -18,13 +18,13 @@ public class TerminalServerHandlerLog implements ProviderProxySrv.Iface {
     @Override
     public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
         String recurrentId = ProxyProviderPackageExtractors.extractRecurrentId(context);
-        log.info("GenerateToken started with recurrentId='{}'", recurrentId);
+        log.info("GenerateToken started with recurrentId={}", recurrentId);
         try {
             RecurrentTokenProxyResult proxyResult = handler.generateToken(context);
-            log.info("GenerateToken finished {} with recurrentId='{}'", proxyResult, recurrentId);
+            log.info("GenerateToken finished {} with recurrentId={}", proxyResult, recurrentId);
             return proxyResult;
         } catch (Exception ex) {
-            String message = String.format("Failed handle GenerateToken with recurrentId='%s'", recurrentId);
+            String message = String.format("Failed handle GenerateToken with recurrentId=%s", recurrentId);
             ServerHandlerLogUtils.logMessage(ex, message);
             throw ex;
         }
@@ -33,9 +33,9 @@ public class TerminalServerHandlerLog implements ProviderProxySrv.Iface {
     @Override
     public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
         String recurrentId = ProxyProviderPackageExtractors.extractRecurrentId(context);
-        log.info("HandleRecurrentTokenCallback: start with recurrentId='{}'", recurrentId);
+        log.info("HandleRecurrentTokenCallback: start with recurrentId={}", recurrentId);
         RecurrentTokenCallbackResult result = handler.handleRecurrentTokenCallback(byteBuffer, context);
-        log.info("HandleRecurrentTokenCallback end {} with recurrentId='{}'", result, recurrentId);
+        log.info("HandleRecurrentTokenCallback end {} with recurrentId={}", result, recurrentId);
         return result;
     }
 
@@ -44,14 +44,14 @@ public class TerminalServerHandlerLog implements ProviderProxySrv.Iface {
         String invoiceId = ProxyProviderPackageExtractors.extractInvoiceId(context);
         String invoicePaymentStatus = ProxyProviderPackageExtractors.extractTargetInvoicePaymentStatus(context);
         String paymentResourceType = PaymentResourceTypeResolver.extractPaymentResourceType(context);
-        log.info("Process payment handle resource='{}', status='{}' start with invoiceId='{}'", paymentResourceType, invoicePaymentStatus, invoiceId);
+        log.info("Process payment handle resource={}, status={} start with invoiceId={}", paymentResourceType, invoicePaymentStatus, invoiceId);
         try {
             PaymentProxyResult proxyResult = handler.processPayment(context);
-            log.info("Process payment handle resource='{}', status='{}' finished with invoiceId='{}' and proxyResult='{}'",
+            log.info("Process payment handle resource={}, status={} finished with invoiceId={} and proxyResult={}",
                     paymentResourceType, invoicePaymentStatus, invoiceId, proxyResult);
             return proxyResult;
         } catch (Exception e) {
-            String message = String.format("Failed handle resource='%s', status='%s' process payment for operation with invoiceId '%s'",
+            String message = String.format("Failed handle resource=%s, status=%s process payment for operation with invoiceId %s",
                     paymentResourceType, invoicePaymentStatus, invoiceId);
             ServerHandlerLogUtils.logMessage(e, message);
             throw e;
@@ -61,9 +61,9 @@ public class TerminalServerHandlerLog implements ProviderProxySrv.Iface {
     @Override
     public PaymentCallbackResult handlePaymentCallback(ByteBuffer byteBuffer, PaymentContext context) throws TException {
         String invoiceId = ProxyProviderPackageExtractors.extractInvoiceId(context);
-        log.info("HandlePaymentCallback start with invoiceId='{}'", invoiceId);
+        log.info("HandlePaymentCallback start with invoiceId={}", invoiceId);
         PaymentCallbackResult result = handler.handlePaymentCallback(byteBuffer, context);
-        log.info("HandlePaymentCallback finish {} with invoiceId='{}'", result, invoiceId);
+        log.info("HandlePaymentCallback finish {} with invoiceId={}", result, invoiceId);
         return result;
     }
 }
