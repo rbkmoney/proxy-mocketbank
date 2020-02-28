@@ -5,6 +5,7 @@ import com.rbkmoney.damsel.p2p_adapter.Context;
 import com.rbkmoney.damsel.p2p_adapter.ProcessResult;
 import com.rbkmoney.proxy.mocketbank.utils.p2p.creator.P2pCreator;
 import com.rbkmoney.proxy.mocketbank.utils.p2p.verification.P2pVerification;
+import com.rbkmoney.proxy.mocketbank.exception.UnsupportedOperationException;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
