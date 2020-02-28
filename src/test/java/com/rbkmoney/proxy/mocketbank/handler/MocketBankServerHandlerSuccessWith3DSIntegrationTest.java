@@ -1,25 +1,18 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
-import com.rbkmoney.damsel.cds.*;
-import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
-import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.damsel.domain.BankCard;
+import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
+import com.rbkmoney.damsel.proxy_provider.PaymentContext;
+import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyWrapper;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiEnrollmentStatus;
+import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiTransactionStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,208 +20,65 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetCaptured;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
+import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
+import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuspend;
+import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
-                "merchant.id=24275801",
-                "merchant.name=RBKmoney1",
-                "merchant.url=http://localhost",
-                "merchant.acquirerBin=422538",
-                "merchant.password=",
-                "merchant.countryCode=643",
                 "cds.client.url.storage.url=http://127.0.0.1:8021/v1/storage",
                 "proxy-mocketbank-mpi.url=http://127.0.0.1:8018",
         }
 )
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@Ignore("Integration test")
-public class MocketBankServerHandlerSuccessWith3DSIntegrationTest {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(MocketBankServerHandlerSuccessWith3DSIntegrationTest.class);
-
-    @ClassRule
-    public final static IntegrationBaseRule rule = new IntegrationBaseRule();
-
-    @Autowired
-    private MocketBankServerHandler handler;
-
-    @Autowired
-    protected com.rbkmoney.damsel.cds.StorageSrv.Iface cds;
-
-    @Value("${merchant.id}")
-    private String merchantId;
-
-    @Value("${merchant.name}")
-    private String merchantName;
-
-    @Value("${merchant.url}")
-    private String merchantUrl;
-
-    @Value("${merchant.acquirerBin}")
-    private String merchantAcquirerBin;
-
-    @Value("${merchant.password}")
-    private String merchantPassword;
-
-    @Value("${merchant.countryCode}")
-    private String merchantCountryCode;
-
-    private String invoiceId = "TEST_INVOICE" + (int) (Math.random() * 50 + 1);
-    private String paymentId = "TEST_PAYMENT" + (int) (Math.random() * 50 + 1);
-
-    @Before
-    public void setUp() {
-        // Connect to CDS
-        // TODO используется лишь в первый раз при запуске теста для разблокировки ключа
-        // UnlockStatus unlockStatus = cdsUnlockKey((short) 1, (short) 1);
-    }
+public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends IntegrationTest {
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
         String[] cards = {
-            "4012888888881881",
-            "5169147129584558",
+                "4012888888881881",
+                "5169147129584558",
         };
 
-        // Put the card and save the response to a subsequent request
-        for (String card: cards) {
-            CardData cardData = CdsWrapper.makeCardDataWithExpDate(
-                    "NONAME", "123", card, Byte.parseByte("12"), Short.parseShort("2020")
-            );
+        for (String card : cards) {
+            CardData cardData = createCardData(card);
             processPaymentSuccess(cardData);
         }
-
     }
 
-    private void processPaymentSuccess(CardData cardData) throws TException, URISyntaxException, IOException {
-        PutCardDataResult putCardDataResponse = cdsPutCardData(cardData);
+    private void processPaymentSuccess(CardData cardData) throws TException, IOException {
+        BankCard bankCard = TestData.createBankCard(cardData);
+        mockCds(cardData, bankCard);
+        mockMpiVerify(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE);
+        mockMpi(MpiTransactionStatus.AUTHENTICATION_SUCCESSFUL);
 
-        PaymentProxyResult processResultPayment = handler.processPayment(
-                getContext(
-                        putCardDataResponse,
-                        ProxyProviderWrapper.makeTargetProcessed(),
-                        null
-                )
-        );
+        PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null);
+        PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
+        assertTrue("Process payment is`n suspend", isSuspend(proxyResult));
 
-        // Process Payment
-        assertTrue("Process payment ", !processResultPayment.getIntent().getSuspend().getTag().isEmpty());
-
-
-        // Prepare handlePaymentCallback
         Map<String, String> mapCallback = new HashMap<>();
         mapCallback.put("MD", "MD-TAG");
         mapCallback.put("paRes", "SomePaRes");
-
+        paymentContext.getSession().setState(proxyResult.getNextState());
         ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
-        // handlePaymentCallback
-        PaymentCallbackResult callbackResult = handler.handlePaymentCallback(
-                callbackMap, getContext(putCardDataResponse, null, null)
-        );
+        PaymentCallbackResult callbackResult = handler.handlePaymentCallback(callbackMap, paymentContext);
+        assertTrue("CallbackResult ", isCallbackSuccess(callbackResult));
 
-        assertTrue("CallbackResult ", callbackResult.getResult().getIntent().getFinish().getStatus().isSetSuccess());
-
-        LOGGER.info("Call capture payment");
-        // Обрабатываем ответ и вызываем CapturePayment
-        PaymentProxyResult processResultCapture = handler.processPayment(
-                getContext(
-                        putCardDataResponse,
-                        ProxyProviderWrapper.makeTargetCaptured(),
-                        DomainWrapper.makeTransactionInfo(
-                                callbackResult.getResult().getTrx().getId(),
-                                Collections.emptyMap()
-                        )
-                )
-        );
-
-        assertEquals("Process Capture ", ProxyWrapper.makeFinishStatusSuccess(), processResultCapture.getIntent().getFinish().getStatus());
-
-        // Обрабатываем ответ
-        LOGGER.info("Response capture payment {}", processResultCapture.toString());
-    }
-
-    private Map<String, String> getOptionsProxy() {
-        return Collections.emptyMap();
-    }
-
-    private PaymentInfo getPaymentInfo(PutCardDataResult putCardDataResponse, TransactionInfo transactionInfo) {
-        return ProxyProviderWrapper.makePaymentInfo(
-                ProxyProviderWrapper.makeInvoice(
-                        invoiceId,
-                        "2016-06-02",
-                        getCost()
-                ),
-                ProxyProviderWrapper.makeShop(
-                        DomainWrapper.makeCategory("CategoryName", "Category description"),
-                        DomainWrapper.makeShopDetails("ShopName", "Shop description")
-                ),
-                ProxyProviderWrapper.makeInvoicePaymentWithTrX(
-                        paymentId,
-                        "2016-06-02",
-                        getPaymentResource(putCardDataResponse),
-                        getCost(),
-                        transactionInfo,
-                        Boolean.FALSE
-                )
-        );
-    }
-
-    private PaymentResource getPaymentResource(PutCardDataResult putCardDataResponse) {
-        return ProxyProviderWrapper.makePaymentResourceDisposablePaymentResource(
-                DomainWrapper.makeDisposablePaymentResource(
-                        DomainWrapper.makeClientInfo("fingerprint", "ip"),
-                        putCardDataResponse.getSessionId(),
-                        DomainWrapper.makePaymentTool(putCardDataResponse.getBankCard())
-                )
-        );
-    }
-
-    private byte[] getSessionState() throws IOException {
-        Map<String, String> extra = new HashMap<>();
-        extra.put("paReq","paReq");
-        return Converter.mapToByteArray(extra);
-    }
-
-    private PaymentContext getContext(PutCardDataResult putCardDataResult, TargetInvoicePaymentStatus target, TransactionInfo transactionInfo) throws IOException {
-        return ProxyProviderWrapper.makeContext(
-                getPaymentInfo(putCardDataResult, transactionInfo),
-                ProxyProviderWrapper.makeSession(
-                        target,
-                        getSessionState()
-                ),
-                getOptionsProxy()
-        );
-    }
-
-
-    private Cash getCost() {
-        return ProxyProviderWrapper.makeCash(
-                ProxyProviderWrapper.makeCurrency("Rubles", (short) 643, "RUB", (short) 2),
-                10000L
-        );
-    }
-
-    protected PutCardDataResult cdsPutCardData(CardData cardData) throws TException {
-        LOGGER.info("CDS: put card request start");
-
-        Auth3DS auth3DS = CdsWrapper.makeAuth3DS("jKfi3B417+zcCBFYbFp3CBUAAAA=", "5");
-        AuthData authData = CdsWrapper.makeAuthDataWithAuth3DS(auth3DS);
-
-        SessionData sessionData = CdsWrapper.makeSessionData(authData);
-
-        PutCardDataResult putCardDataResponse = cds.putCardData(cardData, sessionData);
-        putCardDataResponse.getBankCard().setExpDate(TestData.makeBankCard().getExpDate());
-        LOGGER.info("CDS: put card response {}", putCardDataResponse);
-        return putCardDataResponse;
+        paymentContext.getSession().setTarget(createTargetCaptured());
+        paymentContext.getSession().setState(callbackResult.getResult().getNextState());
+        paymentContext.getPaymentInfo().getPayment().setTrx(callbackResult.getResult().getTrx());
+        PaymentProxyResult processResultCapture = handler.processPayment(paymentContext);
+        assertTrue("Process Capture ", isSuccess(processResultCapture));
     }
 
 }

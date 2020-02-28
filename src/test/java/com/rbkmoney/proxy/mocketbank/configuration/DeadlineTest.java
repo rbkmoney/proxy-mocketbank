@@ -1,13 +1,10 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
-import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
-import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
-import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
-import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
-import com.rbkmoney.proxy.mocketbank.utils.damsel.CdsWrapper;
+import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.proxy_provider.Shop;
+import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import com.rbkmoney.woody.api.flow.error.WUnavailableResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
@@ -24,13 +21,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createBankCardExpDate;
-import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makeCurrency;
-import static com.rbkmoney.proxy.mocketbank.utils.damsel.DomainWrapper.makePaymentTool;
-import static com.rbkmoney.proxy.mocketbank.utils.damsel.ProxyProviderWrapper.*;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
+import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createDisposablePaymentResource;
+import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.woody.api.flow.error.WErrorType.UNAVAILABLE_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -88,39 +85,39 @@ public class DeadlineTest {
     }
 
     private void mockCdsBean() {
-        Mockito.when(cds.getCardData(token)).thenReturn(createCardData());
-    }
-
-    private CardData createCardData() {
-        return CdsWrapper.makeCardDataWithExpDate(
-                "NONAME",
-                "123",
-                "4012888888881881",
-                Byte.parseByte("12"),
-                Short.parseShort("2020")
-        );
+        Mockito.when(cds.getCardData((RecurrentTokenContext) any())).thenReturn(TestData.createCardDataProxyModel("4012888888881881"));
     }
 
     private void deadlineTest() throws TException {
         RecurrentTokenContext context = new RecurrentTokenContext();
         context.setSession(new RecurrentTokenSession());
         context.setTokenInfo(
-                makeRecurrentTokenInfo(
-                        makeRecurrentPaymentTool(
+                createRecurrentTokenInfo(
+                        createRecurrentPaymentTool(
                                 "Recurrent" + (int) (Math.random() * 500 + 1),
-                                makeDisposablePaymentResource(
+                                createDisposablePaymentResource(
                                         "session_id",
-                                        makePaymentTool(
+                                        createPaymentTool(
                                                 new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan").setExpDate(createBankCardExpDate("12","2020"))
                                         )
                                 ),
-                                makeCash(
-                                        makeCurrency("Rubles", (short) 643, "RUB", (short) 1),
+                                createCash(
+                                        createCurrency("Rubles", (short) 643, "RUB", (short) 1),
                                         1000L
                                 )
                         )
-                )
+                ).setShop(prepareShop())
         );
         client.generateToken(context);
+    }
+
+    private Shop prepareShop() {
+        ShopLocation shopLocation = new ShopLocation();
+        shopLocation.setUrl("url");
+        return new Shop()
+                .setId("shop_id")
+                .setCategory(new Category().setName("CategoryName").setDescription("Category description"))
+                .setDetails(new ShopDetails().setName("ShopName").setDescription("Shop description"))
+                .setLocation(shopLocation);
     }
 }

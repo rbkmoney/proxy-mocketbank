@@ -27,6 +27,7 @@
         <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.6</shared.resources.version>
+        <proxy-libs.version>2.1.18</proxy-libs.version>
     </properties>
 
     <dependencies>
@@ -67,22 +68,22 @@
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>hellgate-adapter-client</artifactId>
-            <version>2.1.10</version>
+            <version>${proxy-libs.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-storage</artifactId>
-            <version>2.1.10</version>
+            <version>${proxy-libs.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-identity-document-storage</artifactId>
-            <version>2.1.10</version>
+            <version>${proxy-libs.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel-utils</artifactId>
-            <version>2.1.10</version>
+            <version>${proxy-libs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -129,12 +130,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.palantir.docker.compose</groupId>
-            <artifactId>docker-compose-rule</artifactId>
-            <version>0.28.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
