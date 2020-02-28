@@ -46,7 +46,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
         }
     }
 
-    private void processPayment(CardData cardData) throws TException, IOException {
+    private void processPayment(CardData cardData) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         bankCard.setToken(TestData.BANK_CARD_TOKEN);
         mockCds(cardData, bankCard);
@@ -71,13 +71,13 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
 
         PaymentContext paymentContext = getContext(getPaymentResourceRecurrent(token), createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process payment ", isSuccess(proxyResult));
+        assertTrue("Process payment isn`t success", isSuccess(proxyResult));
 
         paymentContext.getPaymentInfo().getPayment().setTrx(proxyResult.getTrx());
         paymentContext.getSession().setTarget(createTargetCaptured());
 
         PaymentProxyResult processResultCapture = handler.processPayment(paymentContext);
-        assertTrue("Process Capture ", isSuccess(processResultCapture));
+        assertTrue("Process Capture isn`t success ", isSuccess(processResultCapture));
     }
 
 }

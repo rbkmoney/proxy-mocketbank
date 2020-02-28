@@ -18,7 +18,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
+    public void testProcessPaymentSuccess() throws TException, IOException {
         String[] cards = {
                 "4012888888881881",
                 "5169147129584558",
@@ -63,7 +62,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
 
         PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process payment is`n suspend", isSuspend(proxyResult));
+        assertTrue("Process payment isn`t suspend", isSuspend(proxyResult));
 
         Map<String, String> mapCallback = new HashMap<>();
         mapCallback.put("MD", "MD-TAG");
@@ -72,13 +71,13 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
         ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
         PaymentCallbackResult callbackResult = handler.handlePaymentCallback(callbackMap, paymentContext);
-        assertTrue("CallbackResult ", isCallbackSuccess(callbackResult));
+        assertTrue("CallbackResult isn`t success", isCallbackSuccess(callbackResult));
 
         paymentContext.getSession().setTarget(createTargetCaptured());
         paymentContext.getSession().setState(callbackResult.getResult().getNextState());
         paymentContext.getPaymentInfo().getPayment().setTrx(callbackResult.getResult().getTrx());
         PaymentProxyResult processResultCapture = handler.processPayment(paymentContext);
-        assertTrue("Process Capture ", isSuccess(processResultCapture));
+        assertTrue("Process Capture isn`t success", isSuccess(processResultCapture));
     }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
@@ -33,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException, IOException {
+    public void testProcessPaymentSuccess() throws TException {
         String[] cards = {
                 "4242424242424242",
                 "5555555555554444",
@@ -47,16 +46,16 @@ public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTe
         }
     }
 
-    private void processPaymentSuccess(CardData cardData) throws TException, IOException {
+    private void processPaymentSuccess(CardData cardData) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
 
         PaymentProxyResult result = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
-        assertTrue("Process payment is`n success", isSuccess(result));
+        assertTrue("Process payment isn`t success", isSuccess(result));
 
         TransactionInfo trxInfo = createTransactionInfo(result.getTrx().getId(), Collections.emptyMap());
         result = handler.processPayment(getContext(bankCard, createTargetCaptured(), trxInfo));
-        assertTrue("Process Capture is`n success", isSuccess(result));
+        assertTrue("Process Capture isn`t success", isSuccess(result));
     }
 
 }

@@ -41,13 +41,13 @@ public class TerminalServerHandlerTest extends IntegrationTest {
 
         PaymentContext paymentContext = getContext(paymentResource, createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Terminal processPayment is`n success", isSuccess(proxyResult));
+        assertTrue("Terminal processPayment isn`t success", isSuccess(proxyResult));
 
         paymentContext.getPaymentInfo().getPayment().setTrx(proxyResult.getTrx());
         paymentContext.getSession().setTarget(createTargetCaptured());
 
         proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process Capture is`n success", isSuccess(proxyResult));
+        assertTrue("Process Capture isn`t success", isSuccess(proxyResult));
     }
 
 }

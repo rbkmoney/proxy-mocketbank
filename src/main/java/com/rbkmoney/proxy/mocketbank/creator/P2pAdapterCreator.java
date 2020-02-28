@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class P2pAdapterCreator {
 
-    public static final String DELIMETER = ".";
+    public static final String DELIMITER = ".";
 
     public static String createTransactionId(Context context) {
         String operationId = P2pAdapterExtractors.extractOperationId(context);
         String sessionId = P2pAdapterExtractors.extractSessionId(context);
-        return sessionId + DELIMETER + operationId;
+        return sessionId + DELIMITER + operationId;
     }
 
     public static Intent createFinishIntentSuccess() {

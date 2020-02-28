@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isFailure;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
@@ -31,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentFail() throws TException, IOException {
+    public void testProcessPaymentFail() throws TException {
         String[] cards = {
                 "4000000000000002",
                 "5100000000000412",
@@ -51,12 +49,12 @@ public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest 
         }
     }
 
-    private void processPaymentFail(CardData cardData) throws TException, IOException {
+    private void processPaymentFail(CardData cardData) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
 
         PaymentProxyResult processResultPayment = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
-        assertTrue("Process payment ", isFailure(processResultPayment));
+        assertTrue("Process payment isn`t failure", isFailure(processResultPayment));
     }
 
 }

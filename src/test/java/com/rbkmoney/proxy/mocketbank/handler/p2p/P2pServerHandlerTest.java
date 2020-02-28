@@ -27,7 +27,7 @@ public class P2pServerHandlerTest {
     public void testProcess() throws TException {
         Context context = P2pCreator.createContext();
         ProcessResult result = handler.process(context);
-        assertTrue(P2pVerification.isSuccess(result));
+        assertTrue("P2P process isn`t success", P2pVerification.isSuccess(result));
     }
 
     @Test(expected = UnsupportedOperationException.class)

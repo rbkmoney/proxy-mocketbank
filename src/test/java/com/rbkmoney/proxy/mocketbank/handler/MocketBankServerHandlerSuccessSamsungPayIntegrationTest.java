@@ -13,9 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
@@ -33,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerSuccessSamsungPayIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
+    public void testProcessPaymentSuccess() throws TException {
         String[] cards = {
                 "2223577120017656",
         };
@@ -44,13 +41,13 @@ public class MocketBankServerHandlerSuccessSamsungPayIntegrationTest extends Int
         }
     }
 
-    private void processPayment(CardData cardData) throws TException, IOException {
+    private void processPayment(CardData cardData) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         bankCard.setTokenProvider(BankCardTokenProvider.samsungpay);
         mockCds(cardData, bankCard);
 
         PaymentProxyResult proxyResult = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
-        assertTrue("Process payment ", isSuccess(proxyResult));
+        assertTrue("Process payment isn`t success", isSuccess(proxyResult));
     }
 
 }

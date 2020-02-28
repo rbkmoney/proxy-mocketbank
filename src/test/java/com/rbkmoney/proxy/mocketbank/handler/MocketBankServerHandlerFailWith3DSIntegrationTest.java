@@ -62,7 +62,7 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest extends Integrati
 
         PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process payment", isSuspend(proxyResult));
+        assertTrue("Process payment isn`t suspend", isSuspend(proxyResult));
 
         Map<String, String> mapCallback = new HashMap<>();
         mapCallback.put("MD", "MD-TAG");
@@ -71,7 +71,7 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest extends Integrati
         ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
         PaymentCallbackResult callbackResult = handler.handlePaymentCallback(callbackMap, paymentContext);
-        assertTrue("CallbackResult ", isCallbackFailure(callbackResult));
+        assertTrue("CallbackResult isn`t failure", isCallbackFailure(callbackResult));
     }
 
 }

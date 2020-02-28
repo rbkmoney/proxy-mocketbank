@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException, IOException, URISyntaxException {
+    public void testProcessPaymentSuccess() throws TException, IOException {
         String[] cards = {
                 "4012888888881881",
                 "5169147129584558",
@@ -53,7 +52,7 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends I
         }
     }
 
-    private void processPayment(CardData cardData) throws TException, URISyntaxException, IOException {
+    private void processPayment(CardData cardData) throws TException, IOException {
         BankCard bankCard = TestData.createBankCard(cardData);
         bankCard.setToken(TestData.BANK_CARD_TOKEN);
         mockCds(cardData, bankCard);
@@ -75,7 +74,7 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends I
         );
 
         RecurrentTokenProxyResult tokenProxyResult = handler.generateToken(context);
-        assertTrue("GenerateToken is`n suspend", isSuspend(tokenProxyResult));
+        assertTrue("GenerateToken isn`t suspend", isSuspend(tokenProxyResult));
 
         Map<String, String> mapCallback = new HashMap<>();
         mapCallback.put("MD", "MD-TAG");
@@ -84,20 +83,20 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends I
         ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
         RecurrentTokenCallbackResult tokenCallbackResult = handler.handleRecurrentTokenCallback(callbackMap, context);
-        assertTrue("HandleRecurrentTokenCallback is`n success", isRecurrentTokenCallbackSuccess(tokenCallbackResult));
+        assertTrue("HandleRecurrentTokenCallback isn`t success", isRecurrentTokenCallbackSuccess(tokenCallbackResult));
 
         // process
         String token = tokenCallbackResult.getResult().getIntent().getFinish().getStatus().getSuccess().getToken();
 
         PaymentContext paymentContext = getContext(getPaymentResourceRecurrent(token), createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process payment is`n success", isSuccess(proxyResult));
+        assertTrue("Process payment isn`t success", isSuccess(proxyResult));
 
         paymentContext.getPaymentInfo().getPayment().setTrx(proxyResult.getTrx());
         paymentContext.getSession().setTarget(createTargetCaptured());
 
         proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Capture is`n success", isSuccess(proxyResult));
+        assertTrue("Capture isn`t success", isSuccess(proxyResult));
     }
 
 }
