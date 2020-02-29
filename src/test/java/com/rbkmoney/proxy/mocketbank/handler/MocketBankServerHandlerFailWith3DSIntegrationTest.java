@@ -9,6 +9,9 @@ import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiEnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiTransactionStatus;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Mastercard;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.TestCard;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -41,15 +44,15 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest extends Integrati
 
     @Test
     public void testProcessPaymentFail() throws TException, IOException {
-        String[] cards = {
-                "4987654321098769",
-                "5123456789012346",
-                "4342561111111118",
-                "5112000200000002",
+        TestCard[] cards = {
+                Visa.FAILURE_3DS,
+                Mastercard.FAILURE_3DS,
+                Visa.TIMEOUT_3DS,
+                Mastercard.TIMEOUT_3DS
         };
 
-        for (String card : cards) {
-            CardData cardData = createCardData(card);
+        for (TestCard card : cards) {
+            CardData cardData = createCardData(card.getCardNumber());
             processPaymentFail(cardData);
         }
     }

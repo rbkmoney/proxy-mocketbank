@@ -1,0 +1,24 @@
+package com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum Mastercard implements TestCard {
+    SUCCESS("5555555555554444"),
+    SUCCESS_3DS("5169147129584558"),
+    FAILURE_3DS("5123456789012346"),
+    TIMEOUT_3DS("5112000200000002"),
+    INSUFFICIENT_FUNDS("5100000000000412"),
+    INVALID_CARD("5100000000000511"),
+    CVV_MATCH_FAIL("5496198584584769"),
+    EXPIRED("5105105105105100"),
+    UNKNOWN_FAILURE("5124990000000002"),
+    GOOGLE_PAY_FAILURE("2222405343248877"),
+    GOOGLE_PAY_SUCCESS("2222990905257051"),
+    SAMSUNG_PAY_FAILURE("2223007648726984"),
+    SAMSUNG_PAY_SUCCESS("2223577120017656");
+
+    private final String cardNumber;
+}

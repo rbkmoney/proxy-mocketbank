@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -34,14 +35,15 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        String[] cards = {
-                "4242424242424242",
-                "5555555555554444",
-                "586824160825533338",
+        TestCard[] cards = {
+                Visa.SUCCESS,
+                Mastercard.SUCCESS,
+                Maestro.SUCCESS,
+                Mir.SUCCESS
         };
 
-        for (String card : cards) {
-            CardData cardData = createCardData(card);
+        for (TestCard card : cards) {
+            CardData cardData = createCardData(card.getCardNumber());
             processPayment(cardData);
         }
     }
