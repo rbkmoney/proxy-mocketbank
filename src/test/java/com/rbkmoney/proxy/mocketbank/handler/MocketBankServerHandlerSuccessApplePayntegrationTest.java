@@ -5,6 +5,8 @@ import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardTokenProvider;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.TestCard;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -31,12 +33,12 @@ public class MocketBankServerHandlerSuccessApplePayntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] cards = {
-                "5000000000000009",
+        TestCard[] cards = {
+                Visa.APPLE_PAY_FAILURE
         };
 
-        for (String card : cards) {
-            CardData cardData = createCardData(card);
+        for (TestCard card : cards) {
+            CardData cardData = createCardData(card.getCardNumber());
             processPayment(cardData);
         }
     }

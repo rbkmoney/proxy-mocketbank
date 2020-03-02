@@ -4,6 +4,9 @@ import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Mastercard;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.TestCard;
+import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -30,21 +33,21 @@ public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest 
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] cards = {
-                "4000000000000002",
-                "5100000000000412",
-                "4222222222222220",
-                "5100000000000511",
-                "4003830171874018",
-                "5496198584584769",
-                "4000000000000069",
-                "5105105105105100",
-                "4111110000000112",
-                "5124990000000002",
+        TestCard[] cards = {
+                Visa.INSUFFICIENT_FUNDS,
+                Mastercard.INSUFFICIENT_FUNDS,
+                Visa.INVALID_CARD,
+                Mastercard.INVALID_CARD,
+                Visa.CVV_MATCH_FAIL,
+                Mastercard.CVV_MATCH_FAIL,
+                Visa.EXPIRED,
+                Mastercard.EXPIRED,
+                Visa.UNKNOWN_FAILURE,
+                Mastercard.UNKNOWN_FAILURE
         };
 
-        for (String card : cards) {
-            CardData cardData = createCardData(card);
+        for (TestCard card : cards) {
+            CardData cardData = createCardData(card.getCardNumber());
             processPaymentFail(cardData);
         }
     }
