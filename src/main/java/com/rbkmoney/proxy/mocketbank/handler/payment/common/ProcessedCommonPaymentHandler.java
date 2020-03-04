@@ -2,22 +2,26 @@ package com.rbkmoney.proxy.mocketbank.handler.payment.common;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
+import com.rbkmoney.damsel.domain.Failure;
+import com.rbkmoney.damsel.domain.OperationFailure;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.Intent;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
+import com.rbkmoney.damsel.timeout_behaviour.TimeoutBehaviour;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
-import com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator;
 import com.rbkmoney.proxy.mocketbank.handler.payment.CommonPaymentHandler;
+import com.rbkmoney.proxy.mocketbank.service.bank.constant.CustomError;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.ErrorHandler;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
+import com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardUtils;
@@ -32,14 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.rbkmoney.java.damsel.constant.Error.*;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractInvoiceId;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isMakeRecurrent;
-import static com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator.createDefaultTransactionInfo;
-import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
+import static com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator.createDefaultTransactionInfo;
+import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.utils.model.CardAction.*;
 
 @Slf4j
@@ -110,8 +115,12 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         Map<String, String> params = prepareRedirectParams(verifyEnrollmentResponse, tag, termUrl);
         Map<String, String> options = context.getOptions();
         int timerRedirectTimeout = extractRedirectTimeout(options, timerProperties.getRedirectTimeout());
-        return createIntentWithSuspendIntent(
+
+        Intent intent = createIntentWithSuspendIntent(
                 tag, timerRedirectTimeout, createPostUserInteraction(url, params)
         );
+        Failure failure = errorMapping.mapFailure(DEFAULT_ERROR_CODE, CustomError.THREE_DS_NOT_FINISHED);
+        intent.getSuspend().setTimeoutBehaviour(TimeoutBehaviour.operation_failure(OperationFailure.failure(failure)));
+        return intent;
     }
 }
