@@ -40,16 +40,7 @@ public class RecurrentTokenCallbackHandler {
 
     public RecurrentTokenCallbackResult handler(ByteBuffer byteBuffer, RecurrentTokenContext context) {
         String recurrentId = extractRecurrentId(context);
-        HashMap<String, String> parameters;
-        try {
-            parameters = (HashMap<String, String>) Converter.byteArrayToMap(context.getSession().getState());
-            parameters.putAll(Converter.byteBufferToMap(byteBuffer));
-            log.info("handleRecurrentTokenCallback: merge params: recurrentId {}, params {}", recurrentId, parameters);
-        } catch (Exception ex) {
-            String message = "handleRecurrentTokenCallback:  merge params error with recurrentId " + recurrentId;
-            log.error(message, ex);
-            throw new IllegalArgumentException(message, ex);
-        }
+        HashMap<String, String> parameters = Converter.mergeParams(byteBuffer, context.getSession().getState());
 
         CardDataProxyModel cardData = cds.getCardData(context);
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);

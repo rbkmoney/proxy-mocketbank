@@ -39,8 +39,7 @@ public class PaymentCallbackHandler {
     private final List<Card> cardList;
 
     public PaymentCallbackResult handler(ByteBuffer byteBuffer, PaymentContext context) {
-        HashMap<String, String> parameters = mergeParams(byteBuffer, context.getSession().getState());
-
+        HashMap<String, String> parameters = Converter.mergeParams(byteBuffer, context.getSession().getState());
         CardDataProxyModel cardData = cds.getCardData(context);
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {
@@ -53,16 +52,6 @@ public class PaymentCallbackHandler {
 
         CardAction action = CardUtils.extractActionFromCard(cardList, cardData);
         return ErrorHandler.prepareCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, action);
-    }
-
-    public static HashMap<String, String> mergeParams(ByteBuffer byteBuffer, byte[] state) {
-        try {
-            HashMap<String, String> parameters = (HashMap<String, String>) Converter.byteArrayToMap(state);
-            parameters.putAll(Converter.byteBufferToMap(byteBuffer));
-            return parameters;
-        } catch (Exception ex) {
-            throw new IllegalArgumentException(ex);
-        }
     }
 
 }
