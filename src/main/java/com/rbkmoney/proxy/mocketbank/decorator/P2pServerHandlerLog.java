@@ -1,7 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.decorator;
 
 import com.rbkmoney.damsel.p2p_adapter.*;
-import com.rbkmoney.proxy.mocketbank.extractor.P2pAdapterExtractors;
+import com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification;
+import com.rbkmoney.proxy.mocketbank.utils.extractor.p2p.P2pAdapterExtractors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -22,7 +23,7 @@ public class P2pServerHandlerLog implements P2PAdapterSrv.Iface {
             return result;
         } catch (Exception ex) {
             String message = String.format("Failed handle Process with sessionId=%s", sessionId);
-            ServerHandlerLogUtils.logMessage(ex, message);
+            logMessage(ex, message);
             throw ex;
         }
     }
@@ -37,8 +38,16 @@ public class P2pServerHandlerLog implements P2PAdapterSrv.Iface {
             return result;
         } catch (Exception ex) {
             String message = String.format("Failed handle HandleCallback with sessionId=%s", sessionId);
-            ServerHandlerLogUtils.logMessage(ex, message);
+            logMessage(ex, message);
             throw ex;
+        }
+    }
+
+    private void logMessage(Exception ex, String message) {
+        if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
+            log.warn(message, ex);
+        } else {
+            log.error(message, ex);
         }
     }
 

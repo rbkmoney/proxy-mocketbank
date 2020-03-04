@@ -2,9 +2,12 @@ package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.damsel.proxy_provider.PaymentContext;
+import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.*;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -15,9 +18,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
-import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
-import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createRecurrentPaymentTool;
-import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createRecurrentTokenInfo;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetCaptured;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.junit.Assert.assertTrue;
@@ -53,27 +55,14 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
         bankCard.setToken(TestData.BANK_CARD_TOKEN);
         mockCds(cardData, bankCard);
 
-        RecurrentTokenContext context = new RecurrentTokenContext();
-        context.setSession(new RecurrentTokenSession());
-        context.setTokenInfo(
-                createRecurrentTokenInfo(
-                        createRecurrentPaymentTool(
-                                createDisposablePaymentResource(
-                                        createClientInfo(TestData.FINGERPRINT, TestData.IP_ADDRESS),
-                                        TestData.SESSION_ID,
-                                        createPaymentTool(bankCard)
-                                )
-                        ).setId(recurrentId)
-                )
-        );
-
+        RecurrentTokenContext context = createRecurrentTokenContext(bankCard);
         RecurrentTokenProxyResult generationProxyResult = handler.generateToken(context);
 
         String token = generationProxyResult.getIntent().getFinish().getStatus().getSuccess().getToken();
 
         PaymentContext paymentContext = getContext(getPaymentResourceRecurrent(token), createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
-        assertTrue("Process payment isn`t success", isSuccess(proxyResult));
+        assertTrue("Process Payment isn`t success", isSuccess(proxyResult));
 
         paymentContext.getPaymentInfo().getPayment().setTrx(proxyResult.getTrx());
         paymentContext.getSession().setTarget(createTargetCaptured());

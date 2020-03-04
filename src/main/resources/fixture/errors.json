@@ -1,62 +1,54 @@
 [
   {
-    "code":"Unsupported Card",
-    "description":"Unsupported Card",
-    "regexp":"^Unsupported\\sCard$",
-    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_unsupported"
+    "codeRegex": "^Unsupported\\sCard$",
+    "mapping": "authorization_failed:payment_tool_rejected:bank_card_rejected:issuer_not_found"
   },
   {
-    "code":"3-D Secure Failure",
-    "description":"3-D Secure Failure",
-    "regexp":"3-D Secure Failure",
-    "mapping":"preauthorization_failed"
+    "codeRegex": "3-D Secure Failure",
+    "mapping": "preauthorization_failed:unknown"
   },
   {
-    "code":"3-D Secure Timeout",
-    "description":"3-D Secure Timeout",
-    "regexp":"3-D Secure Timeout",
-    "mapping":"preauthorization_failed"
+    "codeRegex": "3-D Secure Timeout",
+    "mapping": "preauthorization_failed:unknown"
   },
   {
-    "code":"Invalid Card",
-    "description":"Invalid Card",
-    "regexp":"Invalid Card",
-    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_number_invalid"
+    "codeRegex": "Invalid Card",
+    "mapping": "authorization_failed:account_not_found"
   },
   {
-    "code":"CVV Match Fail",
-    "description":"CVV Match Fail",
-    "regexp":"CVV Match Fail",
-    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:cvv_invalid"
+    "codeRegex": "CVV Match Fail",
+    "mapping": "authorization_failed:payment_tool_rejected:bank_card_rejected:cvv_invalid"
   },
   {
-    "code":"Expired Card",
-    "description":"Expired Card",
-    "regexp":"Expired Card",
-    "mapping":"authorization_failed:payment_tool_rejected:bank_card_rejected:card_expired"
+    "codeRegex": "Expired Card",
+    "mapping": "authorization_failed:payment_tool_rejected:bank_card_rejected:card_expired"
   },
   {
-    "code":"Insufficient Funds",
-    "description":"Insufficient Funds",
-    "regexp":"Insufficient Funds",
-    "mapping":"authorization_failed:insufficient_funds"
+    "codeRegex": "Insufficient Funds",
+    "mapping": "authorization_failed:insufficient_funds"
   },
   {
-    "code":"Unknown",
-    "description":"Unknown",
-    "regexp":"Unknown",
-    "mapping":"authorization_failed:unknown"
+    "codeRegex": "Unknown",
+    "mapping": "authorization_failed:unknown"
   },
   {
-    "code":"Apple Pay Failure",
-    "description":"Apple Pay Failure",
-    "regexp":"Apple Pay Failure",
-    "mapping":"authorization_failed:unknown"
+    "codeRegex": "Apple Pay Failure",
+    "mapping": "authorization_failed:unknown"
   },
   {
-    "code":"Unknown Failure",
-    "description":"Unknown Failure",
-    "regexp":"Unknown Failure",
-    "mapping":"authorization_failed:unknown"
+    "codeRegex": "Google Pay Failure",
+    "mapping": "authorization_failed:unknown"
+  },
+  {
+    "codeRegex": "Samsung Pay Failure",
+    "mapping": "authorization_failed:unknown"
+  },
+  {
+    "codeRegex": "Unknown Failure",
+    "mapping": "authorization_failed:unknown"
+  },
+  {
+    "codeRegex": ".*",
+    "mapping": "authorization_failed:unknown"
   }
 ]

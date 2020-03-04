@@ -4,12 +4,12 @@ import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiEnrollmentStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiTransactionStatus;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Mastercard;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.TestCard;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Mastercard;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.TestCard;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Visa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -23,9 +23,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
-import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createRecurrentPaymentTool;
-import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createRecurrentTokenInfo;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetCaptured;
+import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuspend;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
@@ -59,23 +58,10 @@ public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends I
         BankCard bankCard = TestData.createBankCard(cardData);
         bankCard.setToken(TestData.BANK_CARD_TOKEN);
         mockCds(cardData, bankCard);
-        mockMpiVerify(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE);
-        mockMpi(MpiTransactionStatus.AUTHENTICATION_SUCCESSFUL);
+        mockMpiVerify(EnrollmentStatus.AUTHENTICATION_AVAILABLE);
+        mockMpi(TransactionStatus.AUTHENTICATION_SUCCESSFUL);
 
-        RecurrentTokenContext context = new RecurrentTokenContext();
-        context.setSession(new RecurrentTokenSession());
-        context.setTokenInfo(
-                createRecurrentTokenInfo(
-                        createRecurrentPaymentTool(
-                                createDisposablePaymentResource(
-                                        createClientInfo(TestData.FINGERPRINT, TestData.IP_ADDRESS),
-                                        TestData.SESSION_ID,
-                                        createPaymentTool(bankCard)
-                                )
-                        ).setId(recurrentId)
-                )
-        );
-
+        RecurrentTokenContext context = createRecurrentTokenContext(bankCard);
         RecurrentTokenProxyResult tokenProxyResult = handler.generateToken(context);
         assertTrue("GenerateToken isn`t suspend", isSuspend(tokenProxyResult));
 

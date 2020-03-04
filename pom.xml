@@ -120,6 +120,11 @@
             <artifactId>adapter-common-lib</artifactId>
             <version>0.0.12</version>
         </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>error-mapping-java</artifactId>
+            <version>1.0.5</version>
+        </dependency>
         <!--Test libs-->
         <dependency>
             <groupId>org.jsoup</groupId>

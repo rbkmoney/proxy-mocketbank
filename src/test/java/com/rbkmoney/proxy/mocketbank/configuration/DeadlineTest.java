@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Visa;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import com.rbkmoney.woody.api.flow.error.WUnavailableResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;

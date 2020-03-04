@@ -2,7 +2,7 @@
 
 [![Build Status](http://ci.rbkmoney.com/buildStatus/icon?job=rbkmoney_private/proxy-mocketbank/master)](http://ci.rbkmoney.com/job/rbkmoney_private/proxy-mocketbank/master)
 
-Сервис предназначен для эмулирования запросов между процессингом и банком
+Сервис предназначен для эмулирования запросов между различными системами
 
 
 ### Developers
@@ -10,20 +10,25 @@
 - [Anatoly Cherkasov](https://github.com/avcherkasov)
 
 
-### Оглавление:
+### Оглавление
 
-1. [Техническая документация](docs/tech.md)
-1. [Полезные ссылки](docs/useful_links.md)
-1. [FAQ](docs/faq.md)
+1. [Настройки](docs/settings.md)
+1. [Структура проекта](docs/structure.md)
 
 
-Отправка запросов на сервис:
+### Отправка запросов на сервис
+
+##### Для внешних запросов
 ```
-http(s)//{host}:8080/mocketbank - для внешних запросов
-http(s)//{host}:8022/proxy/mocketbank - для трифтовых запросов (эквайринг)
-http(s)//{host}:8022/proxy/mocketbank/p2p-credit - для трифтовых запросов (p2p credit)
-http(s)//{host}:8022/proxy/mocketbank/p2p - для трифтовых запросов p2p
-http(s)//{host}:8022/proxy/mocketbank/terminal - для трифтовых запросов по терминалам
-http(s)//{host}:8022/proxy/mocketbank/mobile/operator - для трифтовых запросов для определения оператора мобильного телефона
-http(s)//{host}:8022/proxy/mocketbank/operator - для трифтовых запросов для проведения оплаты с мобильного телефона
+http(s)://{host}:8080/mocketbank
+```
+
+##### Для трифтовых запросов
+```
+http(s)://{host}:8022/proxy/mocketbank - эквайринг
+http(s)://{host}:8022/proxy/mocketbank/p2p-credit - выплаты
+http(s)://{host}:8022/proxy/mocketbank/p2p - p2p
+http(s)://{host}:8022/proxy/mocketbank/terminal - оплата через терминал
+http(s)://{host}:8022/proxy/mocketbank/mobile/operator - определение оператора мобильного телефона
+http(s)://{host}:8022/proxy/mocketbank/mobile - оплата с мобильного телефона
 ```

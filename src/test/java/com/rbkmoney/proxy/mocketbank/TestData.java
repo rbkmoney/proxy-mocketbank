@@ -28,21 +28,17 @@ public class TestData {
     public static final String DEFAULT_ACS_URL = "http://localhost/acs";
     public static final String DEFAULT_PAREQ = "PaReq";
 
-
-    public static CardData makeCardData() {
-        return createCardDataWithExpDate(
-                DEFAULT_CARDHOLDERNAME,
-                "123",
-                "4012001011000771",
-                "12", "2020"
-        );
-    }
+    public static final String DEFAULT_YEAR = "2020";
+    public static final String DEFAULT_MONTH = "12";
+    public static final String DEFAULT_CVV = "123";
+    public static final String DEFAULT_CARD = "4012001011000771";
+    public static final String DEFAULT_BIN = "123456";
 
     public static CardDataProxyModel createCardDataProxyModel(String pan) {
         return CardDataProxyModel.builder()
                 .pan(pan)
-                .expMonth(Byte.parseByte("12"))
-                .expYear(Short.parseShort("2020"))
+                .expMonth(Byte.parseByte(DEFAULT_MONTH))
+                .expYear(Short.parseShort(DEFAULT_YEAR))
                 .cardholderName(DEFAULT_CARDHOLDERNAME)
                 .build();
     }
@@ -50,18 +46,18 @@ public class TestData {
     public static CardData createCardData(String pan) {
         return createCardDataWithExpDate(
                 DEFAULT_CARDHOLDERNAME,
-                "123",
+                DEFAULT_CVV,
                 pan,
-                "12", "2020"
+                DEFAULT_MONTH, DEFAULT_YEAR
         );
     }
 
     public static CardData createCardData() {
         return createCardDataWithExpDate(
                 DEFAULT_CARDHOLDERNAME,
-                "123",
-                "4012001011000771",
-                "12", "2020"
+                DEFAULT_CVV,
+                DEFAULT_CARD,
+                DEFAULT_MONTH, DEFAULT_YEAR
         );
     }
 
@@ -77,23 +73,7 @@ public class TestData {
                                 cardData.getExpDate().getYear()
                         )
                 )
-                .setBin(cardData.pan.substring(0, 6))
-                .setLastDigits(cardData.pan.substring(cardData.pan.length() - 4));
-    }
-
-    public static BankCard makeBankCard(CardData cardData) {
-        String month = String.valueOf(cardData.getExpDate().getMonth());
-        String year = String.valueOf(cardData.getExpDate().getYear());
-
-        return DomainPackageCreators.createBankCard(month, year, cardData.getCardholderName())
-                .setPaymentSystem(BankCardPaymentSystem.mastercard)
-                .setExpDate(
-                        createBankCardExpDate(
-                                cardData.getExpDate().getMonth(),
-                                cardData.getExpDate().getYear()
-                        )
-                )
-                .setBin(cardData.pan.substring(0, 6))
+                .setBin(DEFAULT_BIN)
                 .setLastDigits(cardData.pan.substring(cardData.pan.length() - 4));
     }
 

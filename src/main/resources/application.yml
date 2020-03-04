@@ -23,8 +23,10 @@ server:
 adapter-mock-mpi:
   url: http://127.0.0.1:8018
 ---
-proxy-mocketbank:
+adapter-mock-bank:
   callbackUrl: http://127.0.0.1:8019
+  pathCallbackUrl: /${server.rest.endpoint}/term_url{?termination_uri}
+  pathRecurrentCallbackUrl: /${server.rest.endpoint}/term_rec_url{?termination_uri}
 ---
 cds:
   client:
@@ -42,7 +44,7 @@ hellgate:
       networkTimeout: 30000
 ---
 timer:
-  timeout: 600
+  redirectTimeout: 600
 ---
 fixture:
   cards: classpath:fixture/cards.csv

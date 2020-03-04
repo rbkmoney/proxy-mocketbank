@@ -12,11 +12,12 @@ import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.java.damsel.utils.creators.CdsPackageCreators;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.MockMpiApi;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiEnrollmentStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiTransactionStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.ValidatePaResResponse;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.decorator.PaymentServerHandlerMdcLog;
+import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
+import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
+import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +39,16 @@ public abstract class IntegrationTest {
     protected String invoiceId = "TEST_INVOICE" + (int) (Math.random() * 50 + 1);
     protected String paymentId = "TEST_PAYMENT" + (int) (Math.random() * 50 + 1);
     protected String recurrentId = "TEST_RECURRENT" + (int) (Math.random() * 500 + 1);
+    protected String refundId = "TEST_REFUND" + (int) (Math.random() * 500 + 1);
 
     @Autowired
-    protected MocketBankServerHandlerMdcDecorator handler;
+    protected PaymentServerHandlerMdcLog handler;
 
     @MockBean
     protected CdsClientStorage cdsStorage;
 
     @MockBean
-    protected MockMpiApi mpiApi;
+    protected MpiApi mpiApi;
 
     protected Map<String, String> prepareProxyOptions() {
         return new HashMap<>();
@@ -68,11 +70,21 @@ public abstract class IntegrationTest {
 
     protected PaymentInfo getPaymentInfo(String sessionId, BankCard bankCard, TransactionInfo transactionInfo) {
         PaymentResource paymentResource = getPaymentResource(sessionId, bankCard);
-        return getPaymentInfo(transactionInfo, paymentResource);
+        PaymentInfo paymentInfo = getPaymentInfo(transactionInfo, paymentResource);
+
+        InvoicePaymentCapture invoicePaymentCapture = new InvoicePaymentCapture();
+        invoicePaymentCapture.setCost(prepareCash());
+        paymentInfo.setCapture(invoicePaymentCapture);
+
+        com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund invoicePaymentRefund = new com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund();
+        invoicePaymentRefund.setId(refundId);
+        invoicePaymentRefund.setTrx(transactionInfo);
+        paymentInfo.setRefund(invoicePaymentRefund);
+        return paymentInfo;
     }
 
     protected PaymentInfo getPaymentInfo(TransactionInfo transactionInfo, PaymentResource paymentResource) {
-        return createPaymentInfo(
+        PaymentInfo paymentInfo = createPaymentInfo(
                 createInvoice(
                         invoiceId,
                         TestData.CREATED_AT,
@@ -86,6 +98,17 @@ public abstract class IntegrationTest {
                         prepareCash(),
                         transactionInfo
                 ).setMakeRecurrent(Boolean.FALSE));
+
+        InvoicePaymentCapture invoicePaymentCapture = new InvoicePaymentCapture();
+        invoicePaymentCapture.setCost(prepareCash());
+        paymentInfo.setCapture(invoicePaymentCapture);
+
+        com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund invoicePaymentRefund = new com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund();
+        invoicePaymentRefund.setId(refundId);
+        invoicePaymentRefund.setTrx(transactionInfo);
+        paymentInfo.setRefund(invoicePaymentRefund);
+
+        return paymentInfo;
     }
 
     protected PaymentResource getPaymentResource(String sessionId, BankCard bankCard) {
@@ -124,6 +147,23 @@ public abstract class IntegrationTest {
         );
     }
 
+    protected RecurrentTokenContext createRecurrentTokenContext(BankCard bankCard) {
+        RecurrentTokenContext context = new RecurrentTokenContext();
+        context.setSession(new RecurrentTokenSession());
+        context.setTokenInfo(
+                createRecurrentTokenInfo(
+                        createRecurrentPaymentTool(
+                                createDisposablePaymentResource(
+                                        createClientInfo(TestData.FINGERPRINT, TestData.IP_ADDRESS),
+                                        TestData.SESSION_ID,
+                                        createPaymentTool(bankCard)
+                                )
+                        ).setId(recurrentId)
+                )
+        );
+        return context;
+    }
+
     protected PaymentResource getPaymentResourceRecurrent(String token) {
         return createPaymentResourceRecurrentPaymentResource(
                 createRecurrentPaymentResource(token)
@@ -157,18 +197,18 @@ public abstract class IntegrationTest {
         Mockito.when(cdsStorage.getSessionData((PaymentContext) any())).thenReturn(CdsPackageCreators.createSessionData(AuthData.card_security_code(new CardSecurityCode(cardData.getCvv()))));
     }
 
-    protected void mockMpiVerify(MpiEnrollmentStatus mpiEnrollmentStatus) {
+    protected void mockMpiVerify(EnrollmentStatus mpiEnrollmentStatus) {
         VerifyEnrollmentResponse response = new VerifyEnrollmentResponse();
         response.setAcsUrl(TestData.DEFAULT_ACS_URL);
         response.setEnrolled(mpiEnrollmentStatus.getStatus());
         response.setPaReq(TestData.DEFAULT_PAREQ);
-        Mockito.when(mpiApi.verifyEnrollment(any())).thenReturn(response);
+        Mockito.when(mpiApi.verifyEnrollment((CardDataProxyModel) any())).thenReturn(response);
     }
 
-    protected void mockMpi(MpiTransactionStatus mpiTransactionStatus) {
+    protected void mockMpi(TransactionStatus mpiTransactionStatus) {
         ValidatePaResResponse paResResponse = new ValidatePaResResponse();
         paResResponse.setTransactionStatus(mpiTransactionStatus.getStatus());
-        Mockito.when(mpiApi.validatePaRes(any())).thenReturn(paResResponse);
+        Mockito.when(mpiApi.validatePaRes(any(), any())).thenReturn(paResResponse);
     }
 
 }

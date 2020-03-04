@@ -4,14 +4,12 @@ import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.handler.terminal.payment.UnsupportedTerminalHandler;
 import com.rbkmoney.proxy.mocketbank.validator.TerminalValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TerminalServerHandler implements ProviderProxySrv.Iface {

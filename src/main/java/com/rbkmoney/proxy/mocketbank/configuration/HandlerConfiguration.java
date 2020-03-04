@@ -5,6 +5,7 @@ import com.rbkmoney.proxy.mocketbank.handler.mobile.MobileServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.operator.MobileOperatorServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.oct.OctServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.p2p.P2pServerHandler;
+import com.rbkmoney.proxy.mocketbank.handler.payment.PaymentServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.terminal.TerminalServerHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +42,12 @@ public class HandlerConfiguration {
     @Primary
     public TerminalServerHandlerLog terminalServerHandlerLog(TerminalServerHandler terminalServerHandler) {
         return new TerminalServerHandlerLog(terminalServerHandler);
+    }
+
+    @Bean
+    @Primary
+    public PaymentServerHandlerMdcLog paymentServerHandlerLog(PaymentServerHandler paymentServerHandler) {
+        return new PaymentServerHandlerMdcLog(new PaymentServerHandlerLog(paymentServerHandler));
     }
 
 }

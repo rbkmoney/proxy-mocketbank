@@ -1,7 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.servlet;
 
 import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
-import com.rbkmoney.proxy.mocketbank.handler.MocketBankServerHandlerMdcDecorator;
+import com.rbkmoney.proxy.mocketbank.decorator.PaymentServerHandlerMdcLog;
 import com.rbkmoney.woody.thrift.impl.http.THServiceBuilder;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet("/proxy/mocketbank")
 public class AdapterServletPayment extends GenericServlet {
 
-    private final transient MocketBankServerHandlerMdcDecorator handler;
+    private final transient PaymentServerHandlerMdcLog handler;
     private transient Servlet servlet;
 
     @Override

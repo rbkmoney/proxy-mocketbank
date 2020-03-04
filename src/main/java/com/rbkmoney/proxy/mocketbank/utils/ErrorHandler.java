@@ -1,0 +1,86 @@
+package com.rbkmoney.proxy.mocketbank.utils;
+
+import com.rbkmoney.damsel.domain.Failure;
+import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
+import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenCallbackResult;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenProxyResult;
+import com.rbkmoney.error.mapping.ErrorMapping;
+import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ErrorHandler {
+
+    public static PaymentProxyResult prepareError(ErrorMapping errorMapping, String code, String message) {
+        Failure failure = errorMapping.mapFailure(code, message);
+        return createProxyResultFailure(failure);
+    }
+
+    public static PaymentProxyResult prepareError(ErrorMapping errorMapping, CardAction action) {
+        return prepareError(errorMapping, action.getAction());
+    }
+
+    public static PaymentProxyResult prepareError(ErrorMapping errorMapping, String code, CardAction action) {
+        return prepareError(errorMapping, code, action.getAction());
+    }
+
+    public static PaymentProxyResult prepareError(ErrorMapping errorMapping, String code) {
+        return prepareError(errorMapping, code, code);
+    }
+
+    public static RecurrentTokenProxyResult prepareRecurrentTokenError(ErrorMapping errorMapping, String code) {
+        return prepareRecurrentTokenError(errorMapping, code, code);
+    }
+
+    public static RecurrentTokenProxyResult prepareRecurrentTokenError(ErrorMapping errorMapping, CardAction action) {
+        return prepareRecurrentTokenError(errorMapping, action.getAction());
+    }
+
+    public static RecurrentTokenProxyResult prepareRecurrentTokenError(ErrorMapping errorMapping, String code,  CardAction action) {
+        return prepareRecurrentTokenError(errorMapping, code, action.getAction());
+    }
+
+    public static RecurrentTokenProxyResult prepareRecurrentTokenError(ErrorMapping errorMapping, String code, String message) {
+        Failure failure = errorMapping.mapFailure(code, message);
+        return createRecurrentTokenProxyResultFailure(failure);
+    }
+
+    public static PaymentCallbackResult prepareCallbackError(ErrorMapping errorMapping, String code, String message) {
+        Failure failure = errorMapping.mapFailure(code, message);
+        return createCallbackResultFailure(failure);
+    }
+
+    public static PaymentCallbackResult prepareCallbackError(ErrorMapping errorMapping, String code, CardAction action) {
+        return prepareCallbackError(errorMapping, code, action.getAction());
+    }
+
+    public static PaymentCallbackResult prepareCallbackError(ErrorMapping errorMapping, CardAction action) {
+        return prepareCallbackError(errorMapping, action.getAction());
+    }
+
+    public static PaymentCallbackResult prepareCallbackError(ErrorMapping errorMapping, String code) {
+        return prepareCallbackError(errorMapping, code, code);
+    }
+
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code, CardAction action) {
+        return prepareRecurrentCallbackError(errorMapping, code, action.getAction());
+    }
+
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, CardAction action) {
+        return prepareRecurrentCallbackError(errorMapping, action.getAction());
+    }
+
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code, String message) {
+        Failure failure = errorMapping.mapFailure(code, message);
+        return createRecurrentTokenCallbackResultFailure(failure);
+    }
+
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code) {
+        return prepareRecurrentCallbackError(errorMapping, code, code);
+    }
+
+}

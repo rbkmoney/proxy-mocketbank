@@ -6,12 +6,12 @@ import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiEnrollmentStatus;
-import com.rbkmoney.proxy.mocketbank.utils.mocketbank.constant.MpiTransactionStatus;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Mastercard;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.TestCard;
-import com.rbkmoney.proxy.mocketbank.utils.p2p.constant.testcards.Visa;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Mastercard;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.TestCard;
+import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Visa;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -60,8 +60,8 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest extends Integrati
     private void processPaymentFail(CardData cardData) throws TException, IOException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
-        mockMpiVerify(MpiEnrollmentStatus.AUTHENTICATION_AVAILABLE);
-        mockMpi(MpiTransactionStatus.AUTHENTICATION_FAILED);
+        mockMpiVerify(EnrollmentStatus.AUTHENTICATION_AVAILABLE);
+        mockMpi(TransactionStatus.AUTHENTICATION_FAILED);
 
         PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);

@@ -2,7 +2,8 @@ package com.rbkmoney.proxy.mocketbank.decorator;
 
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors;
-import com.rbkmoney.proxy.mocketbank.converter.PaymentResourceTypeResolver;
+import com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification;
+import com.rbkmoney.proxy.mocketbank.utils.converter.PaymentResourceTypeResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -25,7 +26,7 @@ public class MobileServerHandlerLog implements ProviderProxySrv.Iface {
             return proxyResult;
         } catch (Exception ex) {
             String message = String.format("Failed handle GenerateToken with recurrentId=%s", recurrentId);
-            ServerHandlerLogUtils.logMessage(ex, message);
+            logMessage(ex, message);
             throw ex;
         }
     }
@@ -53,7 +54,7 @@ public class MobileServerHandlerLog implements ProviderProxySrv.Iface {
         } catch (Exception e) {
             String message = String.format("Failed handle resource=%s, status=%s process payment for operation with invoiceId %s",
                     paymentResourceType, invoicePaymentStatus, invoiceId);
-            ServerHandlerLogUtils.logMessage(e, message);
+            logMessage(e, message);
             throw e;
         }
     }
@@ -65,5 +66,13 @@ public class MobileServerHandlerLog implements ProviderProxySrv.Iface {
         PaymentCallbackResult result = handler.handlePaymentCallback(byteBuffer, context);
         log.info("HandlePaymentCallback finish {} with invoiceId={}", result, invoiceId);
         return result;
+    }
+
+    private void logMessage(Exception ex, String message) {
+        if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
+            log.warn(message, ex);
+        } else {
+            log.error(message, ex);
+        }
     }
 }

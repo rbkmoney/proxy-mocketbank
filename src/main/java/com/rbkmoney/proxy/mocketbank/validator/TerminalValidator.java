@@ -4,7 +4,7 @@ import com.rbkmoney.damsel.domain.PaymentTool;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import com.rbkmoney.proxy.mocketbank.exception.TerminalException;
-import com.rbkmoney.proxy.mocketbank.extractor.ProxyProviderPackageExtractors;
+import com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

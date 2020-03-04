@@ -1,6 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
-import com.rbkmoney.proxy.mocketbank.utils.error_mapping.ErrorMapping;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rbkmoney.error.mapping.ErrorMapping;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +21,11 @@ public class ErrorMappingConfiguration {
 
     @Bean
     ErrorMapping errorMapping() throws IOException {
-        ErrorMapping errorMapping = new ErrorMapping(filePath.getInputStream(), patternReason);
-        errorMapping.validateMappingFormat();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+        ErrorMapping errorMapping = new ErrorMapping(filePath.getInputStream(), patternReason, mapper);
+        errorMapping.validateMapping();
         return errorMapping;
     }
 
