@@ -14,7 +14,6 @@ import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankPro
 import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.service.bank.constant.CustomError;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
-import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
@@ -35,6 +34,7 @@ import static com.rbkmoney.java.damsel.constant.Error.DEFAULT_ERROR_CODE;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractRecurrentId;
+import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
 import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.utils.model.CardAction.*;
@@ -83,7 +83,7 @@ public class GenerateTokenHandler {
     private RecurrentTokenProxyResult prepareEnrolledRecurrentTokenProxyResult(RecurrentTokenContext context, RecurrentTokenIntent intent, CardDataProxyModel cardData) {
         RecurrentTokenIntent recurrentTokenIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
-        if (EnrollmentStatus.valueOfByStatus(verifyEnrollmentResponse.getEnrolled()).isAuthenticationAvailable()) {
+        if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
             String tag = SuspendPrefix.RECURRENT.getPrefix() + context.getTokenInfo().getPaymentTool().getId();
             String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathRecurrentCallbackUrl());
             recurrentTokenIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);

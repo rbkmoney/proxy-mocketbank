@@ -21,25 +21,21 @@ public class HandlerConfiguration {
     }
 
     @Bean
-    @Primary
     public MobileOperatorServerHandlerLog mobileOperatorServerHandlerLog(MobileOperatorServerHandler mobileOperatorServerHandler) {
         return new MobileOperatorServerHandlerLog(mobileOperatorServerHandler);
     }
 
     @Bean
-    @Primary
     public MobileServerHandlerLog mobileServerHandlerLog(MobileServerHandler mobileServerHandler) {
         return new MobileServerHandlerLog(mobileServerHandler);
     }
 
     @Bean
-    @Primary
     public P2pServerHandlerLog p2pServerHandlerLog(P2pServerHandler p2pServerHandler) {
         return new P2pServerHandlerLog(p2pServerHandler);
     }
 
     @Bean
-    @Primary
     public TerminalServerHandlerLog terminalServerHandlerLog(TerminalServerHandler terminalServerHandler) {
         return new TerminalServerHandlerLog(terminalServerHandler);
     }

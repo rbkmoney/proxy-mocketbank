@@ -3,8 +3,6 @@ package com.rbkmoney.proxy.mocketbank.service.mpi.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-
 /**
  * 3-D Secure enrollment status
  */
@@ -32,15 +30,8 @@ public enum EnrollmentStatus {
 
     private final String status;
 
-    public static EnrollmentStatus valueOfByStatus(String enrollmentStatus) {
-        return Arrays.stream(values())
-                .filter(es -> es.getStatus().equals(enrollmentStatus))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No matching constant for [" + enrollmentStatus + "]"));
-    }
-
-    public boolean isAuthenticationAvailable() {
-        return this.status.equals(AUTHENTICATION_AVAILABLE.getStatus());
+    public static boolean isAuthenticationAvailable(String status) {
+        return AUTHENTICATION_AVAILABLE.getStatus().equalsIgnoreCase(status);
     }
 
 }

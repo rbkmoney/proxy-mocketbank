@@ -42,6 +42,7 @@ import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreato
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractInvoiceId;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isMakeRecurrent;
+import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
 import static com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator.createDefaultTransactionInfo;
 import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
@@ -101,7 +102,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
     private PaymentProxyResult prepareEnrolledPaymentProxyResult(PaymentContext context, Intent intent, TransactionInfo transactionInfo, CardDataProxyModel cardData) {
         Intent currentIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
-        if (EnrollmentStatus.valueOfByStatus(verifyEnrollmentResponse.getEnrolled()).isAuthenticationAvailable()) {
+        if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + ProxyProviderCreator.createTransactionId(context.getPaymentInfo());
             String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathCallbackUrl());
             currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
