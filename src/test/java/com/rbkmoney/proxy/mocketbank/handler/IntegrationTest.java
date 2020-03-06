@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.cds.CardSecurityCode;
 import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.Cash;
+import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.java.damsel.utils.creators.CdsPackageCreators;
@@ -36,10 +37,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 @Slf4j
 public abstract class IntegrationTest {
 
-    protected String invoiceId = "TEST_INVOICE" + (int) (Math.random() * 50 + 1);
-    protected String paymentId = "TEST_PAYMENT" + (int) (Math.random() * 50 + 1);
-    protected String recurrentId = "TEST_RECURRENT" + (int) (Math.random() * 500 + 1);
-    protected String refundId = "TEST_REFUND" + (int) (Math.random() * 500 + 1);
+    protected String invoiceId = "taLtB5DcAq";
+    protected String paymentId = "1";
+    protected String recurrentId = "1HyXdrtbm5Y";
+    protected String refundId = "1HyXfnApAoK";
 
     @Autowired
     protected PaymentServerHandlerMdcLog handler;
@@ -71,16 +72,16 @@ public abstract class IntegrationTest {
     protected PaymentInfo getPaymentInfo(String sessionId, BankCard bankCard, TransactionInfo transactionInfo) {
         PaymentResource paymentResource = getPaymentResource(sessionId, bankCard);
         PaymentInfo paymentInfo = getPaymentInfo(transactionInfo, paymentResource);
+        paymentInfo.setCapture(prepareInvoicePaymentCapture());
+        paymentInfo.setRefund(createInvoicePaymentRefund(transactionInfo));
+        return paymentInfo;
+    }
 
-        InvoicePaymentCapture invoicePaymentCapture = new InvoicePaymentCapture();
-        invoicePaymentCapture.setCost(prepareCash());
-        paymentInfo.setCapture(invoicePaymentCapture);
-
-        com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund invoicePaymentRefund = new com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund();
+    private InvoicePaymentRefund createInvoicePaymentRefund(TransactionInfo transactionInfo) {
+        InvoicePaymentRefund invoicePaymentRefund = new InvoicePaymentRefund();
         invoicePaymentRefund.setId(refundId);
         invoicePaymentRefund.setTrx(transactionInfo);
-        paymentInfo.setRefund(invoicePaymentRefund);
-        return paymentInfo;
+        return invoicePaymentRefund;
     }
 
     protected PaymentInfo getPaymentInfo(TransactionInfo transactionInfo, PaymentResource paymentResource) {
@@ -99,16 +100,15 @@ public abstract class IntegrationTest {
                         transactionInfo
                 ).setMakeRecurrent(Boolean.FALSE));
 
+        paymentInfo.setCapture(prepareInvoicePaymentCapture());
+        paymentInfo.setRefund(createInvoicePaymentRefund(transactionInfo));
+        return paymentInfo;
+    }
+
+    private InvoicePaymentCapture prepareInvoicePaymentCapture() {
         InvoicePaymentCapture invoicePaymentCapture = new InvoicePaymentCapture();
         invoicePaymentCapture.setCost(prepareCash());
-        paymentInfo.setCapture(invoicePaymentCapture);
-
-        com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund invoicePaymentRefund = new com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund();
-        invoicePaymentRefund.setId(refundId);
-        invoicePaymentRefund.setTrx(transactionInfo);
-        paymentInfo.setRefund(invoicePaymentRefund);
-
-        return paymentInfo;
+        return invoicePaymentCapture;
     }
 
     protected PaymentResource getPaymentResource(String sessionId, BankCard bankCard) {

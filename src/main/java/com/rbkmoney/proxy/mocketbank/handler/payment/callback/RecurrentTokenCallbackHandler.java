@@ -13,7 +13,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.ErrorHandler;
+import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardUtils;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +51,6 @@ public class RecurrentTokenCallbackHandler {
         }
 
         CardAction action = CardUtils.extractActionFromCard(cardList, cardData);
-        return ErrorHandler.prepareRecurrentCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, action);
+        return ErrorBuilder.prepareRecurrentCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, action);
     }
 }

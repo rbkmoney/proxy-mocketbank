@@ -2,7 +2,6 @@ package com.rbkmoney.proxy.mocketbank.decorator;
 
 import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.*;
-import com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -25,7 +24,7 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
             return processResult;
         } catch (Exception ex) {
             String message = String.format("Failed processWithdrawal with withdrawalId=%s", withdrawalId);
-            logMessage(ex, message);
+            ServerHandlerLogUtils.logMessage(ex, message, this.getClass());
             throw ex;
         }
     }
@@ -40,16 +39,8 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
             return quote;
         } catch (Exception ex) {
             String message = String.format("Failed getQuote with idempotencyId=%s", idempotencyId);
-            logMessage(ex, message);
+            ServerHandlerLogUtils.logMessage(ex, message, this.getClass());
             throw ex;
-        }
-    }
-
-    private void logMessage(Exception ex, String message) {
-        if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
-            log.warn(message, ex);
-        } else {
-            log.error(message, ex);
         }
     }
 

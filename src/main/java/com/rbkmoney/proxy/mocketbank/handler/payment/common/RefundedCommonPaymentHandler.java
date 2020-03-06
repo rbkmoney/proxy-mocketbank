@@ -24,7 +24,7 @@ public class RefundedCommonPaymentHandler implements CommonPaymentHandler {
 
     @Override
     public boolean filter(TargetInvoicePaymentStatus targetInvoicePaymentStatus, PaymentResource paymentResource) {
-        return (targetInvoicePaymentStatus.isSetRefunded());
+        return targetInvoicePaymentStatus.isSetRefunded();
     }
 
     @Override

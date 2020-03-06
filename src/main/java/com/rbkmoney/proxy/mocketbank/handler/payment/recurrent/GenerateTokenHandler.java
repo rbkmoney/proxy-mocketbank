@@ -14,8 +14,9 @@ import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankPro
 import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.service.bank.constant.CustomError;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
-import com.rbkmoney.proxy.mocketbank.utils.ErrorHandler;
+import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
@@ -34,7 +35,6 @@ import static com.rbkmoney.java.damsel.constant.Error.DEFAULT_ERROR_CODE;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractRecurrentId;
-import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
 import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.utils.model.CardAction.*;
@@ -69,7 +69,7 @@ public class GenerateTokenHandler {
             }
             return prepareNotEnrolledRecurrentTokenProxyResult(intent, action);
         }
-        return ErrorHandler.prepareRecurrentTokenError(errorMapping, UNSUPPORTED_CARD);
+        return ErrorBuilder.prepareRecurrentTokenError(errorMapping, UNSUPPORTED_CARD);
     }
 
     private RecurrentTokenProxyResult prepareNotEnrolledRecurrentTokenProxyResult(RecurrentTokenIntent intent, CardAction action) {
@@ -77,13 +77,13 @@ public class GenerateTokenHandler {
             return createRecurrentTokenProxyResult(intent, PaymentState.CAPTURED.getBytes());
         }
         CardAction currentAction = isCardFailed(action) ? action : UNKNOWN_FAILURE;
-        return ErrorHandler.prepareRecurrentTokenError(errorMapping, currentAction);
+        return ErrorBuilder.prepareRecurrentTokenError(errorMapping, currentAction);
     }
 
     private RecurrentTokenProxyResult prepareEnrolledRecurrentTokenProxyResult(RecurrentTokenContext context, RecurrentTokenIntent intent, CardDataProxyModel cardData) {
         RecurrentTokenIntent recurrentTokenIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
-        if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
+        if (EnrollmentStatus.valueOfByStatus(verifyEnrollmentResponse.getEnrolled()).isAuthenticationAvailable()) {
             String tag = SuspendPrefix.RECURRENT.getPrefix() + context.getTokenInfo().getPaymentTool().getId();
             String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathRecurrentCallbackUrl());
             recurrentTokenIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);

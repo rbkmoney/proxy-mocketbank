@@ -18,8 +18,9 @@ import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.handler.payment.CommonPaymentHandler;
 import com.rbkmoney.proxy.mocketbank.service.bank.constant.CustomError;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
+import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
-import com.rbkmoney.proxy.mocketbank.utils.ErrorHandler;
+import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
@@ -36,12 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.rbkmoney.java.damsel.constant.Error.*;
+import static com.rbkmoney.java.damsel.constant.Error.DEFAULT_ERROR_CODE;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractInvoiceId;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isMakeRecurrent;
-import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
 import static com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator.createDefaultTransactionInfo;
 import static com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors.hasBankCardTokenProvider;
@@ -87,7 +87,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             }
             return prepareNotEnrolledPaymentProxyResult(intent, transactionInfo, action);
         }
-        return ErrorHandler.prepareError(errorMapping, UNSUPPORTED_CARD);
+        return ErrorBuilder.prepareError(errorMapping, UNSUPPORTED_CARD);
     }
 
     private PaymentProxyResult prepareNotEnrolledPaymentProxyResult(Intent intent, TransactionInfo transactionInfo, CardAction action) {
@@ -95,13 +95,13 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }
         CardAction currentAction = isCardFailed(action) ? action : UNKNOWN_FAILURE;
-        return ErrorHandler.prepareError(errorMapping, currentAction);
+        return ErrorBuilder.prepareError(errorMapping, currentAction);
     }
 
     private PaymentProxyResult prepareEnrolledPaymentProxyResult(PaymentContext context, Intent intent, TransactionInfo transactionInfo, CardDataProxyModel cardData) {
         Intent currentIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
-        if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
+        if (EnrollmentStatus.valueOfByStatus(verifyEnrollmentResponse.getEnrolled()).isAuthenticationAvailable()) {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + ProxyProviderCreator.createTransactionId(context.getPaymentInfo());
             String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathCallbackUrl());
             currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);

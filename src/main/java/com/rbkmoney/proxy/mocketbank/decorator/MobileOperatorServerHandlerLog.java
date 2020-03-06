@@ -1,6 +1,5 @@
 package com.rbkmoney.proxy.mocketbank.decorator;
 
-import com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification;
 import com.rbkmoney.mnp.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +20,10 @@ public class MobileOperatorServerHandlerLog implements MnpSrv.Iface {
             return responseData;
         } catch (Exception ex) {
             String message = String.format("Failed Lookup with requestParams=%s", requestParams);
-            logMessage(ex, message);
+            ServerHandlerLogUtils.logMessage(ex, message, this.getClass());
             throw ex;
         }
     }
 
-    private void logMessage(Exception ex, String message) {
-        if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
-            log.warn(message, ex);
-        } else {
-            log.error(message, ex);
-        }
-    }
+
 }

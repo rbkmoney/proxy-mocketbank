@@ -21,7 +21,7 @@ public class CancelledCommonPaymentHandler implements CommonPaymentHandler {
 
     @Override
     public boolean filter(TargetInvoicePaymentStatus targetInvoicePaymentStatus, PaymentResource paymentResource) {
-        return (targetInvoicePaymentStatus.isSetCancelled());
+        return targetInvoicePaymentStatus.isSetCancelled();
     }
 
     @Override

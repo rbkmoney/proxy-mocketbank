@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.utils.model;
 
 import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
+import com.rbkmoney.proxy.mocketbank.exception.CardException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,9 @@ public class CardUtils {
 
     public static CardAction extractActionFromCard(List<Card> cardList, CardDataProxyModel cardData) {
         Optional<Card> card = CardUtils.extractCardByPan(cardList, cardData.getPan());
+        if (!card.isPresent()) {
+            throw new CardException("Can't extract action from card");
+        }
         CardAction action = CardAction.findByValue(card.get().getAction());
         return isMpiCardFailed(action) ? action : UNKNOWN_FAILURE;
     }

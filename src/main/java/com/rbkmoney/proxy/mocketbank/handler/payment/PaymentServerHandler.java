@@ -41,7 +41,7 @@ public class PaymentServerHandler implements ProviderProxySrv.Iface {
                         context.getPaymentInfo().getPayment().getPaymentResource()
                 ))
                 .findFirst()
-                .orElse(new UnsupportedPaymentHandler())
+                .orElse(new FallbackPaymentHandler())
                 .handler(context);
     }
 

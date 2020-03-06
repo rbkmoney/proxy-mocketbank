@@ -45,7 +45,6 @@ public class HandlerConfiguration {
     }
 
     @Bean
-    @Primary
     public PaymentServerHandlerMdcLog paymentServerHandlerLog(PaymentServerHandler paymentServerHandler) {
         return new PaymentServerHandlerMdcLog(new PaymentServerHandlerLog(paymentServerHandler));
     }

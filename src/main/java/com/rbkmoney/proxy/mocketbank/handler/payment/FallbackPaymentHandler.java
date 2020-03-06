@@ -6,7 +6,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import org.apache.thrift.TException;
 
-public class UnsupportedPaymentHandler implements CommonPaymentHandler {
+public class FallbackPaymentHandler implements CommonPaymentHandler {
 
     @Override
     public boolean filter(final TargetInvoicePaymentStatus targetInvoicePaymentStatus, final PaymentResource paymentResource) {
