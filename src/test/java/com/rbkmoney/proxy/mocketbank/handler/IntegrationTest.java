@@ -37,10 +37,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 @Slf4j
 public abstract class IntegrationTest {
 
-    protected String invoiceId = "taLtB5DcAq";
-    protected String paymentId = "1";
-    protected String recurrentId = "1HyXdrtbm5Y";
-    protected String refundId = "1HyXfnApAoK";
+    protected String invoiceId = "TEST_INVOICE";
+    protected String paymentId = "TEST_PAYMENT";
+    protected String recurrentId = "TEST_RECURRENT";
+    protected String refundId = "TEST_REFUND";
 
     @Autowired
     protected PaymentServerHandlerMdcLog handler;
