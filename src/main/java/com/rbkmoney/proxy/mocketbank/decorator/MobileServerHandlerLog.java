@@ -1,8 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.decorator;
 
 import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.java.damsel.utils.extractors.PaymentResourceTypeExtractors;
 import com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors;
-import com.rbkmoney.proxy.mocketbank.utils.converter.PaymentResourceTypeResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -43,7 +43,7 @@ public class MobileServerHandlerLog implements ProviderProxySrv.Iface {
     public PaymentProxyResult processPayment(PaymentContext context) throws TException {
         String invoiceId = ProxyProviderPackageExtractors.extractInvoiceId(context);
         String invoicePaymentStatus = ProxyProviderPackageExtractors.extractTargetInvoicePaymentStatus(context);
-        String paymentResourceType = PaymentResourceTypeResolver.extractPaymentResourceType(context);
+        String paymentResourceType = PaymentResourceTypeExtractors.extractPaymentResourceType(context);
         log.info("Process payment handle resource={}, status={} start with invoiceId={}", paymentResourceType, invoicePaymentStatus, invoiceId);
         try {
             PaymentProxyResult proxyResult = handler.processPayment(context);

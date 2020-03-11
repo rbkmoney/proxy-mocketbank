@@ -14,6 +14,10 @@ public enum MobilePhoneAction {
     UNSUPPORTED_PHONE("Unsupported phone"),
     INSUFFICIENT_FUNDS("Insufficient Funds");
 
+    private static final MobilePhoneAction[] MOBILE_PHONE_FAILED = {
+            UNKNOWN, UNSUPPORTED_PHONE, INSUFFICIENT_FUNDS
+    };
+
     private final String action;
 
     public static MobilePhoneAction findByValue(String value) {
@@ -23,18 +27,12 @@ public enum MobilePhoneAction {
                 .orElse(UNKNOWN);
     }
 
-    public static MobilePhoneAction[] failedActions() {
-        return new MobilePhoneAction[]{
-                UNKNOWN, UNSUPPORTED_PHONE, INSUFFICIENT_FUNDS
-        };
-    }
-
     public static boolean hasStatus(MobilePhoneAction[] actions, String value) {
         return Arrays.stream(actions).anyMatch(action -> action.getAction().equalsIgnoreCase(value));
     }
 
     public static boolean isFailedAction(String action) {
-        return hasStatus(failedActions(), action);
+        return hasStatus(MOBILE_PHONE_FAILED, action);
     }
 
 }

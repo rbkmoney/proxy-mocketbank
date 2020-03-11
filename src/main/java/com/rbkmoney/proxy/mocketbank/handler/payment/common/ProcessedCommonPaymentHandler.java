@@ -17,7 +17,6 @@ import com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.handler.payment.CommonPaymentHandler;
-import com.rbkmoney.proxy.mocketbank.service.bank.constant.CustomError;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
@@ -38,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.rbkmoney.java.damsel.constant.Error.DEFAULT_ERROR_CODE;
+import static com.rbkmoney.java.damsel.constant.Error.THREE_DS_NOT_FINISHED;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractInvoiceId;
@@ -119,7 +119,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         Intent intent = createIntentWithSuspendIntent(
                 tag, timerRedirectTimeout, createPostUserInteraction(url, params)
         );
-        Failure failure = errorMapping.mapFailure(DEFAULT_ERROR_CODE, CustomError.THREE_DS_NOT_FINISHED);
+        Failure failure = errorMapping.mapFailure(DEFAULT_ERROR_CODE, THREE_DS_NOT_FINISHED);
         intent.getSuspend().setTimeoutBehaviour(TimeoutBehaviour.operation_failure(OperationFailure.failure(failure)));
         return intent;
     }
