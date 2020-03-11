@@ -4,7 +4,7 @@ import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -32,11 +32,7 @@ public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest 
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isCardFailed)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardFailed);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPaymentFail(cardData);

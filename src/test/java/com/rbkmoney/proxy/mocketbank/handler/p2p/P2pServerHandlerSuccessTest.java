@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.p2p_adapter.Context;
 import com.rbkmoney.damsel.p2p_adapter.ProcessResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -25,11 +25,7 @@ public class P2pServerHandlerSuccessTest extends P2PIntegrationTest {
 
     @Test
     public void testProcess() throws TException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isCardSuccess)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             process(cardData);

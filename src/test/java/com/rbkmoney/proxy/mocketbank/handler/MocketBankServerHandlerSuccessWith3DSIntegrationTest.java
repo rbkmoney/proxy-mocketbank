@@ -8,8 +8,8 @@ import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -45,11 +45,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isMpiCardSuccess)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

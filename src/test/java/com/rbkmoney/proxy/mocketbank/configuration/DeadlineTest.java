@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
@@ -131,10 +132,7 @@ public class DeadlineTest {
     }
 
     private String extractSuccess3dsCard() {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isMpiCardSuccess)
-                .map(Card::getPan)
-                .toArray(String[]::new);
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         return pans[0];
     }
 }

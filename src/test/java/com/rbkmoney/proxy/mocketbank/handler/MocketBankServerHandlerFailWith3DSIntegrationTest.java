@@ -8,6 +8,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
@@ -44,11 +45,7 @@ public class MocketBankServerHandlerFailWith3DSIntegrationTest extends Integrati
 
     @Test
     public void testProcessPaymentFail() throws TException, IOException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isMpiCardFailed)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardFailed);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

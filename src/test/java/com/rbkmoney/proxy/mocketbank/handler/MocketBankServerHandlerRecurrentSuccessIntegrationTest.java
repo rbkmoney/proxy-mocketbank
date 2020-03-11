@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +39,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isCardSuccess)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

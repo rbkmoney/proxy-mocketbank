@@ -10,8 +10,8 @@ import com.rbkmoney.damsel.p2p_adapter.ProcessResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -36,11 +36,7 @@ public class P2pServerHandlerSuccess3dsTest extends P2PIntegrationTest {
 
     @Test
     public void testProcess() throws TException, JsonProcessingException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isMpiCardSuccess)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             process(cardData);

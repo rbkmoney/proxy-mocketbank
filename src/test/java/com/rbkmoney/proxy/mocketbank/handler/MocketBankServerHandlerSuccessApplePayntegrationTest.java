@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardTokenProvider;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -33,11 +33,7 @@ public class MocketBankServerHandlerSuccessApplePayntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] pans = cardList.stream()
-                .filter(CardAction::isCardSuccessApplePay)
-                .map(Card::getPan)
-                .toArray(String[]::new);
-
+        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccessApplePay);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);
