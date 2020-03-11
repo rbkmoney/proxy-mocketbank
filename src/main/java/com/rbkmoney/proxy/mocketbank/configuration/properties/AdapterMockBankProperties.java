@@ -24,4 +24,7 @@ public class AdapterMockBankProperties {
     @NotEmpty
     private String pathRecurrentCallbackUrl;
 
+    @NotEmpty
+    private String pathP2pCallbackUrl;
+
 }

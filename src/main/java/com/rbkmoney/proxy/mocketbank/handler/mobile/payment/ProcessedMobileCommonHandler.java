@@ -8,9 +8,9 @@ import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.damsel.constant.PaymentState;
-import com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator;
-import com.rbkmoney.proxy.mocketbank.utils.extractor.proxy.ProxyProviderPackageExtractors;
+import com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.CommonMobileHandler;
+import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhoneAction;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhoneUtils;
@@ -55,7 +55,7 @@ public class ProcessedMobileCommonHandler implements CommonMobileHandler {
             return createProxyResultFailure(errorMapping.mapFailure(error, error));
         }
 
-        TransactionInfo transactionInfo = ProxyProviderCreator.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
         return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 

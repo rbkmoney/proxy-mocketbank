@@ -3,6 +3,9 @@ package com.rbkmoney.proxy.mocketbank.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
+import com.rbkmoney.damsel.p2p_adapter.Callback;
+import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
+import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 public class MocketBankController {
 
     private final HellgateAdapterClient hellgateClient;
+    private final FistfulClient fistfulClient;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -48,7 +52,6 @@ public class MocketBankController {
         return resp;
     }
 
-
     @RequestMapping(value = "/rec_term_url", method = RequestMethod.POST)
     public String receiveRecurrentIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         String tag = SuspendPrefix.RECURRENT + getTag(request);
@@ -62,6 +65,27 @@ public class MocketBankController {
             log.warn("Failed handle callback for recurrent", e);
         } catch (Exception e) {
             log.error("Failed handle callback for recurrent", e);
+        }
+        sendRedirect(request, servletResponse);
+        return resp;
+    }
+
+    @RequestMapping(value = "/p2p", method = RequestMethod.POST)
+    public String receiveP2pIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+        String tag = SuspendPrefix.P2P + getTag(request);
+        log.info("receiveP2pIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
+        String resp = "";
+        try {
+            ByteBuffer callbackParams = prepareCallbackParams(request);
+            Callback callback = new Callback();
+            callback.setTag(tag);
+            callback.setPayload(callbackParams);
+            ProcessCallbackResult result = fistfulClient.processCallback(callback);
+            log.info("P2P Callback Result {}", result);
+        } catch (HellgateException e) {
+            log.warn("Failed handle callback for p2p", e);
+        } catch (Exception e) {
+            log.error("Failed handle callback for p2p", e);
         }
         sendRedirect(request, servletResponse);
         return resp;

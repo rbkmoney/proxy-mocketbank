@@ -2,10 +2,13 @@ package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.proxy_provider.ProviderProxySrv;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
+import com.rbkmoney.damsel.proxy_provider.RecurrentTokenSession;
 import com.rbkmoney.damsel.proxy_provider.Shop;
-import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.TestData;
-import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Visa;
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.woody.api.flow.error.WRuntimeException;
 import com.rbkmoney.woody.api.flow.error.WUnavailableResultException;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
@@ -14,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -21,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createDisposablePaymentResource;
@@ -49,6 +54,9 @@ public class DeadlineTest {
 
     @LocalServerPort
     private int port;
+
+    @Autowired
+    protected List<Card> cardList;
 
     @MockBean
     private CdsClientStorage cds;
@@ -86,7 +94,7 @@ public class DeadlineTest {
     }
 
     private void mockCdsBean() {
-        Mockito.when(cds.getCardData((RecurrentTokenContext) any())).thenReturn(TestData.createCardDataProxyModel(Visa.SUCCESS_3DS.getCardNumber()));
+        Mockito.when(cds.getCardData((RecurrentTokenContext) any())).thenReturn(TestData.createCardDataProxyModel(extractSuccess3dsCard()));
     }
 
     private void deadlineTest() throws TException {
@@ -99,7 +107,7 @@ public class DeadlineTest {
                                 createDisposablePaymentResource(
                                         "session_id",
                                         createPaymentTool(
-                                                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan").setExpDate(createBankCardExpDate("12","2020"))
+                                                new BankCard(token, BankCardPaymentSystem.visa, "bin", "masked_pan").setExpDate(createBankCardExpDate("12", "2020"))
                                         )
                                 ),
                                 createCash(
@@ -120,5 +128,13 @@ public class DeadlineTest {
                 .setCategory(new Category().setName("CategoryName").setDescription("Category description"))
                 .setDetails(new ShopDetails().setName("ShopName").setDescription("Shop description"))
                 .setLocation(shopLocation);
+    }
+
+    private String extractSuccess3dsCard() {
+        String[] pans = cardList.stream()
+                .filter(CardAction::isMpiCardSuccess)
+                .map(Card::getPan)
+                .toArray(String[]::new);
+        return pans[0];
     }
 }

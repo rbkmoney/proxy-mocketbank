@@ -27,7 +27,8 @@
         <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.6</shared.resources.version>
-        <proxy-libs.version>2.1.18</proxy-libs.version>
+        <adapter-client-lib.version>2.1.19</adapter-client-lib.version>
+        <damsel-utils.version>1.0.0</damsel-utils.version>
     </properties>
 
     <dependencies>
@@ -68,22 +69,27 @@
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>hellgate-adapter-client</artifactId>
-            <version>${proxy-libs.version}</version>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-storage</artifactId>
-            <version>${proxy-libs.version}</version>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.proxy-libs</groupId>
             <artifactId>cds-client-identity-document-storage</artifactId>
-            <version>${proxy-libs.version}</version>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney</groupId>
+            <groupId>com.rbkmoney.proxy-libs</groupId>
+            <artifactId>fistful-client</artifactId>
+            <version>${adapter-client-lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>damsel-utils</artifactId>
-            <version>${proxy-libs.version}</version>
+            <version>${damsel-utils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

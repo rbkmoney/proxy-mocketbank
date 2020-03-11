@@ -19,12 +19,14 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createDisposablePaymentResource;
@@ -44,6 +46,9 @@ public abstract class IntegrationTest {
 
     @Autowired
     protected PaymentServerHandlerMdcLog handler;
+
+    @Autowired
+    protected List<Card> cardList;
 
     @MockBean
     protected CdsClientStorage cdsStorage;
@@ -168,18 +173,6 @@ public abstract class IntegrationTest {
         return createPaymentResourceRecurrentPaymentResource(
                 createRecurrentPaymentResource(token)
         );
-    }
-
-    protected boolean isCallbackFailure(PaymentCallbackResult callbackResult) {
-        return callbackResult.getResult().getIntent().getFinish().getStatus().isSetFailure();
-    }
-
-    protected boolean isCallbackSuccess(PaymentCallbackResult callbackResult) {
-        return callbackResult.getResult().getIntent().getFinish().getStatus().isSetSuccess();
-    }
-
-    protected boolean isRecurrentTokenCallbackSuccess(RecurrentTokenCallbackResult tokenCallbackResult) {
-        return tokenCallbackResult.getResult().getIntent().getFinish().getStatus().isSetSuccess();
     }
 
     protected void mockCds(CardData cardData, BankCard bankCard) {

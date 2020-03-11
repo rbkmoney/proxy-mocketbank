@@ -7,8 +7,8 @@ import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import com.rbkmoney.java.damsel.constant.PaymentState;
-import com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator;
 import com.rbkmoney.proxy.mocketbank.handler.payment.CommonPaymentHandler;
+import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -36,7 +36,7 @@ public class ProcessedRecurrentCommonPaymentHandler implements CommonPaymentHand
             intent = createFinishIntentSuccessWithToken(invoiceId);
         }
 
-        TransactionInfo transactionInfo = ProxyProviderCreator.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
         return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 }

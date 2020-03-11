@@ -10,11 +10,12 @@ import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.damsel.constant.Error;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
-import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
+import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
-import static com.rbkmoney.proxy.mocketbank.utils.creator.ProxyProviderCreator.createDefaultTransactionInfo;
 import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus.isAuthenticationSuccessful;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class PaymentCallbackHandler {
         CardDataProxyModel cardData = cds.getCardData(context);
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {
-            TransactionInfo transactionInfo = createDefaultTransactionInfo(context);
+            TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
             PaymentCallbackProxyResult proxyResult = createCallbackProxyResult(
                     createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo
             );

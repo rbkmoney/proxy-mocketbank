@@ -51,10 +51,29 @@ public enum CardAction {
             SAMSUNG_PAY_SUCCESS
     };
 
+    private static final CardAction[] SUCCESS_CARDS_APPLE_PAY = {
+            APPLE_PAY_SUCCESS,
+    };
+
+    private static final CardAction[] SUCCESS_CARDS_GOOGLE_PAY = {
+            GOOGLE_PAY_SUCCESS,
+    };
+
+    private static final CardAction[] SUCCESS_CARDS_SAMSUNG_PAY = {
+            SAMSUNG_PAY_SUCCESS
+    };
+
     private static final CardAction[] MPI_FAILED_CARDS = {
             FAILURE_3DS,
-            TIMEOUT_3DS,
-            UNKNOWN_FAILURE
+            TIMEOUT_3DS
+    };
+
+    private static final CardAction[] MPI_TIMEOUT_CARDS = {
+            TIMEOUT_3DS
+    };
+
+    private static final CardAction[] MPI_SUCCESS_CARDS = {
+            SUCCESS_3DS
     };
 
     private final String action;
@@ -74,16 +93,76 @@ public enum CardAction {
         return Arrays.asList(ENROLLED_CARDS).contains(action);
     }
 
+    public static boolean isCardFailed(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return CardAction.isCardFailed(action);
+    }
+
     public static boolean isCardFailed(CardAction action) {
         return Arrays.asList(FAILED_CARDS).contains(action);
+    }
+
+    public static boolean isCardSuccess(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return CardAction.isCardSuccess(action);
     }
 
     public static boolean isCardSuccess(CardAction action) {
         return Arrays.asList(SUCCESS_CARDS).contains(action);
     }
 
+    public static boolean isCardSuccessApplePay(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return CardAction.isCardSuccess(action);
+    }
+
+    public static boolean isCardSuccessApplePay(CardAction action) {
+        return Arrays.asList(SUCCESS_CARDS_APPLE_PAY).contains(action);
+    }
+
+    public static boolean isCardSuccessSamsungPay(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return CardAction.isCardSuccess(action);
+    }
+
+    public static boolean isCardSuccessSamsungPay(CardAction action) {
+        return Arrays.asList(SUCCESS_CARDS_SAMSUNG_PAY).contains(action);
+    }
+
+    public static boolean isCardSuccessGooglePay(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return CardAction.isCardSuccess(action);
+    }
+
+    public static boolean isCardSuccessGooglePay(CardAction action) {
+        return Arrays.asList(SUCCESS_CARDS_GOOGLE_PAY).contains(action);
+    }
+
     public static boolean isMpiCardFailed(CardAction action) {
         return Arrays.asList(MPI_FAILED_CARDS).contains(action);
+    }
+
+    public static boolean isMpiCardFailed(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return isMpiCardFailed(action);
+    }
+
+    public static boolean isMpiCardSuccess(CardAction action) {
+        return Arrays.asList(MPI_SUCCESS_CARDS).contains(action);
+    }
+
+    public static boolean isMpiCardSuccess(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return isMpiCardSuccess(action);
+    }
+
+    public static boolean isMpiCardTimeout(CardAction action) {
+        return Arrays.asList(MPI_SUCCESS_CARDS).contains(action);
+    }
+
+    public static boolean isMpiCardTimeout(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return isMpiCardTimeout(action);
     }
 
 }

@@ -9,9 +9,8 @@ import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Mastercard;
-import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.TestCard;
-import com.rbkmoney.proxy.mocketbank.utils.constant.testcards.Visa;
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -46,18 +45,18 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        TestCard[] cards = {
-                Visa.SUCCESS_3DS,
-                Mastercard.SUCCESS_3DS
-        };
+        String[] pans = cardList.stream()
+                .filter(CardAction::isMpiCardSuccess)
+                .map(Card::getPan)
+                .toArray(String[]::new);
 
-        for (TestCard card : cards) {
-            CardData cardData = createCardData(card.getCardNumber());
-            processPaymentSuccess(cardData);
+        for (String pan : pans) {
+            CardData cardData = createCardData(pan);
+            processPayment(cardData);
         }
     }
 
-    private void processPaymentSuccess(CardData cardData) throws TException, IOException {
+    private void processPayment(CardData cardData) throws TException, IOException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
         mockMpiVerify(EnrollmentStatus.AUTHENTICATION_AVAILABLE);
@@ -74,7 +73,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
         ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
         PaymentCallbackResult callbackResult = handler.handlePaymentCallback(callbackMap, paymentContext);
-        assertTrue("CallbackResult isn`t success", isCallbackSuccess(callbackResult));
+        assertTrue("CallbackResult isn`t success", isSuccess(callbackResult));
 
         paymentContext.getSession().setTarget(createTargetCaptured());
         paymentContext.getSession().setState(callbackResult.getResult().getNextState());

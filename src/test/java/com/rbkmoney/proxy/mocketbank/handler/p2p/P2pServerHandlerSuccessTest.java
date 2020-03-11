@@ -1,12 +1,12 @@
-package com.rbkmoney.proxy.mocketbank.handler;
+package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
 import com.rbkmoney.damsel.cds.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
+import com.rbkmoney.damsel.p2p_adapter.Context;
+import com.rbkmoney.damsel.p2p_adapter.ProcessResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,41 +14,35 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
-import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isFailure;
+import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        properties = {
-                "cds.client.url.storage.url=http://127.0.0.1:8021/v1/storage",
-        }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest {
+public class P2pServerHandlerSuccessTest extends P2PIntegrationTest {
 
     @Test
-    public void testProcessPaymentFail() throws TException {
+    public void testProcess() throws TException {
         String[] pans = cardList.stream()
-                .filter(CardAction::isCardFailed)
+                .filter(CardAction::isCardSuccess)
                 .map(Card::getPan)
                 .toArray(String[]::new);
 
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
-            processPaymentFail(cardData);
+            process(cardData);
         }
     }
 
-    private void processPaymentFail(CardData cardData) throws TException {
+    private void process(CardData cardData) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
 
-        PaymentProxyResult processResultPayment = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
-        assertTrue("Process payment isn`t failure", isFailure(processResultPayment));
+        Context context = createContext(bankCard);
+        ProcessResult result = handler.process(context);
+        assertTrue("Process payment isn`t success", isSuccess(result));
     }
 
 }

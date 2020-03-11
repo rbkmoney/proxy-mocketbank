@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum SuspendPrefix {
 
     RECURRENT("REC_MPI-"),
-    PAYMENT("COM_MPI-");
+    PAYMENT("COM_MPI-"),
+    P2P("P2P_MPI-");
 
     private final String prefix;
 }

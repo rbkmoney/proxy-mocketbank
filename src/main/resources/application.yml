@@ -27,6 +27,7 @@ adapter-mock-bank:
   callbackUrl: http://127.0.0.1:8019
   pathCallbackUrl: /${server.rest.endpoint}/term_url{?termination_uri}
   pathRecurrentCallbackUrl: /${server.rest.endpoint}/term_rec_url{?termination_uri}
+  pathP2pCallbackUrl: /${server.rest.endpoint}/p2p{?termination_uri}
 ---
 cds:
   client:
@@ -41,6 +42,12 @@ hellgate:
   client:
     adapter:
       url: http://127.0.0.1:8023/v1/proxyhost/provider
+      networkTimeout: 30000
+---
+fistful:
+  client:
+    adapter:
+      url: http://127.0.0.1:8025/v1/ff_p2p_adapter_host
       networkTimeout: 30000
 ---
 timer:

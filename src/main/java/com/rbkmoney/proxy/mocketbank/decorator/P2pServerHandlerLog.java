@@ -1,7 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.decorator;
 
 import com.rbkmoney.damsel.p2p_adapter.*;
-import com.rbkmoney.proxy.mocketbank.utils.extractor.p2p.P2pAdapterExtractors;
+import com.rbkmoney.java.damsel.utils.extractors.P2pAdapterExtractors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
