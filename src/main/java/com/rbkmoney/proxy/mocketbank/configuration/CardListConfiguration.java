@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
-import com.rbkmoney.proxy.mocketbank.utils.extractor.CardReader;
+import com.rbkmoney.proxy.mocketbank.utils.reader.CardReader;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

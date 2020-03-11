@@ -5,7 +5,7 @@ import com.rbkmoney.damsel.msgpack.Value;
 import com.rbkmoney.damsel.withdrawals.provider_adapter.*;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
 import com.rbkmoney.java.damsel.utils.creators.WithdrawalsProviderAdapterPackageCreators;
-import com.rbkmoney.proxy.mocketbank.handler.oct.converter.CurrencyConverter;
+import com.rbkmoney.proxy.mocketbank.service.oct.verification.CurrencyVerification;
 import com.rbkmoney.proxy.mocketbank.validator.WithdrawalValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class OctServerHandler implements AdapterSrv.Iface {
 
         Cash cashFrom = new Cash().setCurrency(getQuoteParams.getCurrencyFrom());
         Cash cashTo = new Cash().setCurrency(getQuoteParams.getCurrencyTo());
-        if (CurrencyConverter.isCryptoCurrency(getQuoteParams.getCurrencyTo())) {
+        if (CurrencyVerification.isCryptoCurrency(getQuoteParams.getCurrencyTo())) {
             cashFrom.setAmount(getQuoteParams.getExchangeCash().getAmount());
             cashTo.setAmount(getQuoteParams.getExchangeCash().getAmount() * 2);
         } else {

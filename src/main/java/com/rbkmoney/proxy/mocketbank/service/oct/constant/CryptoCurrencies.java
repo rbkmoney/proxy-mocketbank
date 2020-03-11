@@ -1,4 +1,4 @@
-package com.rbkmoney.proxy.mocketbank.handler.oct.constant;
+package com.rbkmoney.proxy.mocketbank.service.oct.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

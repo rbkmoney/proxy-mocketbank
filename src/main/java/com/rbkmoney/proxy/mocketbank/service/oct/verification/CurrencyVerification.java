@@ -1,14 +1,14 @@
-package com.rbkmoney.proxy.mocketbank.handler.oct.converter;
+package com.rbkmoney.proxy.mocketbank.service.oct.verification;
 
 import com.rbkmoney.damsel.withdrawals.provider_adapter.GetQuoteParams;
-import com.rbkmoney.proxy.mocketbank.handler.oct.constant.CryptoCurrencies;
+import com.rbkmoney.proxy.mocketbank.service.oct.constant.CryptoCurrencies;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CurrencyConverter {
+public class CurrencyVerification {
 
     public static boolean isCryptoCurrency(com.rbkmoney.damsel.domain.Currency currency) {
         return Arrays.asList(CryptoCurrencies.toArraySymbol()).contains(currency.getSymbolicCode());

@@ -1,22 +1,22 @@
-package com.rbkmoney.proxy.mocketbank.utils.extractor;
+package com.rbkmoney.proxy.mocketbank.utils.reader;
 
-import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
+import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.List;
 
 @Component
-public class MobilePhoneReader implements BeanReader<MobilePhone> {
+public class CardReader implements BeanReader<Card> {
 
     private static final String REGEXP = ", ";
 
     @Override
-    public List<MobilePhone> readList(InputStream is) {
+    public List<Card> readList(InputStream is) {
         return extractListFromFile(is,
                 line -> {
                     String[] p = line.split(REGEXP);
-                    return new MobilePhone(p[0], p[1], p[2]);
+                    return new Card(p[0], p[1], p[2]);
                 });
     }
 }

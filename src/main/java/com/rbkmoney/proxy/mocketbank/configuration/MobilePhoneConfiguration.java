@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
-import com.rbkmoney.proxy.mocketbank.utils.extractor.MobilePhoneReader;
+import com.rbkmoney.proxy.mocketbank.utils.reader.MobilePhoneReader;
 import com.rbkmoney.proxy.mocketbank.utils.mobilephone.MobilePhone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

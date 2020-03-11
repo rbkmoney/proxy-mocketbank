@@ -1,4 +1,4 @@
-package com.rbkmoney.proxy.mocketbank.utils.extractor;
+package com.rbkmoney.proxy.mocketbank.utils.reader;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
