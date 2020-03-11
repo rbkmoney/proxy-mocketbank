@@ -1,5 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
 import com.rbkmoney.damsel.cds.AuthData;
@@ -20,6 +21,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
@@ -110,6 +112,12 @@ public abstract class P2PIntegrationTest {
                 .setToken(token)
                 .setPaymentSystem(BankCardPaymentSystem.mastercard)
                 .setBin(TestData.DEFAULT_BIN);
+    }
+
+    protected Callback prepareCallback(Map<String, String> payload) throws JsonProcessingException {
+        return new Callback()
+                .setTag(payload.get("MD"))
+                .setPayload(Converter.mapToByteBuffer(payload));
     }
 
     protected void mockCds(CardData cardData, BankCard bankCard) {

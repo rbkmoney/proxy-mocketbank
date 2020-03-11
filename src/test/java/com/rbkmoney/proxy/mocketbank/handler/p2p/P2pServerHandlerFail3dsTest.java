@@ -11,7 +11,6 @@ import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
-import com.rbkmoney.proxy.mocketbank.utils.Converter;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import org.apache.thrift.TException;
 import org.junit.Test;
@@ -55,11 +54,9 @@ public class P2pServerHandlerFail3dsTest extends P2PIntegrationTest {
         Map<String, String> payload = new HashMap<>();
         payload.put("MD", "MD-TAG");
         payload.put("paRes", "SomePaRes");
-        context.getSession().setState(result.getNextState());
 
-        Callback callback = new Callback()
-                .setTag(payload.get("MD"))
-                .setPayload(Converter.mapToByteBuffer(payload));
+        context.getSession().setState(result.getNextState());
+        Callback callback = prepareCallback(payload);
 
         CallbackResult callbackResult = handler.handleCallback(callback, context);
         assertTrue("CallbackResult isn`t failure", isFailure(callbackResult));
