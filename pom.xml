@@ -28,7 +28,7 @@
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <shared.resources.version>0.3.6</shared.resources.version>
         <adapter-client-lib.version>2.1.19</adapter-client-lib.version>
-        <damsel-utils.version>1.0.0</damsel-utils.version>
+        <adapter-thrift-lib.version>1.0.0</adapter-thrift-lib.version>
     </properties>
 
     <dependencies>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>damsel-utils</artifactId>
-            <version>${damsel-utils.version}</version>
+            <version>${adapter-thrift-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
