@@ -54,7 +54,7 @@ public class P2pServerHandlerSuccess3dsTest extends P2PIntegrationTest {
         Map<String, String> payload = new HashMap<>();
         payload.put("MD", "MD-TAG");
         payload.put("paRes", "SomePaRes");
-        
+
         context.getSession().setState(result.getNextState());
         Callback callback = prepareCallback(payload);
 

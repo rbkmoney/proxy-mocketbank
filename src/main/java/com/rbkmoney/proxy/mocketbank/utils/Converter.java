@@ -15,7 +15,7 @@ import java.util.Map;
 public class Converter {
 
     public static Map byteBufferToMap(ByteBuffer byteBuffer) throws IOException {
-        return  new ObjectMapper().readValue(new String(byteBuffer.array(), StandardCharsets.UTF_8), HashMap.class);
+        return new ObjectMapper().readValue(new String(byteBuffer.array(), StandardCharsets.UTF_8), HashMap.class);
     }
 
     public static ByteBuffer mapToByteBuffer(Map<String, String> map) throws JsonProcessingException {

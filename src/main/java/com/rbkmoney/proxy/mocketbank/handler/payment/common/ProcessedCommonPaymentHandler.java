@@ -73,7 +73,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         }
 
         // Applepay, Samsungpay, Googlepay - always successful and does not depends on card
-        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
         if (hasBankCardTokenProvider(context)) {
             return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }

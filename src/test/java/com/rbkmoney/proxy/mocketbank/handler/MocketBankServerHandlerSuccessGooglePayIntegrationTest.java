@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
         }
 )
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class MocketBankServerHandlerSuccessGooglePayIntegrationTest extends IntegrationTest  {
+public class MocketBankServerHandlerSuccessGooglePayIntegrationTest extends IntegrationTest {
 
     @Test
     public void testProcessPaymentSuccess() throws TException {

@@ -36,7 +36,7 @@ public class ProcessedRecurrentCommonPaymentHandler implements CommonPaymentHand
             intent = createFinishIntentSuccessWithToken(invoiceId);
         }
 
-        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
         return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 }

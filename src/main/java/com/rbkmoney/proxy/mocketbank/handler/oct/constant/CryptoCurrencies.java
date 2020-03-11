@@ -16,7 +16,7 @@ public enum CryptoCurrencies {
     NAMECOIN("Namecoin", "NMC"),
     PEERCOIN("Peercoin", "PPC"),
     DOGECOIN("Dogecoin", "DOGE"),
-    DOGECOIN_XDG( "Dogecoin", "XDG"),
+    DOGECOIN_XDG("Dogecoin", "XDG"),
     GRIDCOIN("Gridcoin", "GRC"),
     PRIMECOIN("Primecoin", "XPM"),
     NXT("Nxt", "NXT"),

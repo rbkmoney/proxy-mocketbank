@@ -28,7 +28,7 @@ public class ProcessedTerminalCommonHandler implements CommonTerminalHandler {
 
     @Override
     public PaymentProxyResult handler(PaymentContext context) throws TException {
-        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
         return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 

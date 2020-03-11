@@ -55,7 +55,7 @@ public class ProcessedMobileCommonHandler implements CommonMobileHandler {
             return createProxyResultFailure(errorMapping.mapFailure(error, error));
         }
 
-        TransactionInfo transactionInfo =  CreatorUtils.createDefaultTransactionInfo(context);
+        TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
         return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 
