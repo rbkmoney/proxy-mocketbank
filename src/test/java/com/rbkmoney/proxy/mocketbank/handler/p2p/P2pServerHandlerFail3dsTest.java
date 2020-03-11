@@ -20,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,15 +52,14 @@ public class P2pServerHandlerFail3dsTest extends P2PIntegrationTest {
         ProcessResult result = handler.process(context);
         assertTrue("P2P process isn`t sleep", isSleep(result));
 
-        Map<String, String> mapCallback = new HashMap<>();
-        mapCallback.put("MD", "MD-TAG");
-        mapCallback.put("paRes", "SomePaRes");
+        Map<String, String> payload = new HashMap<>();
+        payload.put("MD", "MD-TAG");
+        payload.put("paRes", "SomePaRes");
         context.getSession().setState(result.getNextState());
-        ByteBuffer callbackMap = Converter.mapToByteBuffer(mapCallback);
 
-        Callback callback = new Callback();
-        callback.setTag(mapCallback.get("MD"));
-        callback.setPayload(callbackMap);
+        Callback callback = new Callback()
+                .setTag(payload.get("MD"))
+                .setPayload(Converter.mapToByteBuffer(payload));
 
         CallbackResult callbackResult = handler.handleCallback(callback, context);
         assertTrue("CallbackResult isn`t failure", isFailure(callbackResult));
