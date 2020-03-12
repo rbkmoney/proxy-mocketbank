@@ -67,22 +67,22 @@
             <version>1.1.0</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.proxy-libs</groupId>
+            <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>hellgate-adapter-client</artifactId>
             <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.proxy-libs</groupId>
+            <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>cds-client-storage</artifactId>
             <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.proxy-libs</groupId>
+            <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>cds-client-identity-document-storage</artifactId>
             <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.rbkmoney.proxy-libs</groupId>
+            <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>fistful-client</artifactId>
             <version>${adapter-client-lib.version}</version>
         </dependency>
