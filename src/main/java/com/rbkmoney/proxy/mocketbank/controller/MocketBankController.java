@@ -7,7 +7,6 @@ import com.rbkmoney.damsel.p2p_adapter.Callback;
 import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
 import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
-import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -36,7 +35,7 @@ public class MocketBankController {
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
-        String tag = SuspendPrefix.PAYMENT + getTag(request);
+        String tag = getTag(request);
         log.info("ReceivePaymentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = "";
         try {
@@ -54,7 +53,7 @@ public class MocketBankController {
 
     @RequestMapping(value = "/rec_term_url", method = RequestMethod.POST)
     public String receiveRecurrentIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
-        String tag = SuspendPrefix.RECURRENT + getTag(request);
+        String tag = getTag(request);
         log.info("ReceiveRecurrentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = "";
         try {
@@ -72,7 +71,7 @@ public class MocketBankController {
 
     @RequestMapping(value = "/p2p", method = RequestMethod.POST)
     public String receiveP2pIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
-        String tag = SuspendPrefix.P2P + getTag(request);
+        String tag = getTag(request);
         log.info("receiveP2pIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = "";
         try {
