@@ -157,7 +157,7 @@ public enum CardAction {
     }
 
     public static boolean isMpiCardTimeout(CardAction action) {
-        return Arrays.asList(MPI_SUCCESS_CARDS).contains(action);
+        return Arrays.asList(MPI_TIMEOUT_CARDS).contains(action);
     }
 
     public static boolean isMpiCardTimeout(Card card) {

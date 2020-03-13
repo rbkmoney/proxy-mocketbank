@@ -20,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification.isFailure;
@@ -33,8 +34,8 @@ import static org.junit.Assert.assertTrue;
 public class P2pServerHandlerFail3dsTest extends P2PIntegrationTest {
 
     @Test
-    public void testProcess() throws TException, JsonProcessingException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardFailed);
+    public void testProcessFail3ds() throws TException, JsonProcessingException {
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardFailed);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             process(cardData);

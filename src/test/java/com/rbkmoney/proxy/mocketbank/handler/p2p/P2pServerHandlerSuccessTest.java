@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.junit.Assert.assertTrue;
@@ -24,8 +26,8 @@ import static org.junit.Assert.assertTrue;
 public class P2pServerHandlerSuccessTest extends P2PIntegrationTest {
 
     @Test
-    public void testProcess() throws TException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
+    public void testProcessSuccess() throws TException {
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             process(cardData);

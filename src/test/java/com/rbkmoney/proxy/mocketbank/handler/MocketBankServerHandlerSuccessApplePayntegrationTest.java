@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
@@ -33,7 +35,7 @@ public class MocketBankServerHandlerSuccessApplePayntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccessApplePay);
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccessApplePay);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

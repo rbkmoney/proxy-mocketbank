@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isFailure;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
@@ -32,7 +34,7 @@ public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest 
 
     @Test
     public void testProcessPaymentFail() throws TException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardFailed);
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardFailed);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPaymentFail(cardData);

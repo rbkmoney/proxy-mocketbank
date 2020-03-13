@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetCaptured;
@@ -45,7 +46,7 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

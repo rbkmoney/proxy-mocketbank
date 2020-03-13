@@ -6,15 +6,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CardListUtils {
 
-    public static String[] extractPans(List<Card> cardList, Predicate<Card> cardPredicate) {
+    public static List<String> extractPans(List<Card> cardList, Predicate<Card> cardPredicate) {
         return cardList.stream()
                 .filter(cardPredicate)
                 .map(Card::getPan)
-                .toArray(String[]::new);
+                .collect(Collectors.toList());
     }
 
 }

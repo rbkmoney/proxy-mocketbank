@@ -18,6 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetCaptured;
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createTargetProcessed;
@@ -38,7 +39,7 @@ public class MocketBankServerHandlerRecurrentSuccessIntegrationTest extends Inte
 
     @Test
     public void testProcessPaymentSuccess() throws TException, IOException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);

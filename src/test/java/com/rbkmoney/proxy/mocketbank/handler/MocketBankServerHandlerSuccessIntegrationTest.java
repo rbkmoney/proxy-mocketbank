@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.List;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
@@ -35,7 +36,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTe
 
     @Test
     public void testProcessPaymentSuccess() throws TException {
-        String[] pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
             processPayment(cardData);
