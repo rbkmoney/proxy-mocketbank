@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
-import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.p2p_adapter.Context;
 import com.rbkmoney.damsel.p2p_adapter.ProcessResult;

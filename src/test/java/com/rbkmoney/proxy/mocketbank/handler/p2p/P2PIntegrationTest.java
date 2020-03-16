@@ -3,9 +3,7 @@ package com.rbkmoney.proxy.mocketbank.handler.p2p;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
-import com.rbkmoney.damsel.cds.AuthData;
-import com.rbkmoney.damsel.cds.CardData;
-import com.rbkmoney.damsel.cds.CardSecurityCode;
+import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
 import com.rbkmoney.damsel.domain.BankCardTokenProvider;
@@ -13,7 +11,7 @@ import com.rbkmoney.damsel.domain.Currency;
 import com.rbkmoney.damsel.p2p_adapter.*;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
-import com.rbkmoney.java.damsel.utils.creators.CdsPackageCreators;
+import com.rbkmoney.java.cds.utils.creators.CdsPackageCreators;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.decorator.P2pServerHandlerLog;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
@@ -123,16 +121,16 @@ public abstract class P2PIntegrationTest {
     protected void mockCds(CardData cardData, BankCard bankCard) {
         CardDataProxyModel proxyModel = CardDataProxyModel.builder()
                 .cardholderName(bankCard.getCardholderName())
-                .expMonth(cardData.getExpDate().getMonth())
-                .expYear(cardData.getExpDate().getYear())
+                .expMonth(bankCard.getExpDate().getMonth())
+                .expYear(bankCard.getExpDate().getYear())
                 .pan(cardData.getPan())
                 .build();
 
         Mockito.when(cdsStorage.getCardData(anyString())).thenReturn(cardData);
         Mockito.when(cdsStorage.getCardData((RecurrentTokenContext) any())).thenReturn(proxyModel);
         Mockito.when(cdsStorage.getCardData((PaymentContext) any())).thenReturn(proxyModel);
-        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any())).thenReturn(CdsPackageCreators.createSessionData(AuthData.card_security_code(new CardSecurityCode(cardData.getCvv()))));
-        Mockito.when(cdsStorage.getSessionData((PaymentContext) any())).thenReturn(CdsPackageCreators.createSessionData(AuthData.card_security_code(new CardSecurityCode(cardData.getCvv()))));
+        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
+        Mockito.when(cdsStorage.getSessionData((PaymentContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
     }
 
     protected void mockMpiVerify(EnrollmentStatus mpiEnrollmentStatus) {

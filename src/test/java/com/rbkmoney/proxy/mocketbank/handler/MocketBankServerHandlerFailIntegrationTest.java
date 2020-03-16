@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
-import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;

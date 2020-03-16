@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.rbkmoney.java.damsel.utils.extractors.WithdrawalsProviderAdapterPackageExtractors.isSuccess;
+import static com.rbkmoney.java.damsel.utils.verification.WithdrawalsProviderVerification.isSuccess;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j

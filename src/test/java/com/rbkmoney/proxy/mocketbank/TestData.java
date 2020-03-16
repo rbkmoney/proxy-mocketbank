@@ -1,15 +1,13 @@
 package com.rbkmoney.proxy.mocketbank;
 
 import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
-import com.rbkmoney.damsel.cds.CardData;
+import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
+import com.rbkmoney.java.cds.utils.creators.CdsPackageCreators;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import static com.rbkmoney.java.damsel.utils.creators.CdsPackageCreators.createCardDataWithExpDate;
-import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createBankCardExpDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestData {
@@ -44,35 +42,20 @@ public class TestData {
     }
 
     public static CardData createCardData(String pan) {
-        return createCardDataWithExpDate(
-                DEFAULT_CARDHOLDERNAME,
-                DEFAULT_CVV,
-                pan,
-                DEFAULT_MONTH, DEFAULT_YEAR
-        );
+        return CdsPackageCreators.createCardData(pan);
     }
 
     public static CardData createCardData() {
-        return createCardDataWithExpDate(
-                DEFAULT_CARDHOLDERNAME,
-                DEFAULT_CVV,
-                DEFAULT_CARD,
-                DEFAULT_MONTH, DEFAULT_YEAR
-        );
+        return CdsPackageCreators.createCardData(DEFAULT_CARD);
     }
 
     public static BankCard createBankCard(CardData cardData) {
-        String month = String.valueOf(cardData.getExpDate().getMonth());
-        String year = String.valueOf(cardData.getExpDate().getYear());
 
-        return DomainPackageCreators.createBankCard(month, year, cardData.getCardholderName())
+        return DomainPackageCreators.createBankCard(
+                TestData.DEFAULT_MONTH,
+                TestData.DEFAULT_YEAR,
+                TestData.DEFAULT_CARDHOLDERNAME)
                 .setPaymentSystem(BankCardPaymentSystem.mastercard)
-                .setExpDate(
-                        createBankCardExpDate(
-                                cardData.getExpDate().getMonth(),
-                                cardData.getExpDate().getYear()
-                        )
-                )
                 .setBin(DEFAULT_BIN)
                 .setLastDigits(cardData.pan.substring(cardData.pan.length() - 4));
     }
