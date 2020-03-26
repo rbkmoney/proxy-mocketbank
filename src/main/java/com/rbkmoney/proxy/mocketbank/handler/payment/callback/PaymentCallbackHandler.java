@@ -1,12 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.handler.payment.callback;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
-import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentCallbackProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.error.mapping.ErrorMapping;
+import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.java.damsel.constant.Error;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;

@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.utils.model;
 
-import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
+import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.exception.CardException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

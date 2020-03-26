@@ -1,6 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.service.mpi;
 
-import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
+import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockMpiProperties;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.*;
 import lombok.RequiredArgsConstructor;

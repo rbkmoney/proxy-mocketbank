@@ -1,7 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.handler;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
-import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
 import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.Cash;
@@ -9,6 +8,7 @@ import com.rbkmoney.damsel.proxy_provider.InvoicePaymentRefund;
 import com.rbkmoney.damsel.proxy_provider.Shop;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.java.cds.utils.creators.CdsPackageCreators;
+import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.decorator.PaymentServerHandlerMdcLog;

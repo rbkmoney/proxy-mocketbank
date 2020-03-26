@@ -2,7 +2,6 @@ package com.rbkmoney.proxy.mocketbank.handler.p2p;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
-import com.rbkmoney.cds.client.storage.model.CardDataProxyModel;
 import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
 import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
@@ -12,6 +11,7 @@ import com.rbkmoney.damsel.p2p_adapter.*;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.java.cds.utils.creators.CdsPackageCreators;
+import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.decorator.P2pServerHandlerLog;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;

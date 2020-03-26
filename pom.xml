@@ -26,9 +26,11 @@
         <project.maintainer>Anatoly Cherkasov &lt;a.cherkasov@rbkmoney.com&gt;</project.maintainer>
         <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
+        <damsel.version>1.392-0f6a308</damsel.version>
+        <cds-proto.version>1.57-b58a3fd</cds-proto.version>
         <shared.resources.version>0.3.6</shared.resources.version>
-        <adapter-client-lib.version>2.1.20</adapter-client-lib.version>
-        <adapter-thrift-lib.version>1.0.1</adapter-thrift-lib.version>
+        <adapter-client-lib.version>2.1.22</adapter-client-lib.version>
+        <adapter-thrift-lib.version>1.0.3</adapter-thrift-lib.version>
     </properties>
 
     <dependencies>
@@ -109,7 +111,12 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.391-8fe5f98</version>
+            <version>${damsel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
+            <artifactId>cds-proto</artifactId>
+            <version>${cds-proto.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
