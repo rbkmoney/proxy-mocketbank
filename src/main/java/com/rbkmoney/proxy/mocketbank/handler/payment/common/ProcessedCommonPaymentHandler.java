@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.handler.payment.common;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
+import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.domain.OperationFailure;
 import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
@@ -12,6 +13,7 @@ import com.rbkmoney.damsel.proxy_provider.PaymentResource;
 import com.rbkmoney.damsel.timeout_behaviour.TimeoutBehaviour;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
+import com.rbkmoney.java.damsel.constant.Error;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
@@ -78,7 +80,13 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }
 
-        CardDataProxyModel cardData = cds.getCardData(context);
+        CardDataProxyModel cardData;
+        try {
+            cardData = cds.getCardData(context);
+        } catch (CdsStorageExpDateException ex) {
+            return ErrorBuilder.prepareError(errorMapping, Error.DEFAULT_ERROR_CODE, ex.getMessage());
+        }
+
         Optional<Card> card = CardUtils.extractCardByPan(cardList, cardData.getPan());
         if (card.isPresent()) {
             CardAction action = CardAction.findByValue(card.get().getAction());

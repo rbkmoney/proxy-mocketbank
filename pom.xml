@@ -29,7 +29,7 @@
         <damsel.version>1.392-0f6a308</damsel.version>
         <cds-proto.version>1.57-b58a3fd</cds-proto.version>
         <shared.resources.version>0.3.6</shared.resources.version>
-        <adapter-client-lib.version>2.1.22</adapter-client-lib.version>
+        <adapter-client-lib.version>2.1.24</adapter-client-lib.version>
         <adapter-thrift-lib.version>1.0.3</adapter-thrift-lib.version>
     </properties>
 

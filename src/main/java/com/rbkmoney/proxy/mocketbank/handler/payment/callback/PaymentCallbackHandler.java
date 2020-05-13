@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.handler.payment.callback;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
+import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentCallbackProxyResult;
 import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
@@ -40,7 +41,14 @@ public class PaymentCallbackHandler {
 
     public PaymentCallbackResult handler(ByteBuffer byteBuffer, PaymentContext context) {
         HashMap<String, String> parameters = Converter.mergeParams(byteBuffer, context.getSession().getState());
-        CardDataProxyModel cardData = cds.getCardData(context);
+
+        CardDataProxyModel cardData;
+        try {
+            cardData = cds.getCardData(context);
+        } catch (CdsStorageExpDateException ex) {
+            return ErrorBuilder.prepareCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, ex.getMessage());
+        }
+
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {
             TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);

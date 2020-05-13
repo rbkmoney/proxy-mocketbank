@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.handler.p2p.payment;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
+import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.cds.client.storage.utils.BankCardExtractor;
 import com.rbkmoney.cds.storage.CardData;
 import com.rbkmoney.damsel.domain.BankCard;
@@ -9,6 +10,7 @@ import com.rbkmoney.damsel.p2p_adapter.Context;
 import com.rbkmoney.damsel.p2p_adapter.ProcessResult;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
+import com.rbkmoney.java.damsel.constant.Error;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.java.damsel.utils.creators.P2pAdapterCreators;
 import com.rbkmoney.java.damsel.utils.extractors.P2pAdapterExtractors;
@@ -60,7 +62,12 @@ public class ProcessedP2pHandler {
 
         BankCard bankCard = P2pAdapterExtractors.extractBankCardSender(context);
         CardData cardData = cds.getCardData(bankCard.getToken());
-        CardDataProxyModel cardDataProxyModel = BankCardExtractor.initCardDataProxyModel(bankCard, cardData);
+        CardDataProxyModel cardDataProxyModel;
+        try {
+            cardDataProxyModel = BankCardExtractor.initCardDataProxyModel(bankCard, cardData);
+        } catch (CdsStorageExpDateException ex) {
+            return ErrorBuilder.prepareP2pError(errorMapping, Error.DEFAULT_ERROR_CODE, ex.getMessage());
+        }
 
         Optional<Card> card = CardUtils.extractCardByPan(cardList, cardData.getPan());
         if (card.isPresent()) {

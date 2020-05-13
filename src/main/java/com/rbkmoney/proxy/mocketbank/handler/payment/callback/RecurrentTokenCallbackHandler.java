@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.handler.payment.callback;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
+import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenCallbackResult;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenIntent;
@@ -42,7 +43,13 @@ public class RecurrentTokenCallbackHandler {
         String recurrentId = extractRecurrentId(context);
         HashMap<String, String> parameters = Converter.mergeParams(byteBuffer, context.getSession().getState());
 
-        CardDataProxyModel cardData = cds.getCardData(context);
+        CardDataProxyModel cardData;
+        try {
+            cardData = cds.getCardData(context);
+        } catch (CdsStorageExpDateException ex) {
+            return ErrorBuilder.prepareRecurrentCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, ex.getMessage());
+        }
+
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {
             RecurrentTokenIntent intent = createRecurrentTokenFinishIntentSuccess(recurrentId);
