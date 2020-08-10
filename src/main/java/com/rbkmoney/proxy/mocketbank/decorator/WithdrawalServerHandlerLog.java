@@ -44,4 +44,12 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
         }
     }
 
+    @Override
+    public CallbackResult handleCallback(Callback callback, Withdrawal withdrawal, Value state, Map<String, String> options) throws TException {
+        log.info("handleCallback: start");
+        CallbackResult callbackResult = handler.handleCallback(callback, withdrawal, state, options);
+        log.info("handleCallback: finish {}", callbackResult);
+        return callbackResult;
+    }
+
 }

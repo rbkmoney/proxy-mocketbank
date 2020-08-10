@@ -58,6 +58,11 @@ public class OctServerHandler implements AdapterSrv.Iface {
                 );
     }
 
+    @Override
+    public CallbackResult handleCallback(Callback callback, Withdrawal withdrawal, Value value, Map<String, String> map) throws TException {
+        throw new TException("Not supported method handleCallback");
+    }
+
     private static String getCurrentDateTimeByPattern(Long timestamp) {
         return Instant.ofEpochMilli(timestamp).toString();
     }
