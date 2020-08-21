@@ -26,7 +26,7 @@ adapter-mock-mpi:
 adapter-mock-bank:
   callbackUrl: http://127.0.0.1:8019
   pathCallbackUrl: /${server.rest.endpoint}/term_url{?termination_uri}
-  pathRecurrentCallbackUrl: /${server.rest.endpoint}/term_rec_url{?termination_uri}
+  pathRecurrentCallbackUrl: /${server.rest.endpoint}/rec_term_url{?termination_uri}
   pathP2pCallbackUrl: /${server.rest.endpoint}/p2p{?termination_uri}
 ---
 cds:
