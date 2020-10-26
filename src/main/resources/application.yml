@@ -28,6 +28,8 @@ adapter-mock-bank:
   pathCallbackUrl: /${server.rest.endpoint}/term_url{?termination_uri}
   pathRecurrentCallbackUrl: /${server.rest.endpoint}/rec_term_url{?termination_uri}
   pathP2pCallbackUrl: /${server.rest.endpoint}/p2p{?termination_uri}
+  pathQpsCallbackUrl: /${server.rest.endpoint}/qps
+  finishInteraction: https://checkout.rbk.money/v1/finish-interaction.html
 ---
 cds:
   client:
@@ -52,6 +54,7 @@ fistful:
 ---
 timer:
   redirectTimeout: 600
+  qpsTimeout: 600
 ---
 fixture:
   cards: classpath:fixture/cards.csv

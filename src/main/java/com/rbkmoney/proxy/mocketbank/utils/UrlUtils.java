@@ -4,6 +4,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.MpiField;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
@@ -15,6 +16,14 @@ public class UrlUtils {
     public static String getCallbackUrl(String callbackUrl, String path) {
         return UriComponentsBuilder.fromUriString(callbackUrl)
                 .path(path)
+                .build()
+                .toUriString();
+    }
+
+    public static String getCallbackUrl(String callbackUrl, String path, MultiValueMap<String, String> params) {
+        return UriComponentsBuilder.fromUriString(callbackUrl)
+                .path(path)
+                .queryParams(params)
                 .build()
                 .toUriString();
     }

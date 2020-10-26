@@ -7,6 +7,7 @@ import com.rbkmoney.damsel.p2p_adapter.Callback;
 import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
 import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
+import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,7 @@ public class MocketBankController {
 
     private final HellgateAdapterClient hellgateClient;
     private final FistfulClient fistfulClient;
+    private final AdapterMockBankProperties mockBankProperties;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -87,6 +89,14 @@ public class MocketBankController {
             log.error("Failed handle callback for p2p", e);
         }
         sendRedirect(request, servletResponse);
+        return resp;
+    }
+
+    @RequestMapping(value = "/qps")
+    public String receiveQpsIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+        log.info("receiveQpsIncomingParameters with info {}", httpServletRequestToString(request));
+        String resp = "";
+        servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
         return resp;
     }
 

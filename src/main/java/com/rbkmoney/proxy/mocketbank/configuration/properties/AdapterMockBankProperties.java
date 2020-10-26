@@ -27,4 +27,10 @@ public class AdapterMockBankProperties {
     @NotEmpty
     private String pathP2pCallbackUrl;
 
+    @NotEmpty
+    private String pathQpsCallbackUrl;
+
+    @NotEmpty
+    private String finishInteraction;
+
 }

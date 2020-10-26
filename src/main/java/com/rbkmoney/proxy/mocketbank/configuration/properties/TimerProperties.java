@@ -18,4 +18,7 @@ public class TimerProperties {
     @NotNull
     private int redirectTimeout;
 
+    @NotNull
+    private int qpsTimeout;
+
 }
