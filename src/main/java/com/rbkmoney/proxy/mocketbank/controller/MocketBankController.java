@@ -92,7 +92,7 @@ public class MocketBankController {
         return resp;
     }
 
-    @RequestMapping(value = "/qps")
+    @RequestMapping(value = "/qps", method = RequestMethod.GET)
     public String receiveQpsIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         log.info("receiveQpsIncomingParameters with info {}", httpServletRequestToString(request));
         String resp = "";
