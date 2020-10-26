@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.2.RELEASE</version>
+        <version>2.3.4.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -24,12 +24,12 @@
         <exposed.ports>${server.port} ${server.rest.port}</exposed.ports>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.maintainer>Anatoly Cherkasov &lt;a.cherkasov@rbkmoney.com&gt;</project.maintainer>
-        <dockerfile.base.service.tag>bc95d0d6dc13c693acd2b274531a7d604b877bf3</dockerfile.base.service.tag>
+        <dockerfile.base.service.tag>57e26d8ee999d7b0b50248c22afc63e6f926d276</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <damsel.version>1.439-b18f037</damsel.version>
         <cds-proto.version>1.62-07f2b0f</cds-proto.version>
         <shared.resources.version>0.3.8</shared.resources.version>
-        <adapter-client-lib.version>2.1.27</adapter-client-lib.version>
+        <adapter-client-lib.version>2.1.28</adapter-client-lib.version>
         <adapter-thrift-lib.version>1.0.5</adapter-thrift-lib.version>
     </properties>
 
