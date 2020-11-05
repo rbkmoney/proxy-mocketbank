@@ -59,6 +59,7 @@ timer:
 fixture:
   cards: classpath:fixture/cards.csv
   mobilephone: classpath:fixture/mobilephone.csv
+  payout: classpath:fixture/payout.csv
 ---
 rest-template:
   requestTimeout: 60000

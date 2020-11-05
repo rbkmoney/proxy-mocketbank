@@ -9,7 +9,9 @@ import com.rbkmoney.damsel.proxy_provider.RecurrentTokenCallbackResult;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenProxyResult;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.damsel.utils.creators.P2pAdapterCreators;
+import com.rbkmoney.java.damsel.utils.creators.WithdrawalsProviderAdapterPackageCreators;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
+import com.rbkmoney.proxy.mocketbank.utils.payout.CardPayoutAction;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -82,6 +84,19 @@ public class ErrorBuilder {
     public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code, String message) {
         Failure failure = errorMapping.mapFailure(code, message);
         return createRecurrentTokenCallbackResultFailure(failure);
+    }
+
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, String code, String message) {
+        Failure failure = errorMapping.mapFailure(code, message);
+        return WithdrawalsProviderAdapterPackageCreators.createProcessResultFailure(failure);
+    }
+
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, String code, CardPayoutAction action) {
+        return prepareWithdrawalError(errorMapping, code, action.getAction());
+    }
+
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, CardPayoutAction action) {
+        return prepareWithdrawalError(errorMapping, action.getAction(), action.getAction());
     }
 
 }
