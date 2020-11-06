@@ -41,10 +41,11 @@ public class OctServerHandler implements AdapterSrv.Iface {
 
         if (withdrawal.getDestination().isSetBankCard()) {
             CardDataProxyModel cardData = cds.getCardData(withdrawal);
+            log.info("cardPayoutList {}", cardPayoutList);
             Optional<CardPayout> cardPayout = PayoutUtils.extractCardPayoutByPan(cardPayoutList, cardData.getPan());
             if (cardPayout.isPresent()) {
                 log.info("Found card payout with action {}", cardPayout.get().getAction());
-                if(CardPayoutAction.isCardFailed(cardPayout.get())) {
+                if (CardPayoutAction.isCardFailed(cardPayout.get())) {
                     CardPayoutAction action = CardPayoutAction.findByValue(cardPayout.get().getAction());
                     log.info("Failed card payout with action {}", action);
                     return ErrorBuilder.prepareWithdrawalError(errorMapping, action);
