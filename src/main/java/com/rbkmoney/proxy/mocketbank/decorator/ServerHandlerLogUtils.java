@@ -12,7 +12,7 @@ public class ServerHandlerLogUtils {
         if (ProxyProviderVerification.isUndefinedResultOrUnavailable(ex)) {
             log.warn(MESSAGE_TEMPLATE, className, message, ex);
         } else {
-            log.warn(MESSAGE_TEMPLATE, className, message, ex);
+            log.error(MESSAGE_TEMPLATE, className, message, ex);
         }
     }
 

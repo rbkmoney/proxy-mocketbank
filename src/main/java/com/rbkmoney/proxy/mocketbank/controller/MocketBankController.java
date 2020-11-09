@@ -8,6 +8,7 @@ import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
 import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
+import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -39,7 +40,7 @@ public class MocketBankController {
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("ReceivePaymentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
-        String resp = "";
+        String resp = StringUtil.EMPTY_STRING;
         try {
             ByteBuffer callback = prepareCallbackParams(request);
             ByteBuffer response = hellgateClient.processPaymentCallback(tag, callback);
@@ -57,7 +58,7 @@ public class MocketBankController {
     public String receiveRecurrentIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("ReceiveRecurrentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
-        String resp = "";
+        String resp = StringUtil.EMPTY_STRING;
         try {
             ByteBuffer callback = prepareCallbackParams(request);
             ByteBuffer response = hellgateClient.processRecurrentTokenCallback(tag, callback);
@@ -75,7 +76,7 @@ public class MocketBankController {
     public String receiveP2pIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("receiveP2pIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
-        String resp = "";
+        String resp = StringUtil.EMPTY_STRING;
         try {
             ByteBuffer callbackParams = prepareCallbackParams(request);
             Callback callback = new Callback();
@@ -95,17 +96,15 @@ public class MocketBankController {
     @RequestMapping(value = "/qps", method = RequestMethod.GET)
     public String receiveQpsIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         log.info("receiveQpsIncomingParameters with info {}", httpServletRequestToString(request));
-        String resp = "";
         servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
-        return resp;
+        return StringUtil.EMPTY_STRING;
     }
 
     @RequestMapping(value = "/dw", method = RequestMethod.POST)
     public String receiveDwIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
         log.info("receiveDWIncomingParameters with info {}", httpServletRequestToString(request));
-        String resp = "";
         servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
-        return resp;
+        return StringUtil.EMPTY_STRING;
     }
 
     private String getTag(HttpServletRequest request) {
@@ -114,7 +113,7 @@ public class MocketBankController {
         } else {
             log.warn("Missing a required parameter 'MD' ");
         }
-        return "";
+        return StringUtil.EMPTY_STRING;
     }
 
     private ByteBuffer prepareCallbackParams(HttpServletRequest request) throws JsonProcessingException {
