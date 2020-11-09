@@ -21,4 +21,7 @@ public class TimerProperties {
     @NotNull
     private int qpsTimeout;
 
+    @NotNull
+    private int dwTimeout;
+
 }

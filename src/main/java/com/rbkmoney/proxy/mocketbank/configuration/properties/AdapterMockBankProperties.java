@@ -31,6 +31,9 @@ public class AdapterMockBankProperties {
     private String pathQpsCallbackUrl;
 
     @NotEmpty
+    private String pathDWCallbackUrl;
+
+    @NotEmpty
     private String finishInteraction;
 
 }

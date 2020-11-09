@@ -100,6 +100,14 @@ public class MocketBankController {
         return resp;
     }
 
+    @RequestMapping(value = "/dw", method = RequestMethod.POST)
+    public String receiveDwIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+        log.info("receiveDWIncomingParameters with info {}", httpServletRequestToString(request));
+        String resp = "";
+        servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
+        return resp;
+    }
+
     private String getTag(HttpServletRequest request) {
         if (StringUtils.hasText(request.getParameter("MD"))) {
             return request.getParameter("MD");

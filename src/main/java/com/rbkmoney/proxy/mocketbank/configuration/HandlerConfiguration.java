@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.configuration;
 
 import com.rbkmoney.proxy.mocketbank.decorator.*;
+import com.rbkmoney.proxy.mocketbank.handler.digital.wallet.DigitalWalletServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.MobileServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.operator.MobileOperatorServerHandler;
 import com.rbkmoney.proxy.mocketbank.handler.oct.OctServerHandler;
@@ -38,6 +39,11 @@ public class HandlerConfiguration {
     @Bean
     public TerminalServerHandlerLog terminalServerHandlerLog(TerminalServerHandler terminalServerHandler) {
         return new TerminalServerHandlerLog(terminalServerHandler);
+    }
+
+    @Bean
+    public DigitalWalletServerHandlerLog digitalWalletServerHandlerLog(DigitalWalletServerHandler digitalWalletServerHandler) {
+        return new DigitalWalletServerHandlerLog(digitalWalletServerHandler);
     }
 
     @Bean
