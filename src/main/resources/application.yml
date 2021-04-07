@@ -24,8 +24,8 @@ adapter-mock-mpi:
   url: http://127.0.0.1:8018
 ---
 mpi20:
-  threeDsServerUrl: https://testsecurepay2.rsb.ru:8449
-  callbackUrl: http://127.0.0.1:8080
+  threeDsServerUrl: http://127.0.0.1:8018
+  callbackUrl: http://127.0.0.1:8019
   threeDsMethodNotificationPath: /${server.rest.endpoint}/mpi20/threeDsMethodNotification{?termination_uri}
   acsNotificationPath: /${server.rest.endpoint}/mpi20/acsNotification{?termination_uri}
   returnUrl: https://checkout.rbk.money/v1/finish-interaction.html
