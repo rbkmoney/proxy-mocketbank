@@ -21,6 +21,7 @@ import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.handler.payment.CommonPaymentHandler;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.processor.Mpi20Processor;
 import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
@@ -60,6 +61,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
     private final List<Card> cardList;
     private final TimerProperties timerProperties;
     private final AdapterMockBankProperties mockBankProperties;
+    private final Mpi20Processor mpi20Processor;
 
     @Override
     public boolean filter(TargetInvoicePaymentStatus targetInvoicePaymentStatus, PaymentResource paymentResource) {
@@ -92,6 +94,8 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             CardAction action = CardAction.findByValue(card.get().getAction());
             if (CardAction.isCardEnrolled(card.get())) {
                 return prepareEnrolledPaymentProxyResult(context, intent, transactionInfo, cardData);
+            } else if (CardAction.isCardEnrolled20(card.get())) {
+                return mpi20Processor.processPrepare(context);
             }
             return prepareNotEnrolledPaymentProxyResult(intent, transactionInfo, action);
         }

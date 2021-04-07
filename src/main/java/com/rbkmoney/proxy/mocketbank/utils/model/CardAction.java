@@ -15,6 +15,7 @@ public enum CardAction {
     SUCCESS_3DS("3-D Secure Success"),
     FAILURE_3DS("3-D Secure Failure"),
     TIMEOUT_3DS("3-D Secure Timeout"),
+    SUCCESS_3DS_2_0("3-D Secure 2.0 Success"),
     INSUFFICIENT_FUNDS("Insufficient Funds"),
     INVALID_CARD("Invalid Card"),
     CVV_MATCH_FAIL("CVV Match Fail"),
@@ -32,6 +33,11 @@ public enum CardAction {
             TIMEOUT_3DS,
             SUCCESS_3DS
     };
+
+    private static final CardAction[] ENROLLED_2_0_CARDS = {
+            SUCCESS_3DS_2_0
+    };
+
 
     private static final CardAction[] FAILED_CARDS = {
             INSUFFICIENT_FUNDS,
@@ -87,6 +93,11 @@ public enum CardAction {
     public static boolean isCardEnrolled(Card card) {
         CardAction action = CardAction.findByValue(card.getAction());
         return CardAction.isCardEnrolled(action);
+    }
+
+    public static boolean isCardEnrolled20(Card card) {
+        CardAction action = CardAction.findByValue(card.getAction());
+        return Arrays.asList(ENROLLED_2_0_CARDS).contains(action);
     }
 
     public static boolean isCardEnrolled(CardAction action) {

@@ -1,6 +1,7 @@
 package com.rbkmoney.proxy.mocketbank.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
 import com.rbkmoney.damsel.p2p_adapter.Callback;
@@ -8,6 +9,10 @@ import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
 import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.model.CRes;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.model.ThreeDSMethodData;
+import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +40,7 @@ public class MocketBankController {
     private final HellgateAdapterClient hellgateClient;
     private final FistfulClient fistfulClient;
     private final AdapterMockBankProperties mockBankProperties;
+    private final ObjectMapper objectMapper;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
     public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
@@ -72,8 +78,46 @@ public class MocketBankController {
         return resp;
     }
 
+    @RequestMapping(value = "mpi20/threeDsMethodNotification", method = RequestMethod.POST)
+    public String mpi20ThreeDsMethodNotification(HttpServletRequest servletRequest,
+                                                 HttpServletResponse servletResponse) throws IOException {
+        log.info("mpi20/threeDsMethodNotification {}", httpServletRequestToString(servletRequest));
+        ThreeDSMethodData threeDSMethodData =
+                objectMapper.readValue(servletRequest.getParameter(CallbackResponseFields.THREE_DS_METHOD_DATA), ThreeDSMethodData.class);
+        String tag = SuspendPrefix.PAYMENT.getPrefix() + threeDSMethodData.getThreeDSServerTransID();
+        ByteBuffer callback = prepareCallbackParams(servletRequest);
+        String response = StringUtil.EMPTY_STRING;
+        try {
+            ByteBuffer callbackResponse = hellgateClient.processPaymentCallback(tag, callback);
+            response = new String(callbackResponse.array(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.warn("Failed handle mpi20 threeDsMethodNotification", e);
+            sendRedirect(servletRequest, servletResponse);
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "mpi20/acsNotification", method = RequestMethod.POST)
+    public String mpi20AcsNotification(HttpServletRequest servletRequest,
+                                  HttpServletResponse servletResponse) throws IOException {
+        log.info("mpi20 acsNotification {}", httpServletRequestToString(servletRequest));
+        CRes cRes = objectMapper.readValue(servletRequest.getParameter(CallbackResponseFields.CRES), CRes.class);
+        String tag = SuspendPrefix.PAYMENT.getPrefix() + cRes.getThreeDSServerTransID();
+        ByteBuffer callback = prepareCallbackParams(servletRequest);
+        String response = "";
+        try {
+            ByteBuffer callbackResponse = hellgateClient.processPaymentCallback(tag, callback);
+            response = new String(callbackResponse.array(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.warn("Failed handle mpi20 acsNotification", e);
+        }
+        sendRedirect(servletRequest, servletResponse);
+        return response;
+    }
+
     @RequestMapping(value = "/p2p", method = RequestMethod.POST)
-    public String receiveP2pIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+    public String receiveP2pIncomingParameters(HttpServletRequest request,
+                                               HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("receiveP2pIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = StringUtil.EMPTY_STRING;
