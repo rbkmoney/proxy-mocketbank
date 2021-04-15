@@ -9,7 +9,7 @@ cardPan, action, paymentSystem
 5123456789012346, 3-D Secure Failure, MasterCard
 4342561111111118, 3-D Secure Timeout, Visa
 5112000200000002, 3-D Secure Timeout, MasterCard
-4012888888881866, 3-D Secure 2.0 Success, Visa
+4929172190150505, 3-D Secure 2.0 Success, Visa
 4000000000000002, Insufficient Funds, Visa
 5100000000000412, Insufficient Funds, MasterCard
 4222222222222220, Invalid Card, Visa
