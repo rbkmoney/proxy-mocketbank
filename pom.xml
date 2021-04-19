@@ -26,7 +26,6 @@
         <dockerfile.base.service.tag>c0612d6052ac049496b72a23a04acb142035f249</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
         <cds-proto.version>1.62-07f2b0f</cds-proto.version>
-        <shared.resources.version>0.3.8</shared.resources.version>
     </properties>
 
     <dependencies>
@@ -195,7 +194,7 @@
                 </dependencies>
                 <configuration>
                     <resourceBundles>
-                        <resourceBundle>com.rbkmoney:shared-resources:${shared.resources.version}</resourceBundle>
+                        <resourceBundle>com.rbkmoney:shared-resources:${shared-resources.version}</resourceBundle>
                     </resourceBundles>
                     <attachToMain>false</attachToMain>
                     <attachToTest>false</attachToTest>
