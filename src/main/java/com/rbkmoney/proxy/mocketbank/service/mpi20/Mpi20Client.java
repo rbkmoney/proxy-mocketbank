@@ -16,17 +16,18 @@ public class Mpi20Client {
     private final Mpi20Properties mpi20Properties;
 
     public PreparationResponse prepare(PreparationRequest request) {
-        String url = mpi20Properties.getThreeDsServerUrl() + "/prepare";
-        return restTemplate.postForObject(url, request, PreparationResponse.class);
+        return restTemplate.postForObject(prepareUrl("prepare"), request, PreparationResponse.class);
     }
 
     public AuthenticationResponse auth(AuthenticationRequest request) {
-        String url = mpi20Properties.getThreeDsServerUrl() + "/auth";
-        return restTemplate.postForObject(url, request, AuthenticationResponse.class);
+        return restTemplate.postForObject(prepareUrl("auth"), request, AuthenticationResponse.class);
     }
 
     public ResultResponse result(ResultRequest request) {
-        String url = mpi20Properties.getThreeDsServerUrl() + "/result";
-        return restTemplate.postForObject(url, request, ResultResponse.class);
+        return restTemplate.postForObject(prepareUrl("result"), request, ResultResponse.class);
+    }
+
+    private String prepareUrl(String path) {
+        return String.format("%s/mpi20/%s", mpi20Properties.getThreeDsServerUrl(), path);
     }
 }
