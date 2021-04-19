@@ -109,6 +109,10 @@
             <artifactId>damsel</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
+            <artifactId>damsel-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>cds-proto</artifactId>
             <version>${cds-proto.version}</version>
