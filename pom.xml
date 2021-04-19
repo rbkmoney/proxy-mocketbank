@@ -65,6 +65,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>shared-resources</artifactId>
+            <version>${shared.resources.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -79,34 +80,42 @@
         <dependency>
             <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>cds-client-storage</artifactId>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>cds-client-identity-document-storage</artifactId>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.adapter-client-lib</groupId>
             <artifactId>fistful-client</artifactId>
+            <version>${adapter-client-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>damsel-utils</artifactId>
+            <version>${adapter-thrift-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>cds-utils</artifactId>
+            <version>${adapter-thrift-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.4</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.woody</groupId>
             <artifactId>woody-thrift</artifactId>
+            <version>[1.1.21,)</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
+            <version>${damsel.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -121,6 +130,7 @@
         <dependency>
             <groupId>com.rbkmoney.geck</groupId>
             <artifactId>serializer</artifactId>
+            <version>0.6.11</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -130,6 +140,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>adapter-common-lib</artifactId>
+            <version>0.0.26</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.rbkmoney</groupId>
@@ -196,7 +207,7 @@
                 </dependencies>
                 <configuration>
                     <resourceBundles>
-                        <resourceBundle>com.rbkmoney:shared-resources:${shared-resources.version}</resourceBundle>
+                        <resourceBundle>com.rbkmoney:shared-resources:${shared.resources.version}</resourceBundle>
                     </resourceBundles>
                     <attachToMain>false</attachToMain>
                     <attachToTest>false</attachToTest>
