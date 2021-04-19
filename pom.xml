@@ -25,9 +25,6 @@
         <project.maintainer>Anatoly Cherkasov &lt;a.cherkasov@rbkmoney.com&gt;</project.maintainer>
         <dockerfile.base.service.tag>c0612d6052ac049496b72a23a04acb142035f249</dockerfile.base.service.tag>
         <dockerfile.registry>dr2.rbkmoney.com</dockerfile.registry>
-        <cds-proto.version>1.62-07f2b0f</cds-proto.version>
-        <shared.resources.version>0.3.8</shared.resources.version>
-        <adapter-thrift-lib.version>1.0.5</adapter-thrift-lib.version>
     </properties>
 
     <dependencies>
@@ -63,7 +60,6 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>shared-resources</artifactId>
-            <version>${shared.resources.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -88,13 +84,7 @@
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
-            <artifactId>damsel-utils</artifactId>
-            <version>${adapter-thrift-lib.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>cds-utils</artifactId>
-            <version>${adapter-thrift-lib.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -111,11 +101,6 @@
         <dependency>
             <groupId>com.rbkmoney.adapter-thrift-lib</groupId>
             <artifactId>damsel-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rbkmoney</groupId>
-            <artifactId>cds-proto</artifactId>
-            <version>${cds-proto.version}</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -202,7 +187,7 @@
                 </dependencies>
                 <configuration>
                     <resourceBundles>
-                        <resourceBundle>com.rbkmoney:shared-resources:${shared.resources.version}</resourceBundle>
+                        <resourceBundle>com.rbkmoney:shared-resources:${shared-resources.version}</resourceBundle>
                     </resourceBundles>
                     <attachToMain>false</attachToMain>
                     <attachToTest>false</attachToTest>
