@@ -39,7 +39,9 @@ public class ProcessedMobileCommonHandler implements CommonMobileHandler {
 
     @Override
     public PaymentProxyResult handler(PaymentContext context) throws TException {
-        PaymentResource paymentResource = com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(context);
+        PaymentResource paymentResource =
+                com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors
+                        .extractPaymentResource(context);
         PaymentTool paymentTool = ProxyProviderPackageExtractors.extractPaymentTool(paymentResource);
         String phoneNumber = MobilePhoneUtils.preparePhoneNumber(paymentTool.getMobileCommerce().getPhone());
         Optional<MobilePhone> mobilePhone = MobilePhoneUtils.extractPhoneByNumber(mobilePhones, phoneNumber);

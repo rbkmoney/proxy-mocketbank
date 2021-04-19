@@ -36,7 +36,7 @@ adapter-mock-bank:
   pathRecurrentCallbackUrl: /${server.rest.endpoint}/rec_term_url{?termination_uri}
   pathP2pCallbackUrl: /${server.rest.endpoint}/p2p{?termination_uri}
   pathQpsCallbackUrl: /${server.rest.endpoint}/qps
-  pathDWCallbackUrl: /${server.rest.endpoint}/dw
+  pathDigitalWalletCallbackUrl: /${server.rest.endpoint}/dw
   finishInteraction: https://checkout.rbk.money/v1/finish-interaction.html
 ---
 cds:

@@ -37,11 +37,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 @Slf4j
 public abstract class P2PIntegrationTest {
 
-    protected String SESSION_ID = "TEST_SESSION_ID";
-    protected String OPERATION_ID = "TEST_OPERATION_ID";
-    protected String PAYMENT_SESSION_ID = "TEST_PAYMENT_SESSION_ID";
-    protected String RECEIVER_TOKEN = "receiver";
-    protected String SENDER_TOKEN = "sender";
+    protected static String SESSION_ID = "TEST_SESSION_ID";
+    protected static String OPERATION_ID = "TEST_OPERATION_ID";
+    protected static String PAYMENT_SESSION_ID = "TEST_PAYMENT_SESSION_ID";
+    protected static String RECEIVER_TOKEN = "receiver";
+    protected static String SENDER_TOKEN = "sender";
 
     @Autowired
     protected P2pServerHandlerLog handler;
@@ -129,8 +129,10 @@ public abstract class P2PIntegrationTest {
         Mockito.when(cdsStorage.getCardData(anyString())).thenReturn(cardData);
         Mockito.when(cdsStorage.getCardData((RecurrentTokenContext) any())).thenReturn(proxyModel);
         Mockito.when(cdsStorage.getCardData((PaymentContext) any())).thenReturn(proxyModel);
-        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
-        Mockito.when(cdsStorage.getSessionData((PaymentContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
+        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any()))
+                .thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
+        Mockito.when(cdsStorage.getSessionData((PaymentContext) any()))
+                .thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
     }
 
     protected void mockMpiVerify(EnrollmentStatus mpiEnrollmentStatus) {

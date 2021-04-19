@@ -37,7 +37,10 @@ public class OctServerHandler implements AdapterSrv.Iface {
     private final WithdrawalValidator withdrawalValidator;
 
     @Override
-    public ProcessResult processWithdrawal(Withdrawal withdrawal, Value state, Map<String, String> options) throws TException {
+    public ProcessResult processWithdrawal(
+            Withdrawal withdrawal,
+            Value state,
+            Map<String, String> options) {
 
         if (withdrawal.getDestination().isSetBankCard()) {
             CardDataProxyModel cardData = cds.getCardData(withdrawal);
@@ -53,7 +56,8 @@ public class OctServerHandler implements AdapterSrv.Iface {
             }
         }
 
-        TransactionInfo transactionInfo = DomainPackageCreators.createTransactionInfo(withdrawal.getId(), Collections.emptyMap());
+        TransactionInfo transactionInfo =
+                DomainPackageCreators.createTransactionInfo(withdrawal.getId(), Collections.emptyMap());
         Intent intent = WithdrawalsProviderAdapterPackageCreators.createFinishIntentSuccess(transactionInfo);
         return WithdrawalsProviderAdapterPackageCreators.createProcessResult(intent);
     }
@@ -86,7 +90,11 @@ public class OctServerHandler implements AdapterSrv.Iface {
     }
 
     @Override
-    public CallbackResult handleCallback(Callback callback, Withdrawal withdrawal, Value value, Map<String, String> map) throws TException {
+    public CallbackResult handleCallback(
+            Callback callback,
+            Withdrawal withdrawal,
+            Value value,
+            Map<String, String> map) throws TException {
         throw new TException("Not supported method handleCallback");
     }
 

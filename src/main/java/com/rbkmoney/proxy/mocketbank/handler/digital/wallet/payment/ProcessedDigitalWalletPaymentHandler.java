@@ -42,22 +42,29 @@ public class ProcessedDigitalWalletPaymentHandler implements CommonDigitalWallet
     }
 
     @Override
-    public PaymentProxyResult handler(PaymentContext context) throws TException {
+    public PaymentProxyResult handler(PaymentContext context) {
         String invoiceId = extractInvoiceId(context);
         TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
 
         if (Arrays.equals(context.getSession().getState(), PaymentState.SLEEP.getBytes())) {
-            return createPaymentProxyResult(createFinishIntentSuccess(), PaymentState.CAPTURED.getBytes(), transactionInfo);
+            return createPaymentProxyResult(
+                    createFinishIntentSuccess(),
+                    PaymentState.CAPTURED.getBytes(),
+                    transactionInfo);
         }
 
         Cash cash = extractCashPayment(context);
         DigitalWallet digitalWallet = DwExtractors.extractDigitalWallet(context);
-        HashMap<String, String> params = DwCreators.createDWParams(invoiceId, cash, digitalWallet, mockBankProperties);
-        String url = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathDWCallbackUrl());
+        HashMap<String, String> params = DwCreators.createDigitalWalletParams(
+                invoiceId, cash, digitalWallet, mockBankProperties);
+        String url = UrlUtils.getCallbackUrl(
+                mockBankProperties.getCallbackUrl(),
+                mockBankProperties.getPathDigitalWalletCallbackUrl());
 
         return createPaymentProxyResult(
                 createIntentWithSleepIntent(
-                        DwOptions.extractDWTimerTimeout(context.getOptions(), timerProperties.getDwTimeout()),
+                        DwOptions.extractDigitalWalletTimerTimeout(
+                                context.getOptions(), timerProperties.getDwTimeout()),
                         createPostUserInteraction(url, params)
                 ),
                 PaymentState.SLEEP.getBytes(), transactionInfo);

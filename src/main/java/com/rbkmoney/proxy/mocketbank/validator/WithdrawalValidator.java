@@ -15,7 +15,8 @@ public class WithdrawalValidator implements Validator<GetQuoteParams> {
 
     public void validate(GetQuoteParams getQuoteParams, Map<String, String> options) {
         validateRequiredFields(options);
-        if (CurrencyVerification.isCryptoCurrency(getQuoteParams.getCurrencyFrom()) && CurrencyVerification.isCryptoCurrency(getQuoteParams.getCurrencyTo())) {
+        if (CurrencyVerification.isCryptoCurrency(getQuoteParams.getCurrencyFrom())
+                && CurrencyVerification.isCryptoCurrency(getQuoteParams.getCurrencyTo())) {
             throw new WithdrawalException("Can't exchange crypto currency to crypto currency");
         }
         if (CurrencyVerification.isCurrencyEquals(getQuoteParams.getCurrencyFrom(), getQuoteParams.getCurrencyTo())) {

@@ -27,7 +27,7 @@ public class Converter {
             return new HashMap<>();
         }
         Map<String, String> newMap = new HashMap<>();
-        map.forEach((K, V) -> newMap.put(K.trim(), V[0]));
+        map.forEach((k, v) -> newMap.put(k.trim(), v[0]));
         return newMap;
     }
 

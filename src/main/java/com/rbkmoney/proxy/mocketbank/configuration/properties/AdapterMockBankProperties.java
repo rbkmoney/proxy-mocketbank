@@ -31,7 +31,7 @@ public class AdapterMockBankProperties {
     private String pathQpsCallbackUrl;
 
     @NotEmpty
-    private String pathDWCallbackUrl;
+    private String pathDigitalWalletCallbackUrl;
 
     @NotEmpty
     private String finishInteraction;

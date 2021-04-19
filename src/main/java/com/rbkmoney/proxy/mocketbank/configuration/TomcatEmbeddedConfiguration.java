@@ -64,7 +64,7 @@ public class TomcatEmbeddedConfiguration {
 
     @Bean
     public FilterRegistrationBean woodyFilter() {
-        WFlow wFlow = new WFlow();
+        WFlow woodyFlow = new WFlow();
         Filter filter = new OncePerRequestFilter() {
 
             @Override
@@ -72,7 +72,7 @@ public class TomcatEmbeddedConfiguration {
                                             FilterChain filterChain) throws ServletException, IOException {
                 if ((request.getLocalPort() == restPort)
                         && request.getServletPath().startsWith(restEndpoint)) {
-                    wFlow.createServiceFork(() -> {
+                    woodyFlow.createServiceFork(() -> {
                         try {
                             filterChain.doFilter(request, response);
                         } catch (IOException | ServletException e) {

@@ -10,7 +10,9 @@ import org.apache.thrift.TException;
 public class UnsupportedTerminalHandler implements CommonTerminalHandler {
 
     @Override
-    public boolean filter(final TargetInvoicePaymentStatus targetInvoicePaymentStatus, final PaymentResource paymentResource) {
+    public boolean filter(
+            final TargetInvoicePaymentStatus targetInvoicePaymentStatus,
+            final PaymentResource paymentResource) {
         return false;
     }
 

@@ -31,7 +31,9 @@ public class PaymentServerHandlerLog implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer byteBuffer, RecurrentTokenContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(
+            ByteBuffer byteBuffer,
+            RecurrentTokenContext context) throws TException {
         String recurrentId = ProxyProviderPackageExtractors.extractRecurrentId(context);
         log.info("HandleRecurrentTokenCallback: start with recurrentId={}", recurrentId);
         RecurrentTokenCallbackResult result = handler.handleRecurrentTokenCallback(byteBuffer, context);
@@ -44,14 +46,16 @@ public class PaymentServerHandlerLog implements ProviderProxySrv.Iface {
         String invoiceId = ProxyProviderPackageExtractors.extractInvoiceId(context);
         String invoicePaymentStatus = ProxyProviderPackageExtractors.extractTargetInvoicePaymentStatus(context);
         String paymentResourceType = PaymentResourceTypeExtractors.extractPaymentResourceType(context);
-        log.info("Process payment handle resource={}, status={} start with invoiceId={}", paymentResourceType, invoicePaymentStatus, invoiceId);
+        log.info("Process payment handle resource={}, status={} start with invoiceId={}",
+                paymentResourceType, invoicePaymentStatus, invoiceId);
         try {
             PaymentProxyResult proxyResult = handler.processPayment(context);
             log.info("Process payment handle resource={}, status={} finished with invoiceId={} and proxyResult={}",
                     paymentResourceType, invoicePaymentStatus, invoiceId, proxyResult);
             return proxyResult;
         } catch (Exception ex) {
-            String message = String.format("Failed handle resource=%s, status=%s process payment for operation with invoiceId %s",
+            String message = String.format("Failed handle resource=%s, status=%s process payment " +
+                            "for operation with invoiceId %s",
                     paymentResourceType, invoicePaymentStatus, invoiceId);
             ServerHandlerLogUtils.logMessage(ex, message, this.getClass());
             throw ex;
@@ -59,7 +63,9 @@ public class PaymentServerHandlerLog implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public PaymentCallbackResult handlePaymentCallback(ByteBuffer byteBuffer, PaymentContext context) throws TException {
+    public PaymentCallbackResult handlePaymentCallback(
+            ByteBuffer byteBuffer,
+            PaymentContext context) throws TException {
         String invoiceId = ProxyProviderPackageExtractors.extractInvoiceId(context);
         log.info("HandlePaymentCallback start with invoiceId={}", invoiceId);
         PaymentCallbackResult result = handler.handlePaymentCallback(byteBuffer, context);

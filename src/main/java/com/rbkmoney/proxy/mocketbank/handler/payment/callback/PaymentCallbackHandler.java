@@ -87,7 +87,10 @@ public class PaymentCallbackHandler {
 
 
 
-    private PaymentCallbackResult processEnrolled(ByteBuffer byteBuffer, PaymentContext context, CardDataProxyModel cardData) {
+    private PaymentCallbackResult processEnrolled(
+            ByteBuffer byteBuffer,
+            PaymentContext context,
+            CardDataProxyModel cardData) {
         HashMap<String, String> parameters = Converter.mergeParams(byteBuffer, context.getSession().getState());
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {

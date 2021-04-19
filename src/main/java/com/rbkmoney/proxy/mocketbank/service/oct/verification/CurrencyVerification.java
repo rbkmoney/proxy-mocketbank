@@ -14,7 +14,9 @@ public class CurrencyVerification {
         return Arrays.asList(CryptoCurrencies.toArraySymbol()).contains(currency.getSymbolicCode());
     }
 
-    public static boolean isCurrencyEquals(com.rbkmoney.damsel.domain.Currency currencyFrom, com.rbkmoney.damsel.domain.Currency currencyTo) {
+    public static boolean isCurrencyEquals(
+            com.rbkmoney.damsel.domain.Currency currencyFrom,
+            com.rbkmoney.damsel.domain.Currency currencyTo) {
         return currencyFrom.getSymbolicCode().equalsIgnoreCase(currencyTo.getSymbolicCode())
                 || (currencyFrom.getNumericCode() == currencyTo.getNumericCode());
     }

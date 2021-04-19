@@ -1,14 +1,10 @@
 package com.rbkmoney.proxy.mocketbank.service.mpi20.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rbkmoney.damsel.domain.Failure;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.Mpi20Client;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.CtxToAuthConverter;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.CtxToPreparationConverter;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.CtxToResultConverter;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,7 +37,7 @@ public class Mpi20Processor {
     }
 
     @SneakyThrows
-    public PaymentCallbackProxyResult processAuth(PaymentContext context){
+    public PaymentCallbackProxyResult processAuth(PaymentContext context) {
         AuthenticationRequest request = ctxToAuthConverter.convert(context);
         AuthenticationResponse response = mpi20Client.auth(request);
         Intent intent = buildAuthIntent(request, response);
@@ -53,7 +49,7 @@ public class Mpi20Processor {
     }
 
     @SneakyThrows
-    public PaymentCallbackProxyResult processResult(PaymentContext context){
+    public PaymentCallbackProxyResult processResult(PaymentContext context) {
         ResultRequest request = ctxToResultConverter.convert(context);
         ResultResponse response = mpi20Client.result(request);
         Intent intent = buildResultIntent(request, response);

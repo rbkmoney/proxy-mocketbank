@@ -20,7 +20,9 @@ public class CreatorUtils {
     }
 
     public static TransactionInfo createDefaultTransactionInfo(PaymentContext context) {
-        return createTransactionInfo(ProxyProviderPackageCreators.createInvoiceWithPayment(context.getPaymentInfo()), Collections.emptyMap());
+        return createTransactionInfo(
+                ProxyProviderPackageCreators.createInvoiceWithPayment(context.getPaymentInfo()),
+                Collections.emptyMap());
     }
 
 }

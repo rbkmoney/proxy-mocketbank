@@ -80,7 +80,10 @@ public class GenerateTokenHandler {
         return ErrorBuilder.prepareRecurrentTokenError(errorMapping, UNSUPPORTED_CARD);
     }
 
-    private RecurrentTokenProxyResult prepareNotEnrolledRecurrentTokenProxyResult(RecurrentTokenIntent intent, CardAction action) {
+    private RecurrentTokenProxyResult prepareNotEnrolledRecurrentTokenProxyResult(
+            RecurrentTokenIntent intent,
+            CardAction action) {
+
         if (isCardSuccess(action)) {
             return createRecurrentTokenProxyResult(intent, PaymentState.CAPTURED.getBytes());
         }
@@ -88,19 +91,28 @@ public class GenerateTokenHandler {
         return ErrorBuilder.prepareRecurrentTokenError(errorMapping, currentAction);
     }
 
-    private RecurrentTokenProxyResult prepareEnrolledRecurrentTokenProxyResult(RecurrentTokenContext context, RecurrentTokenIntent intent, CardDataProxyModel cardData) {
+    private RecurrentTokenProxyResult prepareEnrolledRecurrentTokenProxyResult(
+            RecurrentTokenContext context,
+            RecurrentTokenIntent intent,
+            CardDataProxyModel cardData) {
         RecurrentTokenIntent recurrentTokenIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
         if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
             String tag = SuspendPrefix.RECURRENT.getPrefix() + context.getTokenInfo().getPaymentTool().getId();
-            String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathRecurrentCallbackUrl());
+            String termUrl = UrlUtils.getCallbackUrl(
+                    mockBankProperties.getCallbackUrl(),
+                    mockBankProperties.getPathRecurrentCallbackUrl());
             recurrentTokenIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
         }
         byte[] state = StateUtils.prepareState(verifyEnrollmentResponse);
         return createRecurrentTokenProxyResult(recurrentTokenIntent, state);
     }
 
-    private RecurrentTokenIntent prepareRedirect(RecurrentTokenContext context, VerifyEnrollmentResponse verifyEnrollmentResponse, String tag, String termUrl) {
+    private RecurrentTokenIntent prepareRedirect(
+            RecurrentTokenContext context,
+            VerifyEnrollmentResponse verifyEnrollmentResponse,
+            String tag,
+            String termUrl) {
         String url = verifyEnrollmentResponse.getAcsUrl();
         Map<String, String> params = prepareRedirectParams(verifyEnrollmentResponse, tag, termUrl);
         Map<String, String> options = context.getOptions();
@@ -110,7 +122,8 @@ public class GenerateTokenHandler {
                 tag, timerRedirectTimeout, createPostUserInteraction(url, params)
         );
         Failure failure = errorMapping.mapFailure(DEFAULT_ERROR_CODE, THREE_DS_NOT_FINISHED);
-        recurrentTokenIntent.getSuspend().setTimeoutBehaviour(TimeoutBehaviour.operation_failure(OperationFailure.failure(failure)));
+        recurrentTokenIntent.getSuspend().setTimeoutBehaviour(
+                TimeoutBehaviour.operation_failure(OperationFailure.failure(failure)));
         return recurrentTokenIntent;
     }
 }

@@ -16,7 +16,9 @@ import java.util.Map;
 public class DigitalWalletValidator implements Validator<PaymentContext> {
 
     public void validate(PaymentContext context, Map<String, String> options) {
-        PaymentResource paymentResource = com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(context);
+        PaymentResource paymentResource =
+                com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(
+                        context);
         PaymentTool paymentTool = ProxyProviderPackageExtractors.extractPaymentTool(paymentResource);
         if (!paymentTool.isSetDigitalWallet()) {
             throw new DigitalWalletException("Isn`t payment tool payment terminal");

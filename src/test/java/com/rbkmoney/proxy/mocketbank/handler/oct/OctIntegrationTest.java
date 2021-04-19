@@ -34,7 +34,7 @@ public abstract class OctIntegrationTest {
     @Autowired
     protected List<CardPayout> cardPayoutList;
 
-    protected String WITHDRAWALID = "TEST_WITHDRAWAL_ID";
+    protected static String WITHDRAWALID = "TEST_WITHDRAWAL_ID";
 
 
     protected Withdrawal createWithdrawal(BankCard bankCard) {

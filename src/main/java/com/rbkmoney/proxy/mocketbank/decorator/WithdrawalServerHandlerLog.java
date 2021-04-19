@@ -15,7 +15,10 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
     private final AdapterSrv.Iface handler;
 
     @Override
-    public ProcessResult processWithdrawal(Withdrawal withdrawal, Value state, Map<String, String> options) throws TException {
+    public ProcessResult processWithdrawal(
+            Withdrawal withdrawal,
+            Value state,
+            Map<String, String> options) throws TException {
         String withdrawalId = withdrawal.getId();
         log.info("processWithdrawal: start with withdrawalId={}", withdrawalId);
         try {
@@ -45,7 +48,11 @@ public class WithdrawalServerHandlerLog implements AdapterSrv.Iface {
     }
 
     @Override
-    public CallbackResult handleCallback(Callback callback, Withdrawal withdrawal, Value state, Map<String, String> options) throws TException {
+    public CallbackResult handleCallback(
+            Callback callback,
+            Withdrawal withdrawal,
+            Value state,
+            Map<String, String> options) throws TException {
         log.info("handleCallback: start");
         CallbackResult callbackResult = handler.handleCallback(callback, withdrawal, state, options);
         log.info("handleCallback: finish {}", callbackResult);

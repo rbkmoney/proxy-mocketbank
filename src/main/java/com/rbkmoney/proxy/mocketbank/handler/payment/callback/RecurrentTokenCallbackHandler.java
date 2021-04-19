@@ -53,7 +53,8 @@ public class RecurrentTokenCallbackHandler {
         ValidatePaResResponse validatePaResResponse = mpiApi.validatePaRes(cardData, parameters);
         if (isAuthenticationSuccessful(validatePaResResponse.getTransactionStatus())) {
             RecurrentTokenIntent intent = createRecurrentTokenFinishIntentSuccess(recurrentId);
-            RecurrentTokenProxyResult proxyResult = createRecurrentTokenProxyResult(intent, PaymentState.PENDING.getBytes());
+            RecurrentTokenProxyResult proxyResult =
+                    createRecurrentTokenProxyResult(intent, PaymentState.PENDING.getBytes());
             return createRecurrentTokenCallbackResult("".getBytes(), proxyResult);
         }
 

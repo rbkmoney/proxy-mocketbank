@@ -45,7 +45,8 @@ public class P2pCallbackHandler {
     private final List<Card> cardList;
 
     public CallbackResult handleCallback(Callback callback, Context context) {
-        HashMap<String, String> parameters = Converter.mergeParams(ByteBuffer.wrap(callback.getPayload()), context.getSession().getState());
+        HashMap<String, String> parameters =
+                Converter.mergeParams(ByteBuffer.wrap(callback.getPayload()), context.getSession().getState());
 
         BankCard bankCard = P2pAdapterExtractors.extractBankCardSender(context);
         CardData cardData = cds.getCardData(bankCard.getToken());

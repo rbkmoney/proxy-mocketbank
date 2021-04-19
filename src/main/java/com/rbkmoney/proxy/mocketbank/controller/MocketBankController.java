@@ -17,18 +17,15 @@ import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,7 +40,9 @@ public class MocketBankController {
     private final ObjectMapper objectMapper;
 
     @RequestMapping(value = "term_url", method = RequestMethod.POST)
-    public String receiveIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+    public String receiveIncomingParameters(
+            HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("ReceivePaymentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = StringUtil.EMPTY_STRING;
@@ -61,7 +60,9 @@ public class MocketBankController {
     }
 
     @RequestMapping(value = "/rec_term_url", method = RequestMethod.POST)
-    public String receiveRecurrentIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+    public String receiveRecurrentIncomingParameters(
+            HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("ReceiveRecurrentIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
         String resp = StringUtil.EMPTY_STRING;
@@ -83,7 +84,9 @@ public class MocketBankController {
                                                  HttpServletResponse servletResponse) throws IOException {
         log.info("mpi20/threeDsMethodNotification {}", httpServletRequestToString(servletRequest));
         ThreeDSMethodData threeDSMethodData =
-                objectMapper.readValue(servletRequest.getParameter(CallbackResponseFields.THREE_DS_METHOD_DATA), ThreeDSMethodData.class);
+                objectMapper.readValue(servletRequest.getParameter(
+                        CallbackResponseFields.THREE_DS_METHOD_DATA),
+                        ThreeDSMethodData.class);
         String tag = SuspendPrefix.PAYMENT.getPrefix() + threeDSMethodData.getThreeDSServerTransID();
         ByteBuffer callback = prepareCallbackParams(servletRequest);
         String response = StringUtil.EMPTY_STRING;
@@ -99,10 +102,11 @@ public class MocketBankController {
 
     @RequestMapping(value = "mpi20/acsNotification", method = RequestMethod.POST)
     public String mpi20AcsNotification(HttpServletRequest servletRequest,
-                                  HttpServletResponse servletResponse) throws IOException {
+                                       HttpServletResponse servletResponse) throws IOException {
         log.info("mpi20 acsNotification {}", httpServletRequestToString(servletRequest));
-        CRes cRes = objectMapper.readValue(servletRequest.getParameter(CallbackResponseFields.CRES), CRes.class);
-        String tag = SuspendPrefix.PAYMENT.getPrefix() + cRes.getThreeDSServerTransID();
+        CRes challengeRes = objectMapper.readValue(
+                servletRequest.getParameter(CallbackResponseFields.CRES), CRes.class);
+        String tag = SuspendPrefix.PAYMENT.getPrefix() + challengeRes.getThreeDSServerTransID();
         ByteBuffer callback = prepareCallbackParams(servletRequest);
         String response = "";
         try {
@@ -138,14 +142,18 @@ public class MocketBankController {
     }
 
     @RequestMapping(value = "/qps", method = RequestMethod.GET)
-    public String receiveQpsIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+    public String receiveQpsIncomingParameters(
+            HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
         log.info("receiveQpsIncomingParameters with info {}", httpServletRequestToString(request));
         servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
         return StringUtil.EMPTY_STRING;
     }
 
     @RequestMapping(value = "/dw", method = RequestMethod.POST)
-    public String receiveDwIncomingParameters(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
+    public String receiveDwIncomingParameters(
+            HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
         log.info("receiveDWIncomingParameters with info {}", httpServletRequestToString(request));
         servletResponse.sendRedirect(mockBankProperties.getFinishInteraction());
         return StringUtil.EMPTY_STRING;

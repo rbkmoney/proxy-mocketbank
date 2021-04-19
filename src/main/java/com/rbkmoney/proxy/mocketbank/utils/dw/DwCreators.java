@@ -12,7 +12,7 @@ import java.util.HashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DwCreators {
 
-    public static HashMap<String, String> createDWParams(
+    public static HashMap<String, String> createDigitalWalletParams(
             String invoiceId,
             Cash cash,
             DigitalWallet digitalWallet,
@@ -24,7 +24,7 @@ public class DwCreators {
 
         String url = UrlUtils.getCallbackUrl(
                 mockBankProperties.getCallbackUrl(),
-                mockBankProperties.getPathDWCallbackUrl()
+                mockBankProperties.getPathDigitalWalletCallbackUrl()
         );
         params.put("success_url", "{termination_uri}");
         params.put("fail_url", "{termination_uri}");

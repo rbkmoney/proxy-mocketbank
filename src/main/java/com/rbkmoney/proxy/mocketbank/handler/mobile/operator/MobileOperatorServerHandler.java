@@ -20,11 +20,12 @@ public class MobileOperatorServerHandler implements MnpSrv.Iface {
     private final List<MobilePhone> mobilePhones;
 
     @Override
-    public ResponseData lookup(RequestParams requestParams) throws BadPhoneFormat, OperatorNotFound, TException {
+    public ResponseData lookup(RequestParams requestParams) {
         String phoneNumber = MobilePhoneUtils.preparePhoneNumber(requestParams.getPhone());
         Optional<MobilePhone> mobilePhone = MobilePhoneUtils.extractPhoneByNumber(mobilePhones, phoneNumber);
         if (!mobilePhone.isPresent()) {
-            throw new MobileOperatorException(String.format("Phone number %s not correct or not supported", phoneNumber));
+            throw new MobileOperatorException(
+                    String.format("Phone number %s not correct or not supported", phoneNumber));
         }
         return new ResponseData(Operator.valueOf(mobilePhone.get().getOperator()));
     }

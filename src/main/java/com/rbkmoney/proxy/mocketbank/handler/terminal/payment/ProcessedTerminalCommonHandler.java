@@ -45,20 +45,27 @@ public class ProcessedTerminalCommonHandler implements CommonTerminalHandler {
         TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
 
         if (TerminalPaymentProvider.qps.equals(QpsExtractors.extractTerminalPaymentProvider(context))) {
-            return QpsInteraction(context, intent, invoiceId, transactionInfo);
+            return qpsInteraction(context, intent, invoiceId, transactionInfo);
         }
 
         return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
     }
 
-    private PaymentProxyResult QpsInteraction(PaymentContext context, Intent intent, String invoiceId, TransactionInfo transactionInfo) {
+    private PaymentProxyResult qpsInteraction(
+            PaymentContext context,
+            Intent intent,
+            String invoiceId,
+            TransactionInfo transactionInfo) {
         if (Arrays.equals(context.getSession().getState(), PaymentState.SLEEP.getBytes())) {
             return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }
 
         Cash cash = context.getPaymentInfo().getPayment().getCost();
         MultiValueMap<String, String> params = QpsCreators.createQpsParams(invoiceId, cash);
-        String payload = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathQpsCallbackUrl(), params);
+        String payload = UrlUtils.getCallbackUrl(
+                mockBankProperties.getCallbackUrl(),
+                mockBankProperties.getPathQpsCallbackUrl(),
+                params);
         intent = createIntentWithSleepIntent(
                 QpsOptions.extractQpsTimerTimeout(context.getOptions(), timerProperties.getQpsTimeout()),
                 UserInteraction.qr_code_display_request(QpsCreators.createQrCodeDisplayRequest(payload)));

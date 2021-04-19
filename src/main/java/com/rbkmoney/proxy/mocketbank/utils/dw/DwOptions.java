@@ -10,7 +10,7 @@ public class DwOptions {
 
     public static final String DW_TIMER_TIMEOUT = "dw_timeout";
 
-    public static Integer extractDWTimerTimeout(Map<String, String> options, int timeout) {
+    public static Integer extractDigitalWalletTimerTimeout(Map<String, String> options, int timeout) {
         return Integer.parseInt(options.getOrDefault(DW_TIMER_TIMEOUT, String.valueOf(timeout)));
     }
 }

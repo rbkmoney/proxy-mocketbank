@@ -9,7 +9,9 @@ import org.apache.thrift.TException;
 public class FallbackPaymentHandler implements CommonPaymentHandler {
 
     @Override
-    public boolean filter(final TargetInvoicePaymentStatus targetInvoicePaymentStatus, final PaymentResource paymentResource) {
+    public boolean filter(
+            final TargetInvoicePaymentStatus targetInvoicePaymentStatus,
+            final PaymentResource paymentResource) {
         return false;
     }
 

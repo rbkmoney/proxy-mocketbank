@@ -33,7 +33,9 @@ public class PaymentServerHandlerMdcLog implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer callback, RecurrentTokenContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(
+            ByteBuffer callback,
+            RecurrentTokenContext context) throws TException {
         return handler.handleRecurrentTokenCallback(callback, context);
     }
 

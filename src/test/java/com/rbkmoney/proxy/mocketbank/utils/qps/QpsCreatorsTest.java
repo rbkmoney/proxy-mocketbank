@@ -15,7 +15,9 @@ public class QpsCreatorsTest {
         MultiValueMap params = QpsCreators.createQpsParams("invoiceId", prepareCash());
         String payload = UrlUtils.getCallbackUrl("http://127.0.0.1:8019", "qps", params);
 
-        assertEquals("http://127.0.0.1:8019/qps?cur=RUB&bank=100000000000&crc=AB75&sum=10000&id=invoiceId&type=02", payload);
+        assertEquals(
+                "http://127.0.0.1:8019/qps?cur=RUB&bank=100000000000&crc=AB75&sum=10000&id=invoiceId&type=02",
+                payload);
     }
 
     private Cash prepareCash() {

@@ -16,7 +16,9 @@ import java.util.Map;
 public class TerminalValidator implements Validator<PaymentContext> {
 
     public void validate(PaymentContext context, Map<String, String> options) {
-        PaymentResource paymentResource = com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(context);
+        PaymentResource paymentResource =
+                com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractPaymentResource(
+                        context);
         PaymentTool paymentTool = ProxyProviderPackageExtractors.extractPaymentTool(paymentResource);
         if (!paymentTool.isSetPaymentTerminal()) {
             throw new TerminalException("Isn`t payment tool payment terminal");

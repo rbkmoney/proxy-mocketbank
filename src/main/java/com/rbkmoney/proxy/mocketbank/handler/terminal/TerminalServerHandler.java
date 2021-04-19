@@ -23,7 +23,9 @@ public class TerminalServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer callback, RecurrentTokenContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(
+            ByteBuffer callback,
+            RecurrentTokenContext context) throws TException {
         throw new TException("Method Not Supported");
     }
 

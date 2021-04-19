@@ -82,7 +82,10 @@ public class ProcessedP2pHandler {
         return ErrorBuilder.prepareP2pError(errorMapping, UNSUPPORTED_CARD);
     }
 
-    private ProcessResult prepareNotEnrolledP2pResult(com.rbkmoney.damsel.p2p_adapter.Intent intent, TransactionInfo transactionInfo, CardAction action) {
+    private ProcessResult prepareNotEnrolledP2pResult(
+            com.rbkmoney.damsel.p2p_adapter.Intent intent,
+            TransactionInfo transactionInfo,
+            CardAction action) {
         if (isCardSuccess(action)) {
             return P2pAdapterCreators.createP2pResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }
@@ -90,19 +93,29 @@ public class ProcessedP2pHandler {
         return ErrorBuilder.prepareP2pError(errorMapping, currentAction);
     }
 
-    private ProcessResult prepareEnrolledP2pResult(Context context, com.rbkmoney.damsel.p2p_adapter.Intent intent, TransactionInfo transactionInfo, CardDataProxyModel cardData) {
+    private ProcessResult prepareEnrolledP2pResult(
+            Context context,
+            com.rbkmoney.damsel.p2p_adapter.Intent intent,
+            TransactionInfo transactionInfo,
+            CardDataProxyModel cardData) {
         com.rbkmoney.damsel.p2p_adapter.Intent currentIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
         if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
             String tag = SuspendPrefix.P2P.getPrefix() + P2pAdapterCreators.createTransactionId(context);
-            String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathP2pCallbackUrl());
+            String termUrl = UrlUtils.getCallbackUrl(
+                    mockBankProperties.getCallbackUrl(),
+                    mockBankProperties.getPathP2pCallbackUrl());
             currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
         }
         byte[] state = StateUtils.prepareState(verifyEnrollmentResponse);
         return P2pAdapterCreators.createP2pResult(currentIntent, state, transactionInfo);
     }
 
-    private com.rbkmoney.damsel.p2p_adapter.Intent prepareRedirect(Context context, VerifyEnrollmentResponse verifyEnrollmentResponse, String tag, String termUrl) {
+    private com.rbkmoney.damsel.p2p_adapter.Intent prepareRedirect(
+            Context context,
+            VerifyEnrollmentResponse verifyEnrollmentResponse,
+            String tag,
+            String termUrl) {
         String url = verifyEnrollmentResponse.getAcsUrl();
         Map<String, String> params = prepareRedirectParams(verifyEnrollmentResponse, tag, termUrl);
         Map<String, String> options = context.getOptions();

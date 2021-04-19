@@ -45,7 +45,8 @@ public class MocketBankServerHandlerFailIntegrationTest extends IntegrationTest 
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
 
-        PaymentProxyResult processResultPayment = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
+        PaymentProxyResult processResultPayment = handler.processPayment(
+                getContext(bankCard, createTargetProcessed(), null));
         assertTrue("Process payment isn`t failure", isFailure(processResultPayment));
     }
 

@@ -26,7 +26,9 @@ public class DigitalWalletServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer callback, RecurrentTokenContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(
+            ByteBuffer callback,
+            RecurrentTokenContext context) throws TException {
         throw new TException("Method Not Supported");
     }
 
@@ -44,7 +46,7 @@ public class DigitalWalletServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public PaymentCallbackResult handlePaymentCallback(ByteBuffer callback, PaymentContext context) throws TException {
+    public PaymentCallbackResult handlePaymentCallback(ByteBuffer callback, PaymentContext context) {
         return digitalWalletCallbackHandler.handler(callback, context);
     }
 

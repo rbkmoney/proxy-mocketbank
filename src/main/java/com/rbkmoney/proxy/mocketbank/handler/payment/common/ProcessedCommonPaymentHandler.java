@@ -102,7 +102,10 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         return ErrorBuilder.prepareError(errorMapping, UNSUPPORTED_CARD);
     }
 
-    private PaymentProxyResult prepareNotEnrolledPaymentProxyResult(Intent intent, TransactionInfo transactionInfo, CardAction action) {
+    private PaymentProxyResult prepareNotEnrolledPaymentProxyResult(
+            Intent intent,
+            TransactionInfo transactionInfo,
+            CardAction action) {
         if (isCardSuccess(action)) {
             return createPaymentProxyResult(intent, PaymentState.CAPTURED.getBytes(), transactionInfo);
         }
@@ -110,19 +113,30 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         return ErrorBuilder.prepareError(errorMapping, currentAction);
     }
 
-    private PaymentProxyResult prepareEnrolledPaymentProxyResult(PaymentContext context, Intent intent, TransactionInfo transactionInfo, CardDataProxyModel cardData) {
+    private PaymentProxyResult prepareEnrolledPaymentProxyResult(
+            PaymentContext context,
+            Intent intent,
+            TransactionInfo transactionInfo,
+            CardDataProxyModel cardData) {
         Intent currentIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
         if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
-            String tag = SuspendPrefix.PAYMENT.getPrefix() + ProxyProviderPackageCreators.createInvoiceWithPayment(context.getPaymentInfo());
-            String termUrl = UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(), mockBankProperties.getPathCallbackUrl());
+            String tag = SuspendPrefix.PAYMENT.getPrefix() +
+                    ProxyProviderPackageCreators.createInvoiceWithPayment(context.getPaymentInfo());
+            String termUrl = UrlUtils.getCallbackUrl(
+                    mockBankProperties.getCallbackUrl(),
+                    mockBankProperties.getPathCallbackUrl());
             currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
         }
         byte[] state = StateUtils.prepareState(verifyEnrollmentResponse);
         return createPaymentProxyResult(currentIntent, state, transactionInfo);
     }
 
-    private Intent prepareRedirect(PaymentContext context, VerifyEnrollmentResponse verifyEnrollmentResponse, String tag, String termUrl) {
+    private Intent prepareRedirect(
+            PaymentContext context,
+            VerifyEnrollmentResponse verifyEnrollmentResponse,
+            String tag,
+            String termUrl) {
         String url = verifyEnrollmentResponse.getAcsUrl();
         Map<String, String> params = prepareRedirectParams(verifyEnrollmentResponse, tag, termUrl);
         Map<String, String> options = context.getOptions();

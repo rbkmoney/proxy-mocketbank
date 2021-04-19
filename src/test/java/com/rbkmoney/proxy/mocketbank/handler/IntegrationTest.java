@@ -69,7 +69,8 @@ public abstract class IntegrationTest {
     }
 
     protected Cash prepareCash() {
-        return DomainPackageCreators.createCash(10000L, "Rubles", 643, "RUB", 2);
+        return DomainPackageCreators.createCash(
+                10000L, "Rubles", 643, "RUB", 2);
     }
 
     protected PaymentInfo getPaymentInfo(String sessionId, BankCard bankCard, TransactionInfo transactionInfo) {
@@ -78,13 +79,6 @@ public abstract class IntegrationTest {
         paymentInfo.setCapture(prepareInvoicePaymentCapture());
         paymentInfo.setRefund(createInvoicePaymentRefund(transactionInfo));
         return paymentInfo;
-    }
-
-    private InvoicePaymentRefund createInvoicePaymentRefund(TransactionInfo transactionInfo) {
-        InvoicePaymentRefund invoicePaymentRefund = new InvoicePaymentRefund();
-        invoicePaymentRefund.setId(refundId);
-        invoicePaymentRefund.setTrx(transactionInfo);
-        return invoicePaymentRefund;
     }
 
     protected PaymentInfo getPaymentInfo(TransactionInfo transactionInfo, PaymentResource paymentResource) {
@@ -106,6 +100,13 @@ public abstract class IntegrationTest {
         paymentInfo.setCapture(prepareInvoicePaymentCapture());
         paymentInfo.setRefund(createInvoicePaymentRefund(transactionInfo));
         return paymentInfo;
+    }
+
+    private InvoicePaymentRefund createInvoicePaymentRefund(TransactionInfo transactionInfo) {
+        InvoicePaymentRefund invoicePaymentRefund = new InvoicePaymentRefund();
+        invoicePaymentRefund.setId(refundId);
+        invoicePaymentRefund.setTrx(transactionInfo);
+        return invoicePaymentRefund;
     }
 
     private InvoicePaymentCapture prepareInvoicePaymentCapture() {
@@ -184,8 +185,10 @@ public abstract class IntegrationTest {
         Mockito.when(cdsStorage.getCardData(anyString())).thenReturn(cardData);
         Mockito.when(cdsStorage.getCardData((RecurrentTokenContext) any())).thenReturn(proxyModel);
         Mockito.when(cdsStorage.getCardData((PaymentContext) any())).thenReturn(proxyModel);
-        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
-        Mockito.when(cdsStorage.getSessionData((PaymentContext) any())).thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
+        Mockito.when(cdsStorage.getSessionData((RecurrentTokenContext) any()))
+                .thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
+        Mockito.when(cdsStorage.getSessionData((PaymentContext) any()))
+                .thenReturn(CdsPackageCreators.createSessionDataWithCvv(TestData.DEFAULT_CVV));
     }
 
     protected void mockMpiVerify(EnrollmentStatus mpiEnrollmentStatus) {

@@ -54,7 +54,10 @@ public class ErrorBuilder {
         return prepareRecurrentTokenError(errorMapping, action.getAction());
     }
 
-    public static RecurrentTokenProxyResult prepareRecurrentTokenError(ErrorMapping errorMapping, String code, String message) {
+    public static RecurrentTokenProxyResult prepareRecurrentTokenError(
+            ErrorMapping errorMapping,
+            String code,
+            String message) {
         Failure failure = errorMapping.mapFailure(code, message);
         return createRecurrentTokenProxyResultFailure(failure);
     }
@@ -64,7 +67,10 @@ public class ErrorBuilder {
         return P2pAdapterCreators.createP2pCallbackResultFailure(failure);
     }
 
-    public static CallbackResult prepareP2pCallbackResultFailure(ErrorMapping errorMapping, String code, CardAction action) {
+    public static CallbackResult prepareP2pCallbackResultFailure(
+            ErrorMapping errorMapping,
+            String code,
+            CardAction action) {
         return prepareP2pCallbackError(errorMapping, code, action.getAction());
     }
 
@@ -73,29 +79,46 @@ public class ErrorBuilder {
         return createCallbackResultFailure(failure);
     }
 
-    public static PaymentCallbackResult prepareCallbackError(ErrorMapping errorMapping, String code, CardAction action) {
+    public static PaymentCallbackResult prepareCallbackError(
+            ErrorMapping errorMapping,
+            String code,
+            CardAction action) {
         return prepareCallbackError(errorMapping, code, action.getAction());
     }
 
-    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code, CardAction action) {
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(
+            ErrorMapping errorMapping,
+            String code,
+            CardAction action) {
         return prepareRecurrentCallbackError(errorMapping, code, action.getAction());
     }
 
-    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(ErrorMapping errorMapping, String code, String message) {
+    public static RecurrentTokenCallbackResult prepareRecurrentCallbackError(
+            ErrorMapping errorMapping,
+            String code,
+            String message) {
         Failure failure = errorMapping.mapFailure(code, message);
         return createRecurrentTokenCallbackResultFailure(failure);
     }
 
-    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, String code, String message) {
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(
+            ErrorMapping errorMapping,
+            String code,
+            String message) {
         Failure failure = errorMapping.mapFailure(code, message);
         return WithdrawalsProviderAdapterPackageCreators.createProcessResultFailure(failure);
     }
 
-    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, String code, CardPayoutAction action) {
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(
+            ErrorMapping errorMapping,
+            String code,
+            CardPayoutAction action) {
         return prepareWithdrawalError(errorMapping, code, action.getAction());
     }
 
-    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(ErrorMapping errorMapping, CardPayoutAction action) {
+    public static com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult prepareWithdrawalError(
+            ErrorMapping errorMapping,
+            CardPayoutAction action) {
         return prepareWithdrawalError(errorMapping, action.getAction(), action.getAction());
     }
 

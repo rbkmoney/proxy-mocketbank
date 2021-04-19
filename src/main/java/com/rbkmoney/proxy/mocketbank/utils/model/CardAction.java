@@ -95,13 +95,13 @@ public enum CardAction {
         return CardAction.isCardEnrolled(action);
     }
 
+    public static boolean isCardEnrolled(CardAction action) {
+        return Arrays.asList(ENROLLED_CARDS).contains(action);
+    }
+
     public static boolean isCardEnrolled20(Card card) {
         CardAction action = CardAction.findByValue(card.getAction());
         return Arrays.asList(ENROLLED_2_0_CARDS).contains(action);
-    }
-
-    public static boolean isCardEnrolled(CardAction action) {
-        return Arrays.asList(ENROLLED_CARDS).contains(action);
     }
 
     public static boolean isCardFailed(Card card) {

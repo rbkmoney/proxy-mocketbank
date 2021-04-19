@@ -23,12 +23,14 @@ public class PaymentServerHandler implements ProviderProxySrv.Iface {
     private final PaymentValidator paymentValidator;
 
     @Override
-    public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) throws TException {
+    public RecurrentTokenProxyResult generateToken(RecurrentTokenContext context) {
         return generateTokenHandler.handler(context);
     }
 
     @Override
-    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(ByteBuffer callback, RecurrentTokenContext context) throws TException {
+    public RecurrentTokenCallbackResult handleRecurrentTokenCallback(
+            ByteBuffer callback,
+            RecurrentTokenContext context) {
         return recurrentTokenCallbackHandler.handler(callback, context);
     }
 
@@ -46,7 +48,7 @@ public class PaymentServerHandler implements ProviderProxySrv.Iface {
     }
 
     @Override
-    public PaymentCallbackResult handlePaymentCallback(ByteBuffer callback, PaymentContext context) throws TException {
+    public PaymentCallbackResult handlePaymentCallback(ByteBuffer callback, PaymentContext context) {
         return paymentCallbackHandler.handler(callback, context);
     }
 }
