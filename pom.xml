@@ -104,6 +104,10 @@
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
+            <artifactId>cds-proto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.rbkmoney</groupId>
             <artifactId>moneypenny-proto</artifactId>
             <version>1.8-26054d1</version>
         </dependency>
