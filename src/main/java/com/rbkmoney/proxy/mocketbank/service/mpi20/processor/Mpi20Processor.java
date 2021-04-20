@@ -96,7 +96,7 @@ public class Mpi20Processor {
 
     private boolean isPreparationSuccess(PreparationResponse response) {
         return response.getError() == null
-                && response.getProtocolVersion().equals("2");
+                && "2".equals(response.getProtocolVersion());
     }
 
     private boolean isAuthSuccess(AuthenticationResponse response) {
