@@ -1,7 +1,6 @@
 package com.rbkmoney.proxy.mocketbank.service.mpi20;
 
 import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
-import com.rbkmoney.proxy.mocketbank.service.mpi.model.PrepareFieldsObject;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
