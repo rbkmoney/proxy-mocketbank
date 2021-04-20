@@ -96,21 +96,21 @@ public class Mpi20Processor {
     }
 
     private boolean isPreparationSuccess(PreparationResponse response) {
-        return !isResponseHasError(response.getError())
+        return isResponseHasNoError(response.getError())
                 && "2".equals(response.getProtocolVersion());
     }
 
     private boolean isAuthSuccess(AuthenticationResponse response) {
-        return !isResponseHasError(response.getError())
+        return isResponseHasNoError(response.getError())
                 && response.getTransStatus().equals(TransactionStatus.CHALLENGE_REQUIRED.getCode());
     }
 
     private boolean isResultSuccess(ResultResponse response) {
-        return !isResponseHasError(response.getError())
+        return isResponseHasNoError(response.getError())
                 && response.getTransStatus().equals(TransactionStatus.AUTHENTICATION_SUCCESSFUL.getCode());
     }
 
-    private boolean isResponseHasError(Error error) {
+    private boolean isResponseHasNoError(Error error) {
         return error.getCode() == null && error.getTitle() == null;
     }
 }
