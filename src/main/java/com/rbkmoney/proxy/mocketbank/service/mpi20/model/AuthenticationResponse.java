@@ -1,11 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.service.mpi20.model;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AuthenticationResponse {
 
     private String threeDSServerTransID;
