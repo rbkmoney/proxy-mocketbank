@@ -24,6 +24,7 @@ public class Mpi20Processor {
     private final CtxToAuthConverter ctxToAuthConverter;
     private final CtxToResultConverter ctxToResultConverter;
     private final ObjectMapper objectMapper;
+    private static final String PROTOCOL_VERSION_2 = "2";
 
     @SneakyThrows
     public PaymentProxyResult processPrepare(PaymentContext context) {
@@ -97,7 +98,7 @@ public class Mpi20Processor {
 
     private boolean isPreparationSuccess(PreparationResponse response) {
         return isResponseHasNoError(response.getError())
-                && "2".equals(response.getProtocolVersion());
+                && PROTOCOL_VERSION_2.equals(response.getProtocolVersion());
     }
 
     private boolean isAuthSuccess(AuthenticationResponse response) {
