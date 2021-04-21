@@ -79,10 +79,10 @@ public class MocketBankController {
         return resp;
     }
 
-    @RequestMapping(value = "mpi20/threeDsMethodNotification", method = RequestMethod.POST)
+    @RequestMapping(value = "mpi20/three_ds_method_notification", method = RequestMethod.POST)
     public String mpi20ThreeDsMethodNotification(HttpServletRequest servletRequest,
                                                  HttpServletResponse servletResponse) throws IOException {
-        log.info("mpi20/threeDsMethodNotification {}", httpServletRequestToString(servletRequest));
+        log.info("mpi20/three_ds_method_notification {}", httpServletRequestToString(servletRequest));
         ThreeDSMethodData threeDSMethodData =
                 objectMapper.readValue(servletRequest.getParameter(
                         CallbackResponseFields.THREE_DS_METHOD_DATA),
@@ -94,16 +94,16 @@ public class MocketBankController {
             ByteBuffer callbackResponse = hellgateClient.processPaymentCallback(tag, callback);
             response = new String(callbackResponse.array(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            log.warn("Failed handle mpi20 threeDsMethodNotification", e);
+            log.warn("Failed handle mpi20 three_ds_method_notification", e);
             sendRedirect(servletRequest, servletResponse);
         }
         return response;
     }
 
-    @RequestMapping(value = "mpi20/acsNotification", method = RequestMethod.POST)
+    @RequestMapping(value = "mpi20/acs_notification", method = RequestMethod.POST)
     public String mpi20AcsNotification(HttpServletRequest servletRequest,
                                        HttpServletResponse servletResponse) throws IOException {
-        log.info("mpi20 acsNotification {}", httpServletRequestToString(servletRequest));
+        log.info("mpi20 acs_notification {}", httpServletRequestToString(servletRequest));
         CRes challengeRes = objectMapper.readValue(
                 servletRequest.getParameter(CallbackResponseFields.CRES), CRes.class);
         String tag = SuspendPrefix.PAYMENT.getPrefix() + challengeRes.getThreeDSServerTransID();
@@ -113,7 +113,7 @@ public class MocketBankController {
             ByteBuffer callbackResponse = hellgateClient.processPaymentCallback(tag, callback);
             response = new String(callbackResponse.array(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            log.warn("Failed handle mpi20 acsNotification", e);
+            log.warn("Failed handle mpi20 acs_notification", e);
         }
         sendRedirect(servletRequest, servletResponse);
         return response;
