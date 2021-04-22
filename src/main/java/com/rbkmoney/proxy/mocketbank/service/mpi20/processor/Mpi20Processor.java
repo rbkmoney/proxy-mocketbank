@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
+import static com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields.*;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +25,6 @@ public class Mpi20Processor {
     private final CtxToAuthConverter ctxToAuthConverter;
     private final CtxToResultConverter ctxToResultConverter;
     private final ObjectMapper objectMapper;
-    private static final String PROTOCOL_VERSION_2 = "2";
 
     @SneakyThrows
     public PaymentProxyResult processPrepare(PaymentContext context) {
@@ -33,7 +33,10 @@ public class Mpi20Processor {
         Intent intent = buildPrepareIntent(request, response);
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
-            sessionState = new SessionState(response.getThreeDSServerTransID(), Mpi20State.PREPARE);
+            sessionState = new SessionState(
+                    response.getThreeDSServerTransID(),
+                    Mpi20State.PREPARE,
+                    TERMINATION_URI);
         }
         return createPaymentProxyResult(intent, objectMapper.writeValueAsBytes(sessionState));
     }
@@ -45,7 +48,10 @@ public class Mpi20Processor {
         Intent intent = buildAuthIntent(request, response);
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
-            sessionState = new SessionState(response.getThreeDSServerTransID(), Mpi20State.AUTH);
+            sessionState = new SessionState(
+                    response.getThreeDSServerTransID(),
+                    Mpi20State.AUTH,
+                    response.getTerminationUri());
         }
         return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState), null);
     }
@@ -57,7 +63,10 @@ public class Mpi20Processor {
         Intent intent = buildResultIntent(request, response);
         SessionState sessionState = null;
         if (intent.getFinish().getStatus().isSetSuccess()) {
-            sessionState = new SessionState(response.getThreeDSServerTransID(), Mpi20State.RESULT);
+            sessionState = new SessionState(
+                    response.getThreeDSServerTransID(),
+                    Mpi20State.RESULT,
+                    TERMINATION_URI);
         }
         return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState), null);
     }
@@ -66,8 +75,9 @@ public class Mpi20Processor {
         if (isPreparationSuccess(response)) {
             String tag = response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
-                    "threeDSMethodData", response.getThreeDSMethodData(),
-                    "termUrl", request.getNotificationUrl());
+                    THREE_DS_METHOD_DATA, response.getThreeDSMethodData(),
+                    TERM_URL, request.getNotificationUrl(),
+                    TERMINATION_URI, TEMPLATE_TERMINATION_URI);
             UserInteraction interaction = createPostUserInteraction(response.getThreeDSMethodURL(), params);
             return createIntentWithSuspendIntent(tag, 10, interaction);
         } else {
@@ -79,8 +89,9 @@ public class Mpi20Processor {
         if (isAuthSuccess(response)) {
             String tag = response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
-                    "creq", response.getCreq(),
-                    "termUrl", request.getNotificationUrl());
+                    CREQ, response.getCreq(),
+                    TERM_URL, request.getNotificationUrl(),
+                    TERMINATION_URI, request.getTerminationUri());
             UserInteraction interaction = createPostUserInteraction(response.getAcsUrl(), params);
             return createIntentWithSuspendIntent(tag, 10, interaction);
         } else {
