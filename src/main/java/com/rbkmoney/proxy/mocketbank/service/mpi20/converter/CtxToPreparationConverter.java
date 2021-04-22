@@ -28,7 +28,7 @@ public class CtxToPreparationConverter implements Converter<PaymentContext, Prep
                 .pan(cardData.getPan())
                 .notificationUrl(UriComponentsBuilder.fromUriString(mpi20Properties.getCallbackUrl())
                         .path(mpi20Properties.getAcsNotificationPath())
-                        .queryParam("termination_uri", mpi20Properties.getThreeDsMethodNotificationPath())
+                        .queryParam("termination_uri", mpi20Properties.getTerminationUri())
                         .build()
                         .toUriString())
                 .build();
