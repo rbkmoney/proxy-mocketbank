@@ -8,6 +8,7 @@ import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.AuthenticationRequest;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
+import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.convert.converter.Converter;
@@ -35,11 +36,9 @@ public class CtxToAuthConverter implements Converter<PaymentContext, Authenticat
                 .pan(cardData.getPan())
                 .cardholderName(cardData.getCardholderName())
                 .expDate(cardData.getExpYear() + " " + cardData.getExpMonth())
-                .notificationUrl(UriComponentsBuilder.fromUriString(mpi20Properties.getCallbackUrl())
-                        .path(mpi20Properties.getAcsNotificationPath())
-                        .queryParam("termination_uri", mpi20Properties.getTerminationUri())
-                        .build()
-                        .toUriString())
+                .notificationUrl(UrlUtils.getCallbackUrl(
+                        mpi20Properties.getCallbackUrl(),
+                        mpi20Properties.getAcsNotificationPath()))
                 .amount(String.valueOf(cost.getAmount()))
                 .currency(cost.getCurrency().getSymbolicCode())
                 .build();
