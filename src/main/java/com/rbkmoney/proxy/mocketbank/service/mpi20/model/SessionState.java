@@ -8,5 +8,4 @@ import lombok.Data;
 public class SessionState {
     private String transactionId;
     private Mpi20State state;
-    private String terminationUri;
 }

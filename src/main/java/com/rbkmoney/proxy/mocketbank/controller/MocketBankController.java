@@ -79,10 +79,10 @@ public class MocketBankController {
         return resp;
     }
 
-    @RequestMapping(value = "mpi20/three_ds_method_notification", method = RequestMethod.POST)
+    @RequestMapping(value = "three_ds_method_notification", method = RequestMethod.POST)
     public String mpi20ThreeDsMethodNotification(HttpServletRequest servletRequest,
                                                  HttpServletResponse servletResponse) throws IOException {
-        log.info("mpi20/three_ds_method_notification {}", httpServletRequestToString(servletRequest));
+        log.info("three_ds_method_notification {}", httpServletRequestToString(servletRequest));
         ThreeDSMethodData threeDSMethodData =
                 objectMapper.readValue(servletRequest.getParameter(
                         CallbackResponseFields.THREE_DS_METHOD_DATA),
@@ -100,7 +100,7 @@ public class MocketBankController {
         return response;
     }
 
-    @RequestMapping(value = "mpi20/acs_notification", method = RequestMethod.POST)
+    @RequestMapping(value = "acs_notification", method = RequestMethod.POST)
     public String mpi20AcsNotification(HttpServletRequest servletRequest,
                                        HttpServletResponse servletResponse) throws IOException {
         log.info("mpi20 acs_notification {}", httpServletRequestToString(servletRequest));

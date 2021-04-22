@@ -7,6 +7,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi20.Mpi20Client;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
+import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,7 @@ public class Mpi20Processor {
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.PREPARE,
-                    TERMINATION_URI);
+                    Mpi20State.PREPARE);
         }
         return createPaymentProxyResult(intent, objectMapper.writeValueAsBytes(sessionState));
     }
@@ -50,10 +50,10 @@ public class Mpi20Processor {
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.AUTH,
-                    response.getTerminationUri());
+                    Mpi20State.AUTH);
         }
-        return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState), null);
+        return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState),
+                CreatorUtils.createDefaultTransactionInfo(context));
     }
 
     @SneakyThrows
@@ -65,10 +65,10 @@ public class Mpi20Processor {
         if (intent.getFinish().getStatus().isSetSuccess()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.RESULT,
-                    TERMINATION_URI);
+                    Mpi20State.RESULT);
         }
-        return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState), null);
+        return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState),
+                CreatorUtils.createDefaultTransactionInfo(context));
     }
 
     private Intent buildPrepareIntent(PreparationRequest request, PreparationResponse response) {
@@ -76,8 +76,7 @@ public class Mpi20Processor {
             String tag = response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     THREE_DS_METHOD_DATA, response.getThreeDSMethodData(),
-                    TERM_URL, request.getNotificationUrl(),
-                    TERMINATION_URI, TEMPLATE_TERMINATION_URI);
+                    TERM_URL, request.getNotificationUrl());
             UserInteraction interaction = createPostUserInteraction(response.getThreeDSMethodURL(), params);
             return createIntentWithSuspendIntent(tag, 10, interaction);
         } else {
@@ -90,8 +89,7 @@ public class Mpi20Processor {
             String tag = response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     CREQ, response.getCreq(),
-                    TERM_URL, request.getNotificationUrl(),
-                    TERMINATION_URI, request.getTerminationUri());
+                    TERM_URL, request.getNotificationUrl());
             UserInteraction interaction = createPostUserInteraction(response.getAcsUrl(), params);
             return createIntentWithSuspendIntent(tag, 10, interaction);
         } else {
