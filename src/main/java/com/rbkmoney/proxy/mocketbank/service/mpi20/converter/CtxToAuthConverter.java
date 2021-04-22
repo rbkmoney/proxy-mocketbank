@@ -35,7 +35,6 @@ public class CtxToAuthConverter implements Converter<PaymentContext, Authenticat
                 .cardholderName(cardData.getCardholderName())
                 .expDate(cardData.getExpYear() + " " + cardData.getExpMonth())
                 .notificationUrl(mpi20Properties.getAcsNotificationPath())
-                .terminationUri(sessionState.getTerminationUri())
                 .amount(String.valueOf(cost.getAmount()))
                 .currency(cost.getCurrency().getSymbolicCode())
                 .build();
