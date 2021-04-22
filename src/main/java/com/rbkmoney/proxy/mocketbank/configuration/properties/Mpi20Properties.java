@@ -18,5 +18,6 @@ public class Mpi20Properties {
     private String threeDsMethodNotificationPath;
     private String acsNotificationPath;
     private String returnUrl;
+    private String terminationUri;
 
 }

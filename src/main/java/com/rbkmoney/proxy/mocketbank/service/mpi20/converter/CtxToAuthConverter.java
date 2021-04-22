@@ -6,12 +6,13 @@ import com.rbkmoney.damsel.proxy_provider.Cash;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.AuthenticationRequest;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -34,8 +35,11 @@ public class CtxToAuthConverter implements Converter<PaymentContext, Authenticat
                 .pan(cardData.getPan())
                 .cardholderName(cardData.getCardholderName())
                 .expDate(cardData.getExpYear() + " " + cardData.getExpMonth())
-                .notificationUrl(mpi20Properties.getAcsNotificationPath())
-                .terminationUri(sessionState.getTerminationUri())
+                .notificationUrl(UriComponentsBuilder.fromUriString(mpi20Properties.getCallbackUrl())
+                        .path(mpi20Properties.getAcsNotificationPath())
+                        .queryParam("termination_uri", mpi20Properties.getTerminationUri())
+                        .build()
+                        .toUriString())
                 .amount(String.valueOf(cost.getAmount()))
                 .currency(cost.getCurrency().getSymbolicCode())
                 .build();

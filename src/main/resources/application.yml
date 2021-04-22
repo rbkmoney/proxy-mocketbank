@@ -29,6 +29,7 @@ mpi20:
   threeDsMethodNotificationPath: /${server.rest.endpoint}/mpi20/three_ds_method_notification
   acsNotificationPath: /${server.rest.endpoint}/mpi20/acs_notification
   returnUrl: https://checkout.rbk.money/v1/finish-interaction.html
+  terminationUri: {termination_uri}
 ---
 adapter-mock-bank:
   callbackUrl: http://127.0.0.1:8019
