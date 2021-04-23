@@ -35,8 +35,10 @@ public class Mpi20Processor {
     public PaymentProxyResult processPrepare(PaymentContext context) {
         PreparationRequest request = ctxToPreparationConverter.convert(context);
         PreparationResponse response = mpi20Client.prepare(request);
-        int timerRedirectTimeout = extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout());
-        Intent intent = buildPrepareIntent(request, response, timerRedirectTimeout);
+        Intent intent = buildPrepareIntent(
+                request,
+                response,
+                extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout()));
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
@@ -50,8 +52,10 @@ public class Mpi20Processor {
     public PaymentCallbackProxyResult processAuth(PaymentContext context) {
         AuthenticationRequest request = ctxToAuthConverter.convert(context);
         AuthenticationResponse response = mpi20Client.auth(request);
-        int timerRedirectTimeout = extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout());
-        Intent intent = buildAuthIntent(request, response, timerRedirectTimeout);
+        Intent intent = buildAuthIntent(
+                request,
+                response,
+                extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout()));
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
