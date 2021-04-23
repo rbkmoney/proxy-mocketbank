@@ -3,14 +3,12 @@ package com.rbkmoney.proxy.mocketbank.service.mpi20.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
-import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.Mpi20Client;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
-import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,7 +30,6 @@ public class Mpi20Processor {
     private final CtxToResultConverter ctxToResultConverter;
     private final ObjectMapper objectMapper;
     private final TimerProperties timerProperties;
-    private final Mpi20Properties mpi20Properties;
 
     @SneakyThrows
     public PaymentProxyResult processPrepare(PaymentContext context) {
@@ -91,8 +88,7 @@ public class Mpi20Processor {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     THREE_DS_METHOD_DATA, response.getThreeDSMethodData(),
-                    TERM_URL, UrlUtils.getCallbackUrl(mpi20Properties.getCallbackUrl(),
-                            mpi20Properties.getThreeDsMethodNotificationPath()));
+                    TERM_URL, request.getNotificationUrl());
             UserInteraction interaction = createPostUserInteraction(response.getThreeDSMethodURL(), params);
             return createIntentWithSuspendIntent(tag, timerRedirectTimeout, interaction);
         } else {

@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -27,8 +29,11 @@ public class CtxToPreparationConverter implements Converter<PaymentContext, Prep
 
         return PreparationRequest.builder()
                 .pan(cardData.getPan())
-                .notificationUrl(UrlUtils.getCallbackUrl(mpi20Properties.getCallbackUrl(),
-                        mpi20Properties.getThreeDsMethodNotificationPath()))
+                .notificationUrl(URLEncoder.encode(
+                        UrlUtils.getCallbackUrl(
+                                mpi20Properties.getCallbackUrl(),
+                                mpi20Properties.getThreeDsMethodNotificationPath()),
+                        StandardCharsets.UTF_8))
                 .build();
     }
 }
