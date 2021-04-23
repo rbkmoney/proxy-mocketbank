@@ -3,6 +3,7 @@ package com.rbkmoney.proxy.mocketbank.service.mpi20.processor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
+import com.rbkmoney.proxy.mocketbank.configuration.properties.TimerProperties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.Mpi20Client;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
+import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields.*;
 
 @Component
@@ -27,12 +29,16 @@ public class Mpi20Processor {
     private final CtxToAuthConverter ctxToAuthConverter;
     private final CtxToResultConverter ctxToResultConverter;
     private final ObjectMapper objectMapper;
+    private final TimerProperties timerProperties;
 
     @SneakyThrows
     public PaymentProxyResult processPrepare(PaymentContext context) {
         PreparationRequest request = ctxToPreparationConverter.convert(context);
         PreparationResponse response = mpi20Client.prepare(request);
-        Intent intent = buildPrepareIntent(request, response);
+        Intent intent = buildPrepareIntent(
+                request,
+                response,
+                extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout()));
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
@@ -46,7 +52,10 @@ public class Mpi20Processor {
     public PaymentCallbackProxyResult processAuth(PaymentContext context) {
         AuthenticationRequest request = ctxToAuthConverter.convert(context);
         AuthenticationResponse response = mpi20Client.auth(request);
-        Intent intent = buildAuthIntent(request, response);
+        Intent intent = buildAuthIntent(
+                request,
+                response,
+                extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout()));
         SessionState sessionState = null;
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
@@ -72,27 +81,31 @@ public class Mpi20Processor {
                 CreatorUtils.createDefaultTransactionInfo(context));
     }
 
-    private Intent buildPrepareIntent(PreparationRequest request, PreparationResponse response) {
+    private Intent buildPrepareIntent(PreparationRequest request,
+                                      PreparationResponse response,
+                                      int timerRedirectTimeout) {
         if (isPreparationSuccess(response)) {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     THREE_DS_METHOD_DATA, response.getThreeDSMethodData(),
                     TERM_URL, request.getNotificationUrl());
             UserInteraction interaction = createPostUserInteraction(response.getThreeDSMethodURL(), params);
-            return createIntentWithSuspendIntent(tag, 10, interaction);
+            return createIntentWithSuspendIntent(tag, timerRedirectTimeout, interaction);
         } else {
             return createFinishIntentSuccess();
         }
     }
 
-    private Intent buildAuthIntent(AuthenticationRequest request, AuthenticationResponse response) {
+    private Intent buildAuthIntent(AuthenticationRequest request,
+                                   AuthenticationResponse response,
+                                   int timerRedirectTimeout) {
         if (isAuthSuccess(response)) {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     CREQ, response.getCreq(),
                     TERM_URL, request.getNotificationUrl());
             UserInteraction interaction = createPostUserInteraction(response.getAcsUrl(), params);
-            return createIntentWithSuspendIntent(tag, 10, interaction);
+            return createIntentWithSuspendIntent(tag, timerRedirectTimeout, interaction);
         } else {
             return createFinishIntentFailure(response.getError().getCode(), response.getError().getTitle());
         }
