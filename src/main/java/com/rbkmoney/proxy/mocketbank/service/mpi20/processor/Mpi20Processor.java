@@ -87,7 +87,7 @@ public class Mpi20Processor {
 
     private Intent buildAuthIntent(AuthenticationRequest request, AuthenticationResponse response) {
         if (isAuthSuccess(response)) {
-            String tag = response.getThreeDSServerTransID();
+            String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     CREQ, response.getCreq(),
                     TERM_URL, request.getNotificationUrl());
