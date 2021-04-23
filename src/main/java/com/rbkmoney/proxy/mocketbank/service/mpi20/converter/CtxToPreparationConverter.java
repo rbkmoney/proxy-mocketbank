@@ -3,6 +3,7 @@ package com.rbkmoney.proxy.mocketbank.service.mpi20.converter;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
+import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.PreparationRequest;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
@@ -18,6 +19,7 @@ public class CtxToPreparationConverter implements Converter<PaymentContext, Prep
 
     private final CdsClientStorage cds;
     private final Mpi20Properties mpi20Properties;
+    private final AdapterMockBankProperties mockBankProperties;
 
     @Override
     @SneakyThrows
@@ -27,8 +29,8 @@ public class CtxToPreparationConverter implements Converter<PaymentContext, Prep
 
         return PreparationRequest.builder()
                 .pan(cardData.getPan())
-                .notificationUrl(UrlUtils.getCallbackUrl(mpi20Properties.getCallbackUrl(),
-                        mpi20Properties.getThreeDsMethodNotificationPath()))
+                .notificationUrl(UrlUtils.getCallbackUrl(mockBankProperties.getCallbackUrl(),
+                        mockBankProperties.getPathCallbackUrl()))
                 .build();
     }
 }
