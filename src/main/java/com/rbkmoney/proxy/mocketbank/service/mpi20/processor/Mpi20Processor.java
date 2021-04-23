@@ -8,6 +8,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
+import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -73,7 +74,7 @@ public class Mpi20Processor {
 
     private Intent buildPrepareIntent(PreparationRequest request, PreparationResponse response) {
         if (isPreparationSuccess(response)) {
-            String tag = response.getThreeDSServerTransID();
+            String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
             Map<String, String> params = Map.of(
                     THREE_DS_METHOD_DATA, response.getThreeDSMethodData(),
                     TERM_URL, request.getNotificationUrl());
