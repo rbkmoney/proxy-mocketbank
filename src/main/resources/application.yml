@@ -26,8 +26,8 @@ adapter-mock-mpi:
 mpi20:
   threeDsServerUrl: http://127.0.0.1:8018
   callbackUrl: http://127.0.0.1:8019
-  threeDsMethodNotificationPath: /${server.rest.endpoint}/three_ds_method_notification
-  acsNotificationPath: /${server.rest.endpoint}/acs_notification
+  threeDsMethodNotificationPath: /${server.rest.endpoint}/three_ds_method_notification{?termination_uri}
+  acsNotificationPath: /${server.rest.endpoint}/acs_notification{?termination_uri}
   returnUrl: https://checkout.rbk.money/v1/finish-interaction.html
 ---
 adapter-mock-bank:
