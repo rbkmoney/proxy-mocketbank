@@ -20,6 +20,4 @@ public class AuthenticationResponse {
 
     private String creq;
 
-    private String terminationUri;
-
 }
