@@ -95,8 +95,8 @@ public class MocketBankController {
             response = new String(callbackResponse.array(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.warn("Failed handle mpi20 three_ds_method_notification", e);
-            sendRedirect(servletRequest, servletResponse);
         }
+        sendRedirect(servletRequest, servletResponse);
         return response;
     }
 
