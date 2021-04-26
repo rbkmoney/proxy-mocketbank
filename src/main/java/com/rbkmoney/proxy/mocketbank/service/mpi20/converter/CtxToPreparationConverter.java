@@ -11,9 +11,6 @@ import lombok.SneakyThrows;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Component
 @RequiredArgsConstructor
 public class CtxToPreparationConverter implements Converter<PaymentContext, PreparationRequest> {
@@ -29,11 +26,9 @@ public class CtxToPreparationConverter implements Converter<PaymentContext, Prep
 
         return PreparationRequest.builder()
                 .pan(cardData.getPan())
-                .notificationUrl(URLEncoder.encode(
-                        UrlUtils.getCallbackUrl(
-                                mpi20Properties.getCallbackUrl(),
-                                mpi20Properties.getThreeDsMethodNotificationPath()),
-                        StandardCharsets.UTF_8))
+                .notificationUrl(UrlUtils.getCallbackUrl(
+                        mpi20Properties.getCallbackUrl(),
+                        mpi20Properties.getThreeDsMethodNotificationPath()))
                 .build();
     }
 }

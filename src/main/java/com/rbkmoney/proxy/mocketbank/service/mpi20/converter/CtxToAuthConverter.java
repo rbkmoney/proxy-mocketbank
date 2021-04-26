@@ -14,9 +14,6 @@ import lombok.SneakyThrows;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 @Component
 @RequiredArgsConstructor
 public class CtxToAuthConverter implements Converter<PaymentContext, AuthenticationRequest> {
@@ -38,11 +35,9 @@ public class CtxToAuthConverter implements Converter<PaymentContext, Authenticat
                 .pan(cardData.getPan())
                 .cardholderName(cardData.getCardholderName())
                 .expDate(cardData.getExpYear() + " " + cardData.getExpMonth())
-                .notificationUrl(URLEncoder.encode(
-                        UrlUtils.getCallbackUrl(
-                                mpi20Properties.getCallbackUrl(),
-                                mpi20Properties.getAcsNotificationPath()),
-                        StandardCharsets.UTF_8))
+                .notificationUrl(UrlUtils.getCallbackUrl(
+                        mpi20Properties.getCallbackUrl(),
+                        mpi20Properties.getAcsNotificationPath()))
                 .amount(String.valueOf(cost.getAmount()))
                 .currency(cost.getCurrency().getSymbolicCode())
                 .build();
