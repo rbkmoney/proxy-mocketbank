@@ -31,7 +31,7 @@ public class CallbackResponseWithTemplateCreator {
         String terminationUri = termUrl.contains("=")
                 ? termUrl.substring(termUrl.indexOf("=") + 1)
                 : mpi20Properties.getReturnUrl();
-        String acsTermUrl = CallbackResponseWithTemplateCreator.createCallbackUrlWithParam(
+        String acsTermUrl = createCallbackUrlWithParam(
                 mpi20Properties.getCallbackUrl(),
                 mpi20Properties.getAcsNotificationPath(),
                 TERMINATION_URI,
