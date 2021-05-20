@@ -17,24 +17,31 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.Mpi20Client;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
+import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import com.rbkmoney.proxy.mocketbank.utils.model.Card;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.createDisposablePaymentResource;
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createInvoice;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
+import static com.rbkmoney.proxy.mocketbank.TestData.DEFAULT_THREE_DS_TRANS_ID;
+import static com.rbkmoney.proxy.mocketbank.TestData.DEFAULT_THREE_METHOD_DATA;
+import static com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields.CRES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class IntegrationTest {
 
     protected String invoiceId = "TEST_INVOICE";
@@ -53,6 +60,9 @@ public abstract class IntegrationTest {
 
     @MockBean
     protected MpiApi mpiApi;
+
+    @MockBean
+    protected Mpi20Client mpi20Client;
 
     protected Map<String, String> prepareProxyOptions() {
         return new HashMap<>();
@@ -203,6 +213,35 @@ public abstract class IntegrationTest {
         ValidatePaResResponse paResResponse = new ValidatePaResResponse();
         paResResponse.setTransactionStatus(mpiTransactionStatus.getStatus());
         Mockito.when(mpiApi.validatePaRes(any(), any())).thenReturn(paResResponse);
+    }
+
+    @SneakyThrows
+    protected void mockMpiV2Prepare() {
+        PreparationResponse response = new PreparationResponse();
+        response.setProtocolVersion("2");
+        response.setThreeDSMethodURL(TestData.DEFAULT_MPIV2_PREPARE_URL);
+        response.setThreeDSMethodData(DEFAULT_THREE_METHOD_DATA);
+        response.setThreeDSServerTransID(DEFAULT_THREE_DS_TRANS_ID);
+        response.setError(new Error());
+        Mockito.when(mpi20Client.prepare(any())).thenReturn(response);
+    }
+
+    protected void mockMpiV2Auth() {
+        AuthenticationResponse response = new AuthenticationResponse();
+        response.setThreeDSServerTransID(DEFAULT_THREE_DS_TRANS_ID);
+        response.setTransStatus("C");
+        response.setAcsUrl(TestData.DEFAULT_MPIV2_ACS_URL);
+        response.setCreq(CRES);
+        response.setError(new Error());
+        Mockito.when(mpi20Client.auth(any())).thenReturn(response);
+    }
+
+    protected void mockMpiV2Result() {
+        ResultResponse response = new ResultResponse();
+        response.setThreeDSServerTransID(DEFAULT_THREE_DS_TRANS_ID);
+        response.setTransStatus("Y");
+        response.setError(new Error());
+        Mockito.when(mpi20Client.result(any())).thenReturn(response);
     }
 
 }

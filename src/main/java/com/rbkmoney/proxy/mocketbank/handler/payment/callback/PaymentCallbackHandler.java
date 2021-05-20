@@ -1,38 +1,27 @@
 package com.rbkmoney.proxy.mocketbank.handler.payment.callback;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.proxy_provider.PaymentCallbackProxyResult;
-import com.rbkmoney.damsel.proxy_provider.PaymentCallbackResult;
-import com.rbkmoney.damsel.proxy_provider.PaymentContext;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.java.damsel.constant.Error;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.proxy.mocketbank.service.mpi.MpiApi;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.ValidatePaResResponse;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Callback;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.processor.Mpi20Processor;
-import com.rbkmoney.proxy.mocketbank.utils.Converter;
-import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
-import com.rbkmoney.proxy.mocketbank.utils.ErrorBuilder;
-import com.rbkmoney.proxy.mocketbank.utils.model.Card;
-import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
-import com.rbkmoney.proxy.mocketbank.utils.model.CardUtils;
+import com.rbkmoney.proxy.mocketbank.utils.*;
+import com.rbkmoney.proxy.mocketbank.utils.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus.isAuthenticationSuccessful;
@@ -48,6 +37,7 @@ public class PaymentCallbackHandler {
     private final List<Card> cardList;
     private final ObjectMapper objectMapper;
     private final Mpi20Processor mpi20Processor;
+    private final CallbackResponseWithTemplateCreator callbackResponseCreator;
 
     public PaymentCallbackResult handler(ByteBuffer byteBuffer, PaymentContext context) {
         CardDataProxyModel cardData;
@@ -74,17 +64,22 @@ public class PaymentCallbackHandler {
 
     @SneakyThrows
     private PaymentCallbackResult processEnrolled20(PaymentContext context) {
-        SessionState sessionState = objectMapper.readValue(context.getSession().getState(), SessionState.class);
-        switch (sessionState.getState()) {
+        SessionState contextSessionState = objectMapper.readValue(context.getSession().getState(), SessionState.class);
+        switch (contextSessionState.getState()) {
             case PREPARE:
-                return createCallbackResult(new byte[]{}, mpi20Processor.processAuth(context));
+                PaymentCallbackProxyResult authCallbackProxyResult = mpi20Processor.processAuth(context);
+                SessionState authSessionState = objectMapper.readValue(
+                        authCallbackProxyResult.getNextState(),
+                        SessionState.class);
+                return createCallbackResult(
+                        callbackResponseCreator.createCallbackResponseWithForm(authSessionState.getOptions(), contextSessionState),
+                        authCallbackProxyResult);
             case AUTH:
                 return createCallbackResult(new byte[]{}, mpi20Processor.processResult(context));
             default:
                 throw new IllegalStateException("Illegal state");
         }
     }
-
 
 
     private PaymentCallbackResult processEnrolled(

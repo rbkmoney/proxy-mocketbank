@@ -12,14 +12,17 @@ import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class Mpi20Processor {
@@ -43,7 +46,9 @@ public class Mpi20Processor {
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.PREPARE);
+                    Mpi20State.PREPARE,
+                    request.getNotificationUrl(),
+                    new HashMap<>());
         }
         return createPaymentProxyResult(intent, objectMapper.writeValueAsBytes(sessionState));
     }
@@ -53,14 +58,18 @@ public class Mpi20Processor {
         AuthenticationRequest request = ctxToAuthConverter.convert(context);
         AuthenticationResponse response = mpi20Client.auth(request);
         Intent intent = buildAuthIntent(
-                request,
                 response,
                 extractRedirectTimeout(context.getOptions(), timerProperties.getRedirectTimeout()));
         SessionState sessionState = null;
+        Map<String, String> params = Map.of(
+                CREQ, response.getCreq(),
+                TERM_URL, request.getNotificationUrl());
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.AUTH);
+                    Mpi20State.AUTH,
+                    request.getNotificationUrl(),
+                    params);
         }
         return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState),
                 CreatorUtils.createDefaultTransactionInfo(context));
@@ -70,12 +79,14 @@ public class Mpi20Processor {
     public PaymentCallbackProxyResult processResult(PaymentContext context) {
         ResultRequest request = ctxToResultConverter.convert(context);
         ResultResponse response = mpi20Client.result(request);
-        Intent intent = buildResultIntent(request, response);
+        Intent intent = buildResultIntent(response);
         SessionState sessionState = null;
         if (intent.getFinish().getStatus().isSetSuccess()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
-                    Mpi20State.RESULT);
+                    Mpi20State.RESULT,
+                    null,
+                    new HashMap<>());
         }
         return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState),
                 CreatorUtils.createDefaultTransactionInfo(context));
@@ -96,22 +107,17 @@ public class Mpi20Processor {
         }
     }
 
-    private Intent buildAuthIntent(AuthenticationRequest request,
-                                   AuthenticationResponse response,
+    private Intent buildAuthIntent(AuthenticationResponse response,
                                    int timerRedirectTimeout) {
         if (isAuthSuccess(response)) {
             String tag = SuspendPrefix.PAYMENT.getPrefix() + response.getThreeDSServerTransID();
-            Map<String, String> params = Map.of(
-                    CREQ, response.getCreq(),
-                    TERM_URL, request.getNotificationUrl());
-            UserInteraction interaction = createPostUserInteraction(response.getAcsUrl(), params);
-            return createIntentWithSuspendIntent(tag, timerRedirectTimeout, interaction);
+            return createIntentWithSuspendIntent(tag, timerRedirectTimeout);
         } else {
             return createFinishIntentFailure(response.getError().getCode(), response.getError().getTitle());
         }
     }
 
-    private Intent buildResultIntent(ResultRequest request, ResultResponse response) {
+    private Intent buildResultIntent(ResultResponse response) {
         if (isResultSuccess(response)) {
             return createFinishIntentSuccess();
         } else {

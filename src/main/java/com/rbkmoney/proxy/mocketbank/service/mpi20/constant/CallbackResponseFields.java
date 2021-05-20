@@ -8,5 +8,6 @@ public class CallbackResponseFields {
     public static final String TERM_URL = "TermUrl";
     public static final String PROTOCOL_VERSION_2 = "2";
     public static final String CREQ = "creq";
+    public static final String ACS_URL = "acsUrl";
 
 }

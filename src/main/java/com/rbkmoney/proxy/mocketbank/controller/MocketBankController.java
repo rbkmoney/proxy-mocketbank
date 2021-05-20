@@ -96,7 +96,6 @@ public class MocketBankController {
         } catch (Exception e) {
             log.warn("Failed handle mpi20 three_ds_method_notification", e);
         }
-        sendRedirect(servletRequest, servletResponse);
         return response;
     }
 

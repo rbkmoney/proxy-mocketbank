@@ -95,7 +95,9 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             if (CardAction.isCardEnrolled(card.get())) {
                 return prepareEnrolledPaymentProxyResult(context, intent, transactionInfo, cardData);
             } else if (CardAction.isCardEnrolled20(card.get())) {
-                return mpi20Processor.processPrepare(context);
+                PaymentProxyResult paymentProxyResult = mpi20Processor.processPrepare(context);
+                log.info("handler paymentProxyResult {}", paymentProxyResult);
+                return paymentProxyResult;
             }
             return prepareNotEnrolledPaymentProxyResult(intent, transactionInfo, action);
         }
