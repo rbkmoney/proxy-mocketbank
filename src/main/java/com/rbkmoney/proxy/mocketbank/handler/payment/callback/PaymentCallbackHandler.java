@@ -72,7 +72,9 @@ public class PaymentCallbackHandler {
                         authCallbackProxyResult.getNextState(),
                         SessionState.class);
                 return createCallbackResult(
-                        callbackResponseCreator.createCallbackResponseWithForm(authSessionState.getOptions(), contextSessionState),
+                        callbackResponseCreator.createCallbackResponseWithForm(
+                                authSessionState.getOptions(),
+                                contextSessionState),
                         authCallbackProxyResult);
             case AUTH:
                 return createCallbackResult(new byte[]{}, mpi20Processor.processResult(context));
