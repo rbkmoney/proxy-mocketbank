@@ -6,6 +6,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,7 +38,7 @@ public class CallbackResponseWithTemplateCreator {
                 TERMINATION_URI,
                 terminationUri);
         String acsUrl = options.get(TERM_URL);
-        String creq = options.get(CREQ);
+        String creq = StringEscapeUtils.escapeHtml4(options.get(CREQ));
         try {
             return processTemplateIntoString(freemarkerConfiguration.getTemplate(TEMPLATE), Map.of(
                     ACS_URL, acsUrl,
