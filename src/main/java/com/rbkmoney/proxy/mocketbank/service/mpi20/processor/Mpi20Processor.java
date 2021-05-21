@@ -63,12 +63,12 @@ public class Mpi20Processor {
         SessionState sessionState = null;
         Map<String, String> params = Map.of(
                 CREQ, response.getCreq(),
-                TERM_URL, request.getNotificationUrl());
+                TERM_URL, response.getAcsUrl());
         if (intent.isSetSuspend()) {
             sessionState = new SessionState(
                     response.getThreeDSServerTransID(),
                     Mpi20State.AUTH,
-                    request.getNotificationUrl(),
+                    response.getAcsUrl(),
                     params);
         }
         return createCallbackProxyResult(intent, objectMapper.writeValueAsBytes(sessionState),
