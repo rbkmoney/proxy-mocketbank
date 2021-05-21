@@ -41,7 +41,7 @@ public class CallbackResponseWithTemplateCreator {
         try {
             return processTemplateIntoString(freemarkerConfiguration.getTemplate(TEMPLATE), Map.of(
                     ACS_URL, acsUrl,
-                    CRES, creq,
+                    CREQ, creq,
                     TERM_URL, acsTermUrl
             )).getBytes();
         } catch (IOException | TemplateException e) {
