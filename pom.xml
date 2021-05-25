@@ -30,12 +30,6 @@
 
     <dependencies>
         <!--Thrirdparty libs-->
-        <!--TODO: Remove dependency tomcat-embed-core when will updated in parent-->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>10.0.6</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
