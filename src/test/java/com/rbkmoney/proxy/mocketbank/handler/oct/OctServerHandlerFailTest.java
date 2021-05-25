@@ -9,19 +9,19 @@ import com.rbkmoney.proxy.mocketbank.utils.PayoutCardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.payout.CardPayoutAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class OctServerHandlerFailTest extends OctIntegrationTest {
 
     @Test
-    public void testProcessWithdrawal() throws TException {
+    void testProcessWithdrawal() throws TException {
         List<String> pans = PayoutCardListUtils.extractPans(cardPayoutList, CardPayoutAction::isCardFailed);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);

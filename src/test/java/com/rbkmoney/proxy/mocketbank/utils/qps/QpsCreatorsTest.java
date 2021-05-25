@@ -3,15 +3,15 @@ package com.rbkmoney.proxy.mocketbank.utils.qps;
 import com.rbkmoney.damsel.proxy_provider.Cash;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
 import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.MultiValueMap;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QpsCreatorsTest {
 
     @Test
-    public void createQpsParamsTest() {
+    void createQpsParamsTest() {
         MultiValueMap params = QpsCreators.createQpsParams("invoiceId", prepareCash());
         String payload = UrlUtils.getCallbackUrl("http://127.0.0.1:8019", "qps", params);
 

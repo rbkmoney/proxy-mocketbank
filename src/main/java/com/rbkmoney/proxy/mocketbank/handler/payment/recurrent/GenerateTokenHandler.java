@@ -36,9 +36,9 @@ import static com.rbkmoney.java.damsel.constant.Error.THREE_DS_NOT_FINISHED;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractRecurrentId;
-import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
+import static com.rbkmoney.proxy.mocketbank.utils.TokenProviderVerification.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.utils.model.CardAction.*;
 
 @Slf4j

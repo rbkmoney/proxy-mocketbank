@@ -7,17 +7,17 @@ import com.rbkmoney.damsel.withdrawals.provider_adapter.ProcessResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.rbkmoney.java.damsel.utils.verification.WithdrawalsProviderVerification.isSuccess;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 public class OctServerHandlerTest extends OctIntegrationTest {
 
     @Test
-    public void testProcessWithdrawal() throws TException {
+    void testProcessWithdrawal() throws TException {
         CardData cardData = TestData.createCardData();
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);

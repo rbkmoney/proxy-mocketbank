@@ -11,26 +11,26 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
 import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification.isFailure;
 import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification.isSleep;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class P2pServerHandlerFail3dsTimeoutTest extends P2PIntegrationTest {
 
     @Test
-    public void testProcessFail3dsTimeout() throws TException, JsonProcessingException {
+    void testProcessFail3dsTimeout() throws TException, JsonProcessingException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardTimeout);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);

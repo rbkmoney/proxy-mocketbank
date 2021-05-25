@@ -1,9 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.handler.terminal.payment;
 
-import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
-import com.rbkmoney.damsel.domain.TerminalPaymentProvider;
-import com.rbkmoney.damsel.domain.TransactionInfo;
+import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.*;
+import com.rbkmoney.damsel.proxy_provider.Cash;
 import com.rbkmoney.damsel.user_interaction.UserInteraction;
 import com.rbkmoney.java.damsel.constant.PaymentState;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
@@ -44,7 +43,7 @@ public class ProcessedTerminalCommonHandler implements CommonTerminalHandler {
         Intent intent = createFinishIntentSuccess();
         TransactionInfo transactionInfo = CreatorUtils.createDefaultTransactionInfo(context);
 
-        if (TerminalPaymentProvider.qps.equals(QpsExtractors.extractTerminalPaymentProvider(context))) {
+        if (LegacyTerminalPaymentProvider.qps.equals(QpsExtractors.extractTerminalPaymentProvider(context))) {
             return qpsInteraction(context, intent, invoiceId, transactionInfo);
         }
 

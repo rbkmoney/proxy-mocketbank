@@ -2,14 +2,8 @@ package com.rbkmoney.proxy.mocketbank.handler.payment.common;
 
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
-import com.rbkmoney.damsel.domain.Failure;
-import com.rbkmoney.damsel.domain.OperationFailure;
-import com.rbkmoney.damsel.domain.TargetInvoicePaymentStatus;
-import com.rbkmoney.damsel.domain.TransactionInfo;
-import com.rbkmoney.damsel.proxy_provider.Intent;
-import com.rbkmoney.damsel.proxy_provider.PaymentContext;
-import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
-import com.rbkmoney.damsel.proxy_provider.PaymentResource;
+import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.timeout_behaviour.TimeoutBehaviour;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
@@ -44,10 +38,10 @@ import static com.rbkmoney.java.damsel.constant.Error.THREE_DS_NOT_FINISHED;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.extractors.OptionsExtractors.extractRedirectTimeout;
 import static com.rbkmoney.java.damsel.utils.extractors.ProxyProviderPackageExtractors.extractInvoiceId;
-import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.hasBankCardTokenProvider;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isMakeRecurrent;
 import static com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus.isAuthenticationAvailable;
 import static com.rbkmoney.proxy.mocketbank.utils.UrlUtils.prepareRedirectParams;
+import static com.rbkmoney.proxy.mocketbank.utils.TokenProviderVerification.hasBankCardTokenProvider;
 import static com.rbkmoney.proxy.mocketbank.utils.model.CardAction.*;
 
 @Slf4j

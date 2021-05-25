@@ -9,11 +9,11 @@ import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +21,10 @@ import java.util.List;
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException {
+    void testProcessPaymentSuccess() throws TException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);

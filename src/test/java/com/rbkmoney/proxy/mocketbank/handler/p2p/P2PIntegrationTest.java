@@ -3,10 +3,9 @@ package com.rbkmoney.proxy.mocketbank.handler.p2p;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rbkmoney.cds.client.storage.CdsClientStorage;
 import com.rbkmoney.cds.storage.CardData;
-import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
-import com.rbkmoney.damsel.domain.BankCardTokenProvider;
 import com.rbkmoney.damsel.domain.Currency;
+import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.p2p_adapter.Cash;
 import com.rbkmoney.damsel.p2p_adapter.*;
 import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.damsel.proxy_provider.RecurrentTokenContext;
@@ -26,9 +25,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,9 +103,9 @@ public abstract class P2PIntegrationTest {
     }
 
     protected BankCard createBankCard(String token) {
-        return new BankCard().setTokenProvider(BankCardTokenProvider.applepay)
+        return new BankCard().setTokenProviderDeprecated(LegacyBankCardTokenProvider.applepay)
                 .setToken(token)
-                .setPaymentSystem(BankCardPaymentSystem.mastercard)
+                .setPaymentSystem(new PaymentSystemRef(String.valueOf(1)))
                 .setBin(TestData.DEFAULT_BIN);
     }
 

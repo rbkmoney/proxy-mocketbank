@@ -1,30 +1,25 @@
 package com.rbkmoney.proxy.mocketbank.handler.qps;
 
-import com.rbkmoney.damsel.domain.DisposablePaymentResource;
-import com.rbkmoney.damsel.domain.PaymentTerminal;
-import com.rbkmoney.damsel.domain.PaymentTool;
-import com.rbkmoney.damsel.domain.TerminalPaymentProvider;
-import com.rbkmoney.damsel.proxy_provider.PaymentContext;
-import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
-import com.rbkmoney.damsel.proxy_provider.PaymentResource;
+import com.rbkmoney.damsel.domain.*;
+import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.handler.IntegrationTest;
 import com.rbkmoney.proxy.mocketbank.handler.terminal.TerminalServerHandler;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators.*;
 import static com.rbkmoney.java.damsel.utils.creators.ProxyProviderPackageCreators.createPaymentResourceDisposablePaymentResource;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSleep;
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
-import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class QpsServerHandlerTest extends IntegrationTest {
@@ -33,9 +28,9 @@ public class QpsServerHandlerTest extends IntegrationTest {
     private TerminalServerHandler handler;
 
     @Test
-    public void testProcess() throws TException {
+    void testProcess() throws TException {
         PaymentTerminal paymentTerminal = new PaymentTerminal();
-        paymentTerminal.setTerminalType(TerminalPaymentProvider.qps);
+        paymentTerminal.setTerminalTypeDeprecated(LegacyTerminalPaymentProvider.qps);
         PaymentTool paymentTool = PaymentTool.payment_terminal(paymentTerminal);
         DisposablePaymentResource disposablePaymentResource = createDisposablePaymentResource(
                 createClientInfo(TestData.FINGERPRINT, TestData.IP_ADDRESS),

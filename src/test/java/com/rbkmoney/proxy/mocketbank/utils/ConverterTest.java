@@ -4,21 +4,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @Slf4j
 public class ConverterTest {
 
     @Test
-    public void testMe() {
+    void testMe() {
         String tag = SuspendPrefix.RECURRENT.getPrefix() + "1112";
         assertTrue(tag.startsWith(SuspendPrefix.RECURRENT.getPrefix()));
 
@@ -27,7 +28,7 @@ public class ConverterTest {
     }
 
     @Test
-    public void byteBufferToMap() throws IOException {
+    void byteBufferToMap() throws IOException {
         Map<String, String> map = new HashMap<>();
         map.put("key1", "value1");
         map.put("key2", "value2");

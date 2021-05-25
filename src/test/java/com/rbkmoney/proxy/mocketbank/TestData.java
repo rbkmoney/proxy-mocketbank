@@ -1,8 +1,7 @@
 package com.rbkmoney.proxy.mocketbank;
 
 import com.rbkmoney.cds.storage.CardData;
-import com.rbkmoney.damsel.domain.BankCard;
-import com.rbkmoney.damsel.domain.BankCardPaymentSystem;
+import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.java.cds.utils.creators.CdsPackageCreators;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.java.damsel.utils.creators.DomainPackageCreators;
@@ -60,7 +59,7 @@ public class TestData {
                 TestData.DEFAULT_MONTH,
                 TestData.DEFAULT_YEAR,
                 TestData.DEFAULT_CARDHOLDERNAME)
-                .setPaymentSystem(BankCardPaymentSystem.mastercard)
+                .setPaymentSystem(new PaymentSystemRef())
                 .setBin(DEFAULT_BIN)
                 .setLastDigits(cardData.pan.substring(cardData.pan.length() - 4));
     }

@@ -1,24 +1,22 @@
 package com.rbkmoney.proxy.mocketbank.handler.mobile;
 
-import com.rbkmoney.mnp.Operator;
-import com.rbkmoney.mnp.PhoneNumber;
-import com.rbkmoney.mnp.RequestParams;
-import com.rbkmoney.mnp.ResponseData;
+import com.rbkmoney.mnp.*;
 import com.rbkmoney.proxy.mocketbank.exception.MobileOperatorException;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.operator.MobileOperatorServerHandler;
 import org.apache.thrift.TException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class MobileOperatorServerHandlerTest {
@@ -27,7 +25,7 @@ public class MobileOperatorServerHandlerTest {
     private MobileOperatorServerHandler handler;
 
     @Test
-    public void lookupTest() throws TException {
+    void lookupTest() throws TException {
         // Get operator by phone number
         RequestParams requestParams = createRequestParams("9151111111");
         ResponseData responseData = handler.lookup(requestParams);
@@ -45,11 +43,15 @@ public class MobileOperatorServerHandlerTest {
         return params;
     }
 
-    @Test(expected = MobileOperatorException.class)
-    public void lookupExceptionTest() throws TException {
+    @Test
+    void lookupExceptionTest() throws TException {
         // Get exception by phone number if phone not found in lists
         RequestParams requestParams = createRequestParams("9999999999");
-        handler.lookup(requestParams);
+        assertThrows(
+                MobileOperatorException.class,
+                () -> handler.lookup(requestParams),
+                "Expected doThing() to throw, but it didn't"
+        );
     }
 
 }
