@@ -17,7 +17,6 @@ import static com.rbkmoney.java.damsel.utils.verification.WithdrawalsProviderVer
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {

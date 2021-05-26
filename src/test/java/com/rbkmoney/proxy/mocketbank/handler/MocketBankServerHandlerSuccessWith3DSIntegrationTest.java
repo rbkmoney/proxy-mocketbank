@@ -29,7 +29,6 @@ import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {

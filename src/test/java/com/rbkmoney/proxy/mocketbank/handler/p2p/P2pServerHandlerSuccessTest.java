@@ -20,7 +20,6 @@ import static com.rbkmoney.java.damsel.utils.verification.P2pAdapterVerification
 import static com.rbkmoney.proxy.mocketbank.TestData.createCardData;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class P2pServerHandlerSuccessTest extends P2PIntegrationTest {

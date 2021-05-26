@@ -19,7 +19,6 @@ import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerificat
 import static com.rbkmoney.java.damsel.utils.verification.ProxyProviderVerification.isSuccess;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class DigitalWalletServerHandlerTest extends IntegrationTest {

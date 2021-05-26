@@ -31,7 +31,6 @@ import static com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackRespo
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @Slf4j
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {
