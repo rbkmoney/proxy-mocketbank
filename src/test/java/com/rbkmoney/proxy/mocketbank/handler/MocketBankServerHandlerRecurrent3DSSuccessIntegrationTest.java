@@ -40,7 +40,7 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 public class MocketBankServerHandlerRecurrent3DSSuccessIntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentSuccess() throws TException, IOException {
+    void testProcessPaymentSuccess() throws TException, IOException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);

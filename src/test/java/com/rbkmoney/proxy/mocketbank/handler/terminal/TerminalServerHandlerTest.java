@@ -26,7 +26,7 @@ public class TerminalServerHandlerTest extends IntegrationTest {
     private TerminalServerHandler handler;
 
     @Test
-    public void testProcess() throws TException {
+    void testProcess() throws TException {
         PaymentTool paymentTool = PaymentTool.payment_terminal(new PaymentTerminal());
         DisposablePaymentResource disposablePaymentResource = createDisposablePaymentResource(
                 createClientInfo(TestData.FINGERPRINT, TestData.IP_ADDRESS),

@@ -34,7 +34,7 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 public class MocketBankServerHandlerSuccessApplePayntegrationTest extends IntegrationTest {
 
     @Test
-    public void testProcessPaymentFail() throws TException {
+    void testProcessPaymentFail() throws TException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccessApplePay);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);

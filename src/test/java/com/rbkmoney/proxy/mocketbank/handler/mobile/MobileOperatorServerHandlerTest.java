@@ -50,7 +50,7 @@ public class MobileOperatorServerHandlerTest {
         assertThrows(
                 MobileOperatorException.class,
                 () -> handler.lookup(requestParams),
-                "Expected doThing() to throw, but it didn't"
+                "Expected lookup() to throw, but it didn't"
         );
     }
 
