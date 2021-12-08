@@ -83,7 +83,9 @@ public abstract class IntegrationTest {
                 10000L, "Rubles", 643, "RUB", 2);
     }
 
-    protected PaymentInfo getPaymentInfo(String sessionId, BankCard bankCard, TransactionInfo transactionInfo) {
+    protected PaymentInfo getPaymentInfo(String sessionId,
+                                         BankCard bankCard,
+                                         TransactionInfo transactionInfo) {
         PaymentResource paymentResource = getPaymentResource(sessionId, bankCard);
         PaymentInfo paymentInfo = getPaymentInfo(transactionInfo, paymentResource);
         paymentInfo.setCapture(prepareInvoicePaymentCapture());
@@ -112,6 +114,11 @@ public abstract class IntegrationTest {
         return paymentInfo;
     }
 
+    private PayerSessionInfo createPayerSessionInfo(String redirectUrl) {
+        return new PayerSessionInfo()
+                .setRedirectUrl(redirectUrl);
+    }
+
     private InvoicePaymentRefund createInvoicePaymentRefund(TransactionInfo transactionInfo) {
         InvoicePaymentRefund invoicePaymentRefund = new InvoicePaymentRefund();
         invoicePaymentRefund.setId(refundId);
@@ -133,6 +140,17 @@ public abstract class IntegrationTest {
                         createPaymentTool(bankCard)
                 )
         );
+    }
+
+    protected PaymentContext getContext(
+            BankCard bankCard,
+            TargetInvoicePaymentStatus target,
+            TransactionInfo transactionInfo,
+            String redirectUrl
+    ) {
+        PaymentContext context = getContext(bankCard, target, transactionInfo);
+        context.getPaymentInfo().getPayment().setPayerSessionInfo(createPayerSessionInfo(redirectUrl));
+        return context;
     }
 
     protected PaymentContext getContext(

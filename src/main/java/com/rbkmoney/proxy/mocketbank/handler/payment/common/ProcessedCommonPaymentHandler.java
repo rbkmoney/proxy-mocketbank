@@ -118,8 +118,10 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             String tag = SuspendPrefix.PAYMENT.getPrefix() +
                     ProxyProviderPackageCreators.createInvoiceWithPayment(context.getPaymentInfo());
             String termUrl = UrlUtils.getCallbackUrl(
+                    context.getPaymentInfo().getPayment(),
                     mockBankProperties.getCallbackUrl(),
-                    mockBankProperties.getPathCallbackUrl());
+                    mockBankProperties.getPathCallbackUrl()
+            );
             currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
         }
         byte[] state = StateUtils.prepareState(verifyEnrollmentResponse);

@@ -33,24 +33,37 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTest {
 
+    private static final String REDIRECT_URL = "http://127.0.0.1:8082";
+
     @Test
     void testProcessPaymentSuccess() throws TException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
-            processPayment(cardData);
+            processPayment(cardData, null);
         }
     }
 
-    private void processPayment(CardData cardData) throws TException {
+    @Test
+    void testProcessPaymentSuccessWithRedirect() throws TException {
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
+        for (String pan : pans) {
+            CardData cardData = createCardData(pan);
+            processPayment(cardData, REDIRECT_URL);
+        }
+    }
+
+    private void processPayment(CardData cardData, String redirectUrl) throws TException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
 
-        PaymentProxyResult result = handler.processPayment(getContext(bankCard, createTargetProcessed(), null));
+        PaymentProxyResult result = handler.processPayment(
+                getContext(bankCard, createTargetProcessed(), null, redirectUrl));
         assertTrue("Process payment isn`t success", isSuccess(result));
 
         TransactionInfo trxInfo = createTransactionInfo(result.getTrx().getId(), Collections.emptyMap());
-        result = handler.processPayment(getContext(bankCard, createTargetCaptured(), trxInfo));
+        result = handler.processPayment(
+                getContext(bankCard, createTargetCaptured(), trxInfo, redirectUrl));
         assertTrue("Process Capture isn`t success", isSuccess(result));
     }
 

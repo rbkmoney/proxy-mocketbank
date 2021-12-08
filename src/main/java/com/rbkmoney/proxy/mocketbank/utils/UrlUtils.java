@@ -1,10 +1,12 @@
 package com.rbkmoney.proxy.mocketbank.utils;
 
+import com.rbkmoney.damsel.proxy_provider.InvoicePayment;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.MpiField;
 import com.rbkmoney.proxy.mocketbank.service.mpi.model.VerifyEnrollmentResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
@@ -12,6 +14,15 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UrlUtils {
+
+    public static String getCallbackUrl(InvoicePayment payment, String callbackUrl, String path) {
+        if (payment != null && payment.isSetPayerSessionInfo()
+                && StringUtils.hasText(payment.getPayerSessionInfo().getRedirectUrl())) {
+            return payment.getPayerSessionInfo().getRedirectUrl();
+        }
+
+        return getCallbackUrl(callbackUrl, path);
+    }
 
     public static String getCallbackUrl(String callbackUrl, String path) {
         return UriComponentsBuilder.fromUriString(callbackUrl)
