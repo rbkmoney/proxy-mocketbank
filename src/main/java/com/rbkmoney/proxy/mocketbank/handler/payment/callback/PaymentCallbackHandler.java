@@ -47,12 +47,9 @@ public class PaymentCallbackHandler {
             return ErrorBuilder.prepareCallbackError(errorMapping, Error.DEFAULT_ERROR_CODE, ex.getMessage());
         }
 
-        Optional<Card> optionalCard = CardUtils.extractCardByPan(cardList, cardData.getPan());
-        if (optionalCard.isEmpty()) {
-            throw new IllegalStateException("Card must be set");
-        }
+        Card card = CardUtils.extractCardByPan(cardList, cardData.getPan())
+                .orElseThrow(() -> new IllegalStateException("Card must be set"));
 
-        Card card = optionalCard.get();
         if (CardAction.isCardEnrolled(card)) {
             return processEnrolled(byteBuffer, context, cardData);
         } else if (CardAction.isCardEnrolled20(card)) {
