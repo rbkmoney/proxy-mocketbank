@@ -8,7 +8,6 @@
 **adapter-mock-bank.callbackUrl** | URL адаптера на который будет возвращен ответ с результатом проверки 3DS со стороны банка | http://127.0.0.1:8080
 **adapter-mock-bank.pathCallbackUrl** | Путь для URL адаптера на который будет возвращен ответ с результатом проверки 3DS со стороны банка | /mocketbank/term_url{?termination_uri}
 **adapter-mock-bank.pathRecurrentCallbackUrl** | Путь для URL адаптера на который будет возвращен ответ с результатом проверки 3DS со стороны банка | /mocketbank/rec_term_url{?termination_uri}
-**adapter-mock-bank.pathP2pCallbackUrl** | Путь для URL адаптера на который будет возвращен ответ при взаимодействии с p2p | /mocketbank/p2p{?termination_uri}
 **adapter-mock-bank.pathQpsCallbackUrl** | Путь для URL адаптера на который будет возвращен ответ при взаимодействии с qps | /mocketbank/qps
 **adapter-mock-bank.finishInteraction** | Заглушка для чекаута | https://checkout.rbk.money/v1/finish-interaction.html
 **adapter-mock-mpi.url** | url для взаимодействия с заглушкой mpi | http://127.0.0.1:8079

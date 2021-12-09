@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rbkmoney.adapter.helpers.hellgate.HellgateAdapterClient;
 import com.rbkmoney.adapter.helpers.hellgate.exception.HellgateException;
-import com.rbkmoney.damsel.p2p_adapter.Callback;
-import com.rbkmoney.damsel.p2p_adapter.ProcessCallbackResult;
-import com.rbkmoney.fistful.client.FistfulClient;
 import com.rbkmoney.java.damsel.converter.CommonConverter;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankProperties;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields;
@@ -35,7 +32,6 @@ import java.util.stream.Collectors;
 public class MocketBankController {
 
     private final HellgateAdapterClient hellgateClient;
-    private final FistfulClient fistfulClient;
     private final AdapterMockBankProperties mockBankProperties;
     private final ObjectMapper objectMapper;
 
@@ -123,21 +119,7 @@ public class MocketBankController {
                                                HttpServletResponse servletResponse) throws IOException {
         String tag = getTag(request);
         log.info("receiveP2pIncomingParameters with tag {}, info {}", tag, httpServletRequestToString(request));
-        String resp = StringUtil.EMPTY_STRING;
-        try {
-            ByteBuffer callbackParams = prepareCallbackParams(request);
-            Callback callback = new Callback();
-            callback.setTag(tag);
-            callback.setPayload(callbackParams);
-            ProcessCallbackResult result = fistfulClient.processCallback(callback);
-            log.info("P2P Callback Result {}", result);
-        } catch (HellgateException e) {
-            log.warn("Failed handle callback for p2p", e);
-        } catch (Exception e) {
-            log.error("Failed handle callback for p2p", e);
-        }
-        sendRedirect(request, servletResponse);
-        return resp;
+        throw new UnsupportedOperationException("p2p is not supported");
     }
 
     @RequestMapping(value = "/qps", method = RequestMethod.GET)

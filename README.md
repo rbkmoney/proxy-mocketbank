@@ -27,7 +27,6 @@ http(s)://{host}:8080/mocketbank
 ```
 http(s)://{host}:8022/proxy/mocketbank - эквайринг
 http(s)://{host}:8022/proxy/mocketbank/p2p-credit - выплаты
-http(s)://{host}:8022/proxy/mocketbank/p2p - p2p
 http(s)://{host}:8022/proxy/mocketbank/terminal - оплата через терминал
 http(s)://{host}:8022/proxy/mocketbank/dw - оплата с помощью электронных кошельков
 http(s)://{host}:8022/proxy/mocketbank/mobile/operator - определение оператора мобильного телефона
