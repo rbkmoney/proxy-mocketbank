@@ -9,6 +9,7 @@ import com.rbkmoney.proxy.mocketbank.configuration.properties.AdapterMockBankPro
 import com.rbkmoney.proxy.mocketbank.service.mpi20.constant.CallbackResponseFields;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.CRes;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.ThreeDSMethodData;
+import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import io.micrometer.shaded.io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
@@ -155,8 +156,8 @@ public class MocketBankController {
     }
 
     private void sendRedirect(HttpServletRequest request, HttpServletResponse servletResponse) throws IOException {
-        if (StringUtils.hasText(request.getParameter("termination_uri"))) {
-            servletResponse.sendRedirect(request.getParameter("termination_uri"));
+        if (StringUtils.hasText(request.getParameter(UrlUtils.TERMINATION_URI_REQUEST_PARAM_NAME))) {
+            servletResponse.sendRedirect(request.getParameter(UrlUtils.TERMINATION_URI_REQUEST_PARAM_NAME));
         }
     }
 

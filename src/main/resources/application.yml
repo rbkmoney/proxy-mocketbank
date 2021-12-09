@@ -49,7 +49,7 @@ mpi20:
 ---
 adapter-mock-bank:
   callbackUrl: http://127.0.0.1:8019
-  pathCallbackUrl: /${server.rest.endpoint}/term_url{?termination_uri}
+  pathCallbackUrl: /${server.rest.endpoint}
   pathRecurrentCallbackUrl: /${server.rest.endpoint}/rec_term_url{?termination_uri}
   pathQpsCallbackUrl: /${server.rest.endpoint}/qps
   pathDigitalWalletCallbackUrl: /${server.rest.endpoint}/dw
