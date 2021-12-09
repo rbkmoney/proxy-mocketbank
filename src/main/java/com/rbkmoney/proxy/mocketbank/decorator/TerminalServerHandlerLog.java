@@ -54,8 +54,8 @@ public class TerminalServerHandlerLog implements ProviderProxySrv.Iface {
                     paymentResourceType, invoicePaymentStatus, invoiceId, proxyResult);
             return proxyResult;
         } catch (Exception ex) {
-            String message = String.format("Failed handle resource=%s, status=%s process payment " +
-                            "for operation with invoiceId %s",
+            String message = String.format(
+                    "Failed handle resource=%s, status=%s process payment for operation with invoiceId %s",
                     paymentResourceType, invoicePaymentStatus, invoiceId);
             ServerHandlerLogUtils.logMessage(ex, message, this.getClass());
             throw ex;

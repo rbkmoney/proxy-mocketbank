@@ -5,11 +5,9 @@ import com.rbkmoney.proxy.mocketbank.exception.MobileOperatorException;
 import com.rbkmoney.proxy.mocketbank.handler.mobile.operator.MobileOperatorServerHandler;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
