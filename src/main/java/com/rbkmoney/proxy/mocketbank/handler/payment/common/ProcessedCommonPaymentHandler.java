@@ -5,6 +5,7 @@ import com.rbkmoney.cds.client.storage.exception.CdsStorageExpDateException;
 import com.rbkmoney.damsel.domain.*;
 import com.rbkmoney.damsel.proxy_provider.*;
 import com.rbkmoney.damsel.timeout_behaviour.TimeoutBehaviour;
+import com.rbkmoney.damsel.user_interaction.UserInteraction;
 import com.rbkmoney.error.mapping.ErrorMapping;
 import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.java.damsel.constant.Error;
@@ -88,7 +89,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
         if (card.isPresent()) {
             CardAction action = CardAction.findByValue(card.get().getAction());
             if (CardAction.isCardEnrolled(card.get())) {
-                return prepareEnrolledPaymentProxyResult(context, intent, transactionInfo, cardData);
+                return prepareEnrolledPaymentProxyResult(context, intent, transactionInfo, cardData, action);
             } else if (CardAction.isCardEnrolled20(card.get())) {
                 return mpi20Processor.processPrepare(context);
             }
@@ -112,7 +113,8 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             PaymentContext context,
             Intent intent,
             TransactionInfo transactionInfo,
-            CardDataProxyModel cardData) {
+            CardDataProxyModel cardData,
+            CardAction action) {
         Intent currentIntent = intent;
         VerifyEnrollmentResponse verifyEnrollmentResponse = mpiApi.verifyEnrollment(cardData);
         if (isAuthenticationAvailable(verifyEnrollmentResponse.getEnrolled())) {
@@ -127,7 +129,7 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
                     mockBankProperties.getPathCallbackUrl(),
                     terminationUrl
             );
-            currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl);
+            currentIntent = prepareRedirect(context, verifyEnrollmentResponse, tag, termUrl, action);
         }
         byte[] state = StateUtils.prepareState(verifyEnrollmentResponse);
         return createPaymentProxyResult(currentIntent, state, transactionInfo);
@@ -137,17 +139,28 @@ public class ProcessedCommonPaymentHandler implements CommonPaymentHandler {
             PaymentContext context,
             VerifyEnrollmentResponse verifyEnrollmentResponse,
             String tag,
-            String termUrl) {
+            String termUrl,
+            CardAction action) {
         String url = verifyEnrollmentResponse.getAcsUrl();
         Map<String, String> params = prepareRedirectParams(verifyEnrollmentResponse, tag, termUrl);
         Map<String, String> options = context.getOptions();
         int timerRedirectTimeout = extractRedirectTimeout(options, timerProperties.getRedirectTimeout());
 
         Intent intent = createIntentWithSuspendIntent(
-                tag, timerRedirectTimeout, createPostUserInteraction(url, params)
+                tag, timerRedirectTimeout, prepareUserInteraction(url, params, action)
         );
         Failure failure = errorMapping.mapFailure(DEFAULT_ERROR_CODE, THREE_DS_NOT_FINISHED);
         intent.getSuspend().setTimeoutBehaviour(TimeoutBehaviour.operation_failure(OperationFailure.failure(failure)));
         return intent;
     }
+
+    private UserInteraction prepareUserInteraction(String url,
+                                                   Map<String, String> params,
+                                                   CardAction action) {
+        if (CardAction.isGetAcsCard(action)) {
+            return createGetUserInteraction(UrlUtils.prepareUrlWithParams(url, params));
+        }
+        return createPostUserInteraction(url, params);
+    }
+
 }

@@ -53,14 +53,15 @@ public class PaymentCallbackHandler {
         if (CardAction.isCardEnrolled(card)) {
             return processEnrolled(byteBuffer, context, cardData);
         } else if (CardAction.isCardEnrolled20(card)) {
-            return processEnrolled20(context);
+            CardAction cardAction = CardAction.findByValue(card.getAction());
+            return processEnrolled20(context, CardUtils.getHttpMethodByCardAction(cardAction));
         } else {
             throw new RuntimeException("Card should be enrolled");
         }
     }
 
     @SneakyThrows
-    private PaymentCallbackResult processEnrolled20(PaymentContext context) {
+    private PaymentCallbackResult processEnrolled20(PaymentContext context, String formMethod) {
         SessionState contextSessionState = objectMapper.readValue(context.getSession().getState(), SessionState.class);
         switch (contextSessionState.getState()) {
             case PREPARE:
@@ -71,7 +72,9 @@ public class PaymentCallbackHandler {
                 return createCallbackResult(
                         callbackResponseCreator.createCallbackResponseWithForm(
                                 authSessionState.getOptions(),
-                                contextSessionState),
+                                formMethod,
+                                context
+                        ),
                         authCallbackProxyResult);
             case AUTH:
                 return createCallbackResult(new byte[]{}, mpi20Processor.processResult(context));

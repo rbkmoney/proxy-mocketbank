@@ -8,6 +8,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi.constant.EnrollmentStatus;
 import com.rbkmoney.proxy.mocketbank.service.mpi.constant.TransactionStatus;
 import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
 import com.rbkmoney.proxy.mocketbank.utils.Converter;
+import com.rbkmoney.proxy.mocketbank.utils.TestConstants;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -42,17 +43,26 @@ public class MocketBankServerHandlerSuccessWith3DSIntegrationTest extends Integr
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
-            processPayment(cardData);
+            processPayment(cardData, null);
         }
     }
 
-    private void processPayment(CardData cardData) throws TException, IOException {
+    @Test
+    void testProcessPaymentSuccessWithRedirect() throws TException, IOException {
+        List<String> pans = CardListUtils.extractPans(cardList, CardAction::isMpiCardSuccess);
+        for (String pan : pans) {
+            CardData cardData = createCardData(pan);
+            processPayment(cardData, TestConstants.REDIRECT_URL);
+        }
+    }
+
+    private void processPayment(CardData cardData, String redirectUrl) throws TException, IOException {
         BankCard bankCard = TestData.createBankCard(cardData);
         mockCds(cardData, bankCard);
         mockMpiVerify(EnrollmentStatus.AUTHENTICATION_AVAILABLE);
         mockMpi(TransactionStatus.AUTHENTICATION_SUCCESSFUL);
 
-        PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null);
+        PaymentContext paymentContext = getContext(bankCard, createTargetProcessed(), null, redirectUrl);
         PaymentProxyResult proxyResult = handler.processPayment(paymentContext);
         assertTrue("Process payment isn`t suspend", isSuspend(proxyResult));
 

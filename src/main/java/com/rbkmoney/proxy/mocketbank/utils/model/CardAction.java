@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 
 @Getter
 @RequiredArgsConstructor
@@ -13,9 +14,11 @@ public enum CardAction {
     UNSUPPORTED_CARD("Unsupported Card"),
     SUCCESS("Success"),
     SUCCESS_3DS("3-D Secure Success"),
+    SUCCESS_3DS_GET_ACS("3-D Secure Success with Get Acs"),
     FAILURE_3DS("3-D Secure Failure"),
     TIMEOUT_3DS("3-D Secure Timeout"),
     SUCCESS_3DS_2_0("3-D Secure 2.0 Success"),
+    SUCCESS_3DS_2_0_GET_ACS("3-D Secure 2.0 Success with Get Acs"),
     INSUFFICIENT_FUNDS("Insufficient Funds"),
     INVALID_CARD("Invalid Card"),
     CVV_MATCH_FAIL("CVV Match Fail"),
@@ -31,11 +34,13 @@ public enum CardAction {
     private static final CardAction[] ENROLLED_CARDS = {
             FAILURE_3DS,
             TIMEOUT_3DS,
-            SUCCESS_3DS
+            SUCCESS_3DS,
+            SUCCESS_3DS_GET_ACS
     };
 
     private static final CardAction[] ENROLLED_2_0_CARDS = {
-            SUCCESS_3DS_2_0
+            SUCCESS_3DS_2_0,
+            SUCCESS_3DS_2_0_GET_ACS
     };
 
 
@@ -81,6 +86,11 @@ public enum CardAction {
     private static final CardAction[] MPI_SUCCESS_CARDS = {
             SUCCESS_3DS
     };
+
+    private static final EnumSet<CardAction> GET_ACS_CARDS = EnumSet.of(
+            SUCCESS_3DS_GET_ACS,
+            SUCCESS_3DS_2_0_GET_ACS
+    );
 
     private final String action;
 
@@ -174,6 +184,10 @@ public enum CardAction {
     public static boolean isMpiCardTimeout(Card card) {
         CardAction action = CardAction.findByValue(card.getAction());
         return isMpiCardTimeout(action);
+    }
+
+    public static boolean isGetAcsCard(CardAction action) {
+        return GET_ACS_CARDS.contains(action);
     }
 
 }

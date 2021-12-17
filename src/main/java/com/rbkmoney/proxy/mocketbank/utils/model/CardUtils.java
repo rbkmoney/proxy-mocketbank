@@ -4,6 +4,7 @@ import com.rbkmoney.java.cds.utils.model.CardDataProxyModel;
 import com.rbkmoney.proxy.mocketbank.exception.CardException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpMethod;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,5 +26,9 @@ public class CardUtils {
         }
         CardAction action = CardAction.findByValue(card.get().getAction());
         return isMpiCardFailed(action) ? action : UNKNOWN_FAILURE;
+    }
+
+    public static String getHttpMethodByCardAction(CardAction action) {
+        return CardAction.isGetAcsCard(action) ? HttpMethod.GET.name() : HttpMethod.POST.name();
     }
 }
