@@ -9,6 +9,7 @@ import com.rbkmoney.proxy.mocketbank.service.mpi20.converter.*;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.Error;
 import com.rbkmoney.proxy.mocketbank.service.mpi20.model.*;
 import com.rbkmoney.proxy.mocketbank.utils.CreatorUtils;
+import com.rbkmoney.proxy.mocketbank.utils.UrlUtils;
 import com.rbkmoney.proxy.mocketbank.utils.state.constant.SuspendPrefix;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

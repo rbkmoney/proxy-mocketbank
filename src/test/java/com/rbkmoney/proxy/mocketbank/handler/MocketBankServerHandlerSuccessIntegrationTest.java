@@ -6,6 +6,7 @@ import com.rbkmoney.damsel.domain.TransactionInfo;
 import com.rbkmoney.damsel.proxy_provider.PaymentProxyResult;
 import com.rbkmoney.proxy.mocketbank.TestData;
 import com.rbkmoney.proxy.mocketbank.utils.CardListUtils;
+import com.rbkmoney.proxy.mocketbank.utils.TestConstants;
 import com.rbkmoney.proxy.mocketbank.utils.model.CardAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -31,8 +32,6 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTest {
 
-    private static final String REDIRECT_URL = "http://127.0.0.1:8082";
-
     @Test
     void testProcessPaymentSuccess() throws TException {
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
@@ -47,7 +46,7 @@ public class MocketBankServerHandlerSuccessIntegrationTest extends IntegrationTe
         List<String> pans = CardListUtils.extractPans(cardList, CardAction::isCardSuccess);
         for (String pan : pans) {
             CardData cardData = createCardData(pan);
-            processPayment(cardData, REDIRECT_URL);
+            processPayment(cardData, TestConstants.REDIRECT_URL);
         }
     }
 

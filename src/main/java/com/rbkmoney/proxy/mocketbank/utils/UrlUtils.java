@@ -51,7 +51,16 @@ public class UrlUtils {
         return param;
     }
 
-    private static boolean hasRedirectUrl(InvoicePayment payment) {
+    public static String prepareUrlWithParams(String url, Map<String, String> params) {
+        MultiValueMap<String, String> multiValueMapParams = new LinkedMultiValueMap<>();
+        multiValueMapParams.setAll(params);
+        return UriComponentsBuilder.fromUriString(url)
+                .queryParams(multiValueMapParams)
+                .build()
+                .toUriString();
+    }
+
+    public static boolean hasRedirectUrl(InvoicePayment payment) {
         return payment != null && payment.isSetPayerSessionInfo()
                 && StringUtils.hasText(payment.getPayerSessionInfo().getRedirectUrl());
     }

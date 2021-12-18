@@ -1,8 +1,8 @@
 package com.rbkmoney.proxy.mocketbank.utils;
 
+import com.rbkmoney.damsel.proxy_provider.PaymentContext;
 import com.rbkmoney.proxy.mocketbank.configuration.properties.Mpi20Properties;
 import com.rbkmoney.proxy.mocketbank.exception.RedirectTemplateException;
-import com.rbkmoney.proxy.mocketbank.service.mpi20.model.SessionState;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,15 @@ public class CallbackResponseWithTemplateCreator {
     private final Configuration freemarkerConfiguration;
 
     public static final String TEMPLATE = "redirect.ftl";
+    public static final String METHOD = "formMethod";
+
 
     public byte[] createCallbackResponseWithForm(
             Map<String, String> options,
-            SessionState contextSessionState) {
-        String termUrl = contextSessionState.getTermUrl();
-        String terminationUri = termUrl.contains("=")
-                ? termUrl.substring(termUrl.indexOf("=") + 1)
+            String formMethod,
+            PaymentContext context) {
+        String terminationUri = UrlUtils.hasRedirectUrl(context.getPaymentInfo().getPayment())
+                ? context.getPaymentInfo().getPayment().getPayerSessionInfo().getRedirectUrl()
                 : mpi20Properties.getReturnUrl();
         String acsTermUrl = createCallbackUrlWithParam(
                 mpi20Properties.getCallbackUrl(),
@@ -42,6 +44,7 @@ public class CallbackResponseWithTemplateCreator {
         try {
             return processTemplateIntoString(freemarkerConfiguration.getTemplate(TEMPLATE), Map.of(
                     ACS_URL, acsUrl,
+                    METHOD, formMethod,
                     CREQ, creq,
                     TERM_URL, acsTermUrl
             )).getBytes();

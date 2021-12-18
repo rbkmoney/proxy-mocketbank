@@ -3,6 +3,7 @@ cardPan, action, paymentSystem
 5555555555554444, Success, MasterCard
 586824160825533338, Success, Maestro
 2201382000000013, Success, MIR
+4556418324571052, 3-D Secure Success with Get Acs, Visa
 4012888888881881, 3-D Secure Success, Visa
 5169147129584558, 3-D Secure Success, MasterCard
 4987654321098769, 3-D Secure Failure, Visa
@@ -10,6 +11,7 @@ cardPan, action, paymentSystem
 4342561111111118, 3-D Secure Timeout, Visa
 5112000200000002, 3-D Secure Timeout, MasterCard
 4929172190150505, 3-D Secure 2.0 Success, Visa
+4556724110260093, 3-D Secure 2.0 Success with Get Acs, Visa
 4000000000000002, Insufficient Funds, Visa
 5100000000000412, Insufficient Funds, MasterCard
 4222222222222220, Invalid Card, Visa
